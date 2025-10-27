@@ -304,22 +304,3 @@ php artisan queue:work
 
 ---
 
-## 📝 License
-
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
----
-
-## 👥 Contributors
-
--   **Your Name** - _Initial work_
-
----
-
-## 📞 Support
-
-Untuk pertanyaan atau issue, silakan buka [GitHub Issues](https://github.com/yourusername/bank-sampah/issues).
-
----
-
-**Built with ❤️ using Laravel**
