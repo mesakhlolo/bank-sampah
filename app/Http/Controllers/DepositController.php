@@ -40,16 +40,16 @@ class DepositController extends Controller
                 ->where('status', 'final');
 
             // Apply filters
-            if ($request->filled('customer_id')) {
+            if ($request->has('customer_id') && $request->customer_id != '') {
                 $depositsQuery->where('customer_id', $request->customer_id);
             }
-            if ($request->filled('date_from')) {
-                $depositsQuery->whereDate('transaction_date', '>=', $request->date_from);
+            if ($request->has('date_from') && $request->date_from != '') {
+                $depositsQuery->where('transaction_date', '>=', $request->date_from.' 00:00:00');
             }
-            if ($request->filled('date_to')) {
-                $depositsQuery->whereDate('transaction_date', '<=', $request->date_to);
+            if ($request->has('date_to') && $request->date_to != '') {
+                $depositsQuery->where('transaction_date', '<=', $request->date_to.' 23:59:59');
             }
-            if ($request->filled('search')) {
+            if ($request->has('search') && $request->search != '') {
                 $depositsQuery->where('code', 'like', '%'.$request->search.'%');
             }
 
@@ -73,16 +73,16 @@ class DepositController extends Controller
             $withdrawalsQuery = \App\Models\Withdrawal::with(['customer', 'creator']);
 
             // Apply filters
-            if ($request->filled('customer_id')) {
+            if ($request->has('customer_id') && $request->customer_id != '') {
                 $withdrawalsQuery->where('customer_id', $request->customer_id);
             }
-            if ($request->filled('date_from')) {
-                $withdrawalsQuery->whereDate('transaction_date', '>=', $request->date_from);
+            if ($request->has('date_from') && $request->date_from != '') {
+                $withdrawalsQuery->where('transaction_date', '>=', $request->date_from.' 00:00:00');
             }
-            if ($request->filled('date_to')) {
-                $withdrawalsQuery->whereDate('transaction_date', '<=', $request->date_to);
+            if ($request->has('date_to') && $request->date_to != '') {
+                $withdrawalsQuery->where('transaction_date', '<=', $request->date_to.' 23:59:59');
             }
-            if ($request->filled('search')) {
+            if ($request->has('search') && $request->search != '') {
                 $withdrawalsQuery->where('code', 'like', '%'.$request->search.'%');
             }
 

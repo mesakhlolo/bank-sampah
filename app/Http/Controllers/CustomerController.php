@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -43,8 +44,9 @@ class CustomerController extends Controller
     {
         $this->authorize('create', Customer::class);
 
-        // Generate next member code
-        $nextMemberCode = $this->generateNextMemberCode();
+        // Don't generate code here to avoid race condition
+        // Code will be generated during store
+        $nextMemberCode = 'Auto-generated';
 
         return view('customers.create', compact('nextMemberCode'));
     }
@@ -56,12 +58,15 @@ class CustomerController extends Controller
     {
         $data = $request->validated();
 
-        // Auto-generate member code if not provided
-        if (empty($data['member_code'])) {
-            $data['member_code'] = $this->generateNextMemberCode();
-        }
+        // Use database transaction to ensure atomic operation
+        $customer = DB::transaction(function () use ($data) {
+            // Auto-generate member code if not provided
+            if (empty($data['member_code'])) {
+                $data['member_code'] = $this->generateNextMemberCode();
+            }
 
-        $customer = Customer::create($data);
+            return Customer::create($data);
+        });
 
         return redirect()->route('customers.index')
             ->with('success', 'Nasabah berhasil ditambahkan.');
@@ -72,17 +77,19 @@ class CustomerController extends Controller
      */
     private function generateNextMemberCode(): string
     {
-        $lastCustomer = Customer::orderBy('id', 'desc')->first();
+        // Get the last member code by extracting the max number
+        $lastCode = Customer::orderBy('member_code', 'desc')->value('member_code');
 
-        if (! $lastCustomer) {
+        if (! $lastCode) {
             return 'NSB-0001';
         }
 
-        // Extract number from last code (e.g., NSB-0001 -> 1)
-        $lastNumber = (int) substr($lastCustomer->member_code, 4);
+        // Extract number from last code using regex (handles any format)
+        preg_match('/\d+/', $lastCode, $matches);
+        $lastNumber = isset($matches[0]) ? (int) $matches[0] : 0;
         $nextNumber = $lastNumber + 1;
 
-        return 'NSB-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return 'NSB-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -93,9 +100,9 @@ class CustomerController extends Controller
         $this->authorize('view', $customer);
 
         $customer->load([
-            'ledgerEntries' => fn($q) => $q->latest()->limit(20),
-            'deposits' => fn($q) => $q->latest()->limit(10),
-            'withdrawals' => fn($q) => $q->latest()->limit(10),
+            'ledgerEntries' => fn ($q) => $q->latest()->limit(20),
+            'deposits' => fn ($q) => $q->latest()->limit(10),
+            'withdrawals' => fn ($q) => $q->latest()->limit(10),
         ]);
 
         return view('customers.show', compact('customer'));

@@ -12,17 +12,15 @@
                     <form method="POST" action="{{ route('customers.store') }}">
                         @csrf
 
-                        <!-- Member Code -->
+                        <!-- Member Code (Hidden - auto-generated) -->
+                        <input type="hidden" name="member_code" value="">
+
                         <div class="mb-4">
-                            <label for="member_code" class="block text-sm font-medium text-gray-700">Kode Anggota
-                                (Otomatis)</label>
-                            <input type="text" name="member_code" id="member_code"
-                                value="{{ old('member_code', $nextMemberCode) }}" readonly
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('member_code') border-red-500 @enderror">
-                            @error('member_code')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                            <p class="mt-1 text-xs text-gray-500">Kode anggota akan di-generate otomatis</p>
+                            <label class="block text-sm font-medium text-gray-700">Kode Anggota (Otomatis)</label>
+                            <div class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 px-3 py-2 text-gray-500">
+                                Akan di-generate otomatis dengan format NSB-xxxx
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Kode akan dibuat otomatis saat data disimpan</p>
                         </div>
 
                         <!-- Name -->

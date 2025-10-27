@@ -16,13 +16,15 @@ class ReportController extends Controller
         $end = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
 
         // Total deposits
-        $totalDeposits = Deposit::whereBetween('created_at', [$start, $end])
+        $totalDeposits = Deposit::whereDate('transaction_date', '>=', $start)
+            ->whereDate('transaction_date', '<=', $end)
             ->where('status', 'final')
             ->selectRaw('SUM(total_amount) as total_amount, SUM(total_weight) as total_weight, COUNT(*) as count')
             ->first();
 
         // Total withdrawals
-        $totalWithdrawals = Withdrawal::whereBetween('created_at', [$start, $end])
+        $totalWithdrawals = Withdrawal::whereDate('transaction_date', '>=', $start)
+            ->whereDate('transaction_date', '<=', $end)
             ->selectRaw('SUM(amount) as total_amount, COUNT(*) as count')
             ->first();
 
@@ -33,7 +35,8 @@ class ReportController extends Controller
         $categorySummary = DB::table('deposit_items')
             ->join('deposits', 'deposit_items.deposit_id', '=', 'deposits.id')
             ->join('waste_categories', 'deposit_items.waste_category_id', '=', 'waste_categories.id')
-            ->whereBetween('deposits.created_at', [$start, $end])
+            ->whereDate('deposits.transaction_date', '>=', $start)
+            ->whereDate('deposits.transaction_date', '<=', $end)
             ->where('deposits.status', 'final')
             ->select(
                 'waste_categories.name',
@@ -48,7 +51,8 @@ class ReportController extends Controller
         // Top 10 customers by deposit amount
         $topCustomers = DB::table('deposits')
             ->join('customers', 'deposits.customer_id', '=', 'customers.id')
-            ->whereBetween('deposits.created_at', [$start, $end])
+            ->whereDate('deposits.transaction_date', '>=', $start)
+            ->whereDate('deposits.transaction_date', '<=', $end)
             ->where('deposits.status', 'final')
             ->select(
                 'customers.name',
@@ -79,12 +83,14 @@ class ReportController extends Controller
         $end = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
 
         // Reuse same logic as summary method
-        $totalDeposits = Deposit::whereBetween('created_at', [$start, $end])
+        $totalDeposits = Deposit::whereDate('transaction_date', '>=', $start)
+            ->whereDate('transaction_date', '<=', $end)
             ->where('status', 'final')
             ->selectRaw('SUM(total_amount) as total_amount, SUM(total_weight) as total_weight, COUNT(*) as count')
             ->first();
 
-        $totalWithdrawals = Withdrawal::whereBetween('created_at', [$start, $end])
+        $totalWithdrawals = Withdrawal::whereDate('transaction_date', '>=', $start)
+            ->whereDate('transaction_date', '<=', $end)
             ->selectRaw('SUM(amount) as total_amount, COUNT(*) as count')
             ->first();
 
@@ -93,7 +99,8 @@ class ReportController extends Controller
         $categorySummary = DB::table('deposit_items')
             ->join('deposits', 'deposit_items.deposit_id', '=', 'deposits.id')
             ->join('waste_categories', 'deposit_items.waste_category_id', '=', 'waste_categories.id')
-            ->whereBetween('deposits.created_at', [$start, $end])
+            ->whereDate('deposits.transaction_date', '>=', $start)
+            ->whereDate('deposits.transaction_date', '<=', $end)
             ->where('deposits.status', 'final')
             ->select(
                 'waste_categories.name',
@@ -107,7 +114,8 @@ class ReportController extends Controller
 
         $topCustomers = DB::table('deposits')
             ->join('customers', 'deposits.customer_id', '=', 'customers.id')
-            ->whereBetween('deposits.created_at', [$start, $end])
+            ->whereDate('deposits.transaction_date', '>=', $start)
+            ->whereDate('deposits.transaction_date', '<=', $end)
             ->where('deposits.status', 'final')
             ->select(
                 'customers.name',

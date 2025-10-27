@@ -12,7 +12,7 @@ class WasteCategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true; // Both admin and operator can view
+        return $user->isAdmin(); // Only admin can view
     }
 
     /**
@@ -20,7 +20,7 @@ class WasteCategoryPolicy
      */
     public function view(User $user, WasteCategory $wasteCategory): bool
     {
-        return true; // Both admin and operator can view
+        return $user->isAdmin(); // Only admin can view
     }
 
     /**

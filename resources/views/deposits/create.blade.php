@@ -196,5 +196,18 @@
                 }
             }
         }
+
+        // Initialize TomSelect for customer dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            new TomSelect('#customer_id', {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: 'Pilih atau ketik untuk mencari nasabah...',
+                maxOptions: null
+            });
+        });
     </script>
 </x-app-layout>

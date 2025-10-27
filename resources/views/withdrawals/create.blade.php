@@ -154,5 +154,23 @@
                 }
             }
         }
+
+        // Initialize TomSelect for customer dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const tomSelect = new TomSelect('#customer_id', {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: 'Pilih atau ketik untuk mencari nasabah...',
+                maxOptions: null,
+                onChange: function(value) {
+                    // Trigger Alpine's loadCustomerBalance when selection changes
+                    const event = new Event('change', { bubbles: true });
+                    document.getElementById('customer_id').dispatchEvent(event);
+                }
+            });
+        });
     </script>
 </x-app-layout>
