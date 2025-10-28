@@ -2,22 +2,14 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Riwayat Transaksi') }}
+                {{ __('Riwayat Setoran Sampah') }}
             </h2>
-            <div class="flex gap-2">
-                @can('create', App\Models\Deposit::class)
-                    <a href="{{ route('deposits.create') }}"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        + Setoran Baru
-                    </a>
-                @endcan
-                @can('create', App\Models\Withdrawal::class)
-                    <a href="{{ route('withdrawals.create') }}"
-                        class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-                        + Penarikan Baru
-                    </a>
-                @endcan
-            </div>
+            @can('create', App\Models\Deposit::class)
+                <a href="{{ route('deposits.create') }}"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    + Setoran Baru
+                </a>
+            @endcan
         </div>
     </x-slot>
 
@@ -39,25 +31,12 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('deposits.index') }}"
-                        class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <!-- Transaction Type -->
-                        <div>
-                            <label for="type" class="block text-sm font-medium text-gray-700">Tipe Transaksi</label>
-                            <select name="type" id="type"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">Semua Transaksi</option>
-                                <option value="deposit" {{ request('type') == 'deposit' ? 'selected' : '' }}>Setoran
-                                </option>
-                                <option value="withdrawal" {{ request('type') == 'withdrawal' ? 'selected' : '' }}>
-                                    Penarikan</option>
-                            </select>
-                        </div>
-
+                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Search by code -->
                         <div>
                             <label for="search" class="block text-sm font-medium text-gray-700">Cari Kode</label>
                             <input type="text" name="search" id="search" value="{{ request('search') }}"
-                                placeholder="DEP/WDR-..."
+                                placeholder="DEP-..."
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
 
@@ -91,7 +70,7 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="md:col-span-5 flex gap-2">
+                        <div class="md:col-span-4 flex gap-2">
                             <button type="submit"
                                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Filter
@@ -108,17 +87,13 @@
             <!-- Transactions Table -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    @if ($transactions->isEmpty())
-                        <p class="text-center text-gray-500 py-8">Belum ada transaksi.</p>
+                    @if ($deposits->isEmpty())
+                        <p class="text-center text-gray-500 py-8">Belum ada setoran.</p>
                     @else
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Tipe
-                                        </th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Kode
@@ -146,58 +121,32 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($transactions as $transaction)
+                                    @foreach ($deposits as $deposit)
                                         <tr class="hover:bg-gray-50">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                @if ($transaction->type === 'deposit')
-                                                    <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Setoran
-                                                    </span>
-                                                @else
-                                                    <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                        Penarikan
-                                                    </span>
-                                                @endif
-                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ $transaction->code }}
+                                                {{ $deposit->code }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $transaction->date->format('d M Y H:i') }}
+                                                {{ $deposit->transaction_date ? $deposit->transaction_date->format('d M Y') : $deposit->created_at->format('d M Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $transaction->customer_name }}
+                                                {{ $deposit->customer->name }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $transaction->creator_name }}
+                                                {{ $deposit->creator->name }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium"
-                                                :class="'{{ $transaction->type === 'deposit' ? 'text-green-600' : 'text-red-600' }}'">
-                                                {{ $transaction->type === 'deposit' ? '+' : '-' }}
-                                                Rp {{ number_format($transaction->amount, 0, ',', '.') }}
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
+                                                + Rp {{ number_format($deposit->total_amount, 0, ',', '.') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                @if ($transaction->type === 'deposit')
-                                                    <a href="{{ route('deposits.show', $transaction->id) }}"
-                                                        class="text-blue-600 hover:text-blue-900 mr-3">
-                                                        Lihat
-                                                    </a>
-                                                    <a href="{{ route('deposits.download-pdf', $transaction->id) }}"
-                                                        class="text-green-600 hover:text-green-900">
-                                                        PDF
-                                                    </a>
-                                                @else
-                                                    <a href="{{ route('withdrawals.show', $transaction->id) }}"
-                                                        class="text-blue-600 hover:text-blue-900 mr-3">
-                                                        Lihat
-                                                    </a>
-                                                    <a href="{{ route('withdrawals.download-pdf', $transaction->id) }}"
-                                                        class="text-green-600 hover:text-green-900">
-                                                        PDF
-                                                    </a>
-                                                @endif
+                                                <a href="{{ route('deposits.show', $deposit) }}"
+                                                    class="text-blue-600 hover:text-blue-900 mr-3">
+                                                    Lihat
+                                                </a>
+                                                <a href="{{ route('deposits.download-pdf', $deposit) }}"
+                                                    class="text-green-600 hover:text-green-900">
+                                                    PDF
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -207,7 +156,7 @@
 
                         <!-- Pagination -->
                         <div class="mt-4">
-                            {{ $transactions->links() }}
+                            {{ $deposits->links() }}
                         </div>
                     @endif
                 </div>

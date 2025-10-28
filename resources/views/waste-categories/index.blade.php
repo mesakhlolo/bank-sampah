@@ -43,19 +43,23 @@
                                             <p class="text-sm text-gray-600 mt-1">{{ $category->description }}</p>
                                         @endif
                                     </div>
-                                    <div class="flex gap-2">
+                                    <div class="flex items-center gap-2 flex-shrink-0">
                                         @can('update', $category)
                                             <a href="{{ route('waste-categories.edit', $category) }}"
-                                                class="text-blue-600 hover:text-blue-900 text-sm">Edit</a>
+                                                class="text-blue-600 hover:text-blue-900 font-medium text-sm whitespace-nowrap">
+                                                Edit
+                                            </a>
                                         @endcan
                                         @can('delete', $category)
                                             <form action="{{ route('waste-categories.destroy', $category) }}" method="POST"
-                                                class="inline"
+                                                class="inline m-0"
                                                 onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="text-red-600 hover:text-red-900 text-sm">Hapus</button>
+                                                    class="text-red-600 hover:text-red-900 font-medium text-sm whitespace-nowrap">
+                                                    Hapus
+                                                </button>
                                             </form>
                                         @endcan
                                     </div>
@@ -63,42 +67,7 @@
 
                                 <!-- Price History -->
                                 <div class="mt-3 pt-3 border-t">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <h4 class="text-sm font-semibold text-gray-700">Riwayat Harga</h4>
-                                        @can('create', App\Models\WastePrice::class)
-                                            <button
-                                                onclick="document.getElementById('price-form-{{ $category->id }}').classList.toggle('hidden')"
-                                                class="text-xs bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded">
-                                                + Tambah Harga
-                                            </button>
-                                        @endcan
-                                    </div>
-
-                                    <!-- Add Price Form -->
-                                    @can('create', App\Models\WastePrice::class)
-                                        <div id="price-form-{{ $category->id }}" class="hidden mb-3 p-3 bg-gray-50 rounded">
-                                            <form method="POST" action="{{ route('waste-prices.store') }}"
-                                                class="flex gap-2 items-end">
-                                                @csrf
-                                                <input type="hidden" name="waste_category_id" value="{{ $category->id }}">
-                                                <div class="flex-1">
-                                                    <label class="block text-xs text-gray-600 mb-1">Harga per Kg
-                                                        (Rp)</label>
-                                                    <input type="number" name="price_per_kg" step="0.01" required
-                                                        class="w-full rounded-md border-gray-300 text-sm">
-                                                </div>
-                                                <div class="flex-1">
-                                                    <label class="block text-xs text-gray-600 mb-1">Berlaku Dari</label>
-                                                    <input type="date" name="effective_from" value="{{ date('Y-m-d') }}"
-                                                        required class="w-full rounded-md border-gray-300 text-sm">
-                                                </div>
-                                                <button type="submit"
-                                                    class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-                                                    Simpan
-                                                </button>
-                                            </form>
-                                        </div>
-                                    @endcan
+                                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Riwayat Harga</h4>
 
                                     <!-- Price List - Only Active & Future -->
                                     @if ($category->prices->count() > 0)

@@ -91,15 +91,32 @@ DB_PASSWORD=
 ### Step 4: Database Migration & Seeding
 
 ```bash
-php artisan migrate --seed
+# Jalankan migration dan seeding
+php artisan migrate:fresh --seed
+
+# Atau hanya migration
+php artisan migrate
+
+# Kemudian seed manual
+php artisan db:seed
 ```
 
-Seeder akan membuat:
+**Seeder akan membuat:**
 
 -   2 User: Admin & Operator
--   5 Kategori Sampah dengan harga awal
--   10 Nasabah dummy
--   Sample transaksi
+-   50 Nasabah dengan data random
+-   5 Kategori Sampah dengan harga
+-   ~250-300 Transaksi Setoran
+-   ~30-35 Transaksi Penarikan
+-   Total data: ~1,200-1,500 records
+
+**Lihat statistik data dummy:**
+
+```bash
+php artisan stats:show
+```
+
+📚 **Dokumentasi Lengkap:** Lihat [SEEDING_GUIDE.md](SEEDING_GUIDE.md) untuk panduan detail.
 
 ### Step 5: Build Frontend Assets
 
@@ -243,6 +260,8 @@ bank-sampah/
 ### Clear Cache
 
 ```bash
+php artisan optimize:clear
+# Atau individual:
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
@@ -253,6 +272,27 @@ php artisan view:clear
 ```bash
 php artisan migrate:fresh --seed
 ```
+
+### Lihat Statistik Data
+
+```bash
+# Tampilkan statistik lengkap (total transaksi, saldo, top customers, dll)
+php artisan stats:show
+```
+
+### Quick Reference
+
+Untuk command-command yang sering digunakan, lihat [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
+
+---
+
+## 📚 Dokumentasi
+
+-   **[SEEDING_GUIDE.md](SEEDING_GUIDE.md)** - Panduan lengkap database seeding dan testing data
+-   **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Referensi cepat command-command penting
+-   **[Implementation_Plan.md](Implementation_Plan.md)** - Rencana implementasi detail
+-   **[FIXING-BUG-AND-ERROR-LOGIC.md](FIXING-BUG-AND-ERROR-LOGIC.md)** - Dokumentasi bug fixes
+-   **[Requirements.md](Requirements.md)** - Requirement aplikasi lengkap
 
 ---
 
@@ -303,4 +343,3 @@ php artisan queue:work
 ```
 
 ---
-

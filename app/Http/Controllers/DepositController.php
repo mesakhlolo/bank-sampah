@@ -29,96 +29,34 @@ class DepositController extends Controller
         // Get all customers for filter
         $customers = Customer::orderBy('name')->get();
 
-        // Build combined transactions query
-        $type = $request->input('type', ''); // 'deposit', 'withdrawal', or '' for all
+        // Build deposits query - only show deposits, not withdrawals
+        $depositsQuery = Deposit::with(['customer', 'creator'])
+            ->where('status', 'final');
 
-        $transactions = collect();
-
-        // Get deposits
-        if ($type === '' || $type === 'deposit') {
-            $depositsQuery = Deposit::with(['customer', 'creator'])
-                ->where('status', 'final');
-
-            // Apply filters
-            if ($request->has('customer_id') && $request->customer_id != '') {
-                $depositsQuery->where('customer_id', $request->customer_id);
-            }
-            if ($request->has('date_from') && $request->date_from != '') {
-                $depositsQuery->where('transaction_date', '>=', $request->date_from.' 00:00:00');
-            }
-            if ($request->has('date_to') && $request->date_to != '') {
-                $depositsQuery->where('transaction_date', '<=', $request->date_to.' 23:59:59');
-            }
-            if ($request->has('search') && $request->search != '') {
-                $depositsQuery->where('code', 'like', '%'.$request->search.'%');
-            }
-
-            $deposits = $depositsQuery->get()->map(function ($deposit) {
-                return (object) [
-                    'id' => $deposit->id,
-                    'type' => 'deposit',
-                    'code' => $deposit->code,
-                    'date' => $deposit->transaction_date ?? $deposit->created_at,
-                    'customer_name' => $deposit->customer->name,
-                    'creator_name' => $deposit->creator->name,
-                    'amount' => $deposit->total_amount,
-                ];
-            });
-
-            $transactions = $transactions->merge($deposits);
+        // Apply filters
+        if ($request->filled('customer_id')) {
+            $depositsQuery->where('customer_id', $request->customer_id);
         }
 
-        // Get withdrawals
-        if ($type === '' || $type === 'withdrawal') {
-            $withdrawalsQuery = \App\Models\Withdrawal::with(['customer', 'creator']);
-
-            // Apply filters
-            if ($request->has('customer_id') && $request->customer_id != '') {
-                $withdrawalsQuery->where('customer_id', $request->customer_id);
-            }
-            if ($request->has('date_from') && $request->date_from != '') {
-                $withdrawalsQuery->where('transaction_date', '>=', $request->date_from.' 00:00:00');
-            }
-            if ($request->has('date_to') && $request->date_to != '') {
-                $withdrawalsQuery->where('transaction_date', '<=', $request->date_to.' 23:59:59');
-            }
-            if ($request->has('search') && $request->search != '') {
-                $withdrawalsQuery->where('code', 'like', '%'.$request->search.'%');
-            }
-
-            $withdrawals = $withdrawalsQuery->get()->map(function ($withdrawal) {
-                return (object) [
-                    'id' => $withdrawal->id,
-                    'type' => 'withdrawal',
-                    'code' => $withdrawal->code,
-                    'date' => $withdrawal->transaction_date ?? $withdrawal->created_at,
-                    'customer_name' => $withdrawal->customer->name,
-                    'creator_name' => $withdrawal->creator->name,
-                    'amount' => $withdrawal->amount,
-                ];
-            });
-
-            $transactions = $transactions->merge($withdrawals);
+        if ($request->filled('date_from')) {
+            $depositsQuery->whereDate('transaction_date', '>=', $request->date_from);
         }
 
-        // Sort by date descending
-        $transactions = $transactions->sortByDesc('date');
+        if ($request->filled('date_to')) {
+            $depositsQuery->whereDate('transaction_date', '<=', $request->date_to);
+        }
 
-        // Paginate manually
-        $page = $request->input('page', 1);
-        $perPage = 15;
-        $offset = ($page - 1) * $perPage;
+        if ($request->filled('search')) {
+            $depositsQuery->where('code', 'like', '%'.$request->search.'%');
+        }
 
-        $paginatedTransactions = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transactions->slice($offset, $perPage)->values(),
-            $transactions->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
+        // Sort by date descending and paginate
+        $deposits = $depositsQuery->orderBy('transaction_date', 'desc')
+            ->paginate(15)
+            ->withQueryString();
 
         return view('deposits.index', [
-            'transactions' => $paginatedTransactions,
+            'deposits' => $deposits,
             'customers' => $customers,
         ]);
     }

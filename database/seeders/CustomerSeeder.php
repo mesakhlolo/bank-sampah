@@ -12,6 +12,8 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->command->info('Creating demo customers...');
+        
         // Create specific demo customers
         Customer::create([
             'member_code' => 'CUST-0001',
@@ -29,7 +31,11 @@ class CustomerSeeder extends Seeder
             'joined_at' => '2025-09-15',
         ]);
 
-        // Create additional random customers
-        Customer::factory()->count(8)->create();
+        $this->command->info('Creating random customers...');
+        
+        // Create additional random customers (50 customers total for better testing)
+        Customer::factory()->count(48)->create();
+        
+        $this->command->info('✓ Total customers created: ' . Customer::count());
     }
 }

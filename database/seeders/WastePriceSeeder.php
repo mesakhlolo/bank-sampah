@@ -21,6 +21,9 @@ class WastePriceSeeder extends Seeder
             'Botol Kaca' => 2000,
         ];
 
+        // Set effective date to 6 months ago to ensure all historical transactions can use this price
+        $effectiveDate = now()->subMonths(6)->format('Y-m-d');
+        
         foreach ($prices as $categoryName => $price) {
             $category = WasteCategory::where('name', $categoryName)->first();
 
@@ -28,9 +31,11 @@ class WastePriceSeeder extends Seeder
                 WastePrice::create([
                     'waste_category_id' => $category->id,
                     'price_per_kg' => $price,
-                    'effective_from' => '2025-10-01',
+                    'effective_from' => $effectiveDate,
                 ]);
             }
         }
+        
+        $this->command->info("✓ Waste prices created with effective date: {$effectiveDate}");
     }
 }

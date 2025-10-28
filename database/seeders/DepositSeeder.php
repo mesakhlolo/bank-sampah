@@ -24,7 +24,7 @@ class DepositSeeder extends Seeder
             return;
         }
 
-        $customers = Customer::take(5)->get();
+        $customers = Customer::all();
         $categories = WasteCategory::where('is_active', true)->get();
 
         if ($categories->isEmpty()) {
@@ -33,40 +33,60 @@ class DepositSeeder extends Seeder
             return;
         }
 
+        $this->command->info('Creating deposit transactions...');
+        
+        $depositCount = 0;
+        
         foreach ($customers as $customer) {
-            // Create 1-2 deposits per customer
-            $depositCount = rand(1, 2);
+            // Create 3-8 deposits per customer untuk data yang lebih banyak
+            $depositPerCustomer = rand(3, 8);
 
-            for ($i = 0; $i < $depositCount; $i++) {
+            for ($i = 0; $i < $depositPerCustomer; $i++) {
                 $items = [];
 
-                // Random 2-3 categories per deposit
-                $selectedCategories = $categories->random(rand(2, 3));
+                // Random 1-4 categories per deposit
+                $categoryCount = rand(1, 4);
+                $selectedCategories = $categories->random(min($categoryCount, $categories->count()));
 
                 foreach ($selectedCategories as $category) {
                     $items[] = [
                         'waste_category_id' => $category->id,
-                        'weight_kg' => rand(10, 100) / 10, // 1.0 - 10.0 kg
+                        'weight_kg' => rand(5, 500) / 10, // 0.5 - 50.0 kg
                     ];
                 }
 
+                // Create deposits spread over the last 60 days
                 $data = [
                     'customer_id' => $customer->id,
                     'created_by' => $operator->id,
-                    'transaction_date' => now()->subDays(rand(0, 14))->format('Y-m-d'),
+                    'transaction_date' => now()->subDays(rand(0, 60))->format('Y-m-d'),
                     'items' => $items,
-                    'notes' => fake()->optional(0.3)->sentence(),
+                    'notes' => fake()->optional(0.3)->randomElement([
+                        'Setoran rutin',
+                        'Hasil pemilahan minggu ini',
+                        'Sampah dari kantor',
+                        'Kumpulan sampah rumah tangga',
+                        'Setoran dari lingkungan RT',
+                    ]),
                 ];
 
                 try {
                     $deposit = $depositService->createDeposit($data);
-                    $this->command->info("✓ Deposit {$deposit->code} created for {$customer->name} (Rp ".number_format($deposit->total_amount, 0, ',', '.').')');
+                    $depositCount++;
+                    
+                    if ($depositCount % 20 == 0) {
+                        $this->command->info("Progress: {$depositCount} deposits created...");
+                    }
                 } catch (\Exception $e) {
                     $this->command->error("✗ Error creating deposit for {$customer->name}: ".$e->getMessage());
                 }
             }
         }
 
-        $this->command->info("\nTotal deposits created: ".\App\Models\Deposit::count());
+        $this->command->info("✓ Total deposits created: {$depositCount}");
+        
+        // Show some statistics
+        $totalAmount = \App\Models\Deposit::sum('total_amount');
+        $this->command->info("✓ Total deposit amount: Rp ".number_format($totalAmount, 0, ',', '.'));
     }
 }

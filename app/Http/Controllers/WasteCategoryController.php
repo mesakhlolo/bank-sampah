@@ -42,6 +42,14 @@ class WasteCategoryController extends Controller
     {
         $category = WasteCategory::create($request->validated());
 
+        // Create initial price if provided
+        if ($request->filled('price_per_kg')) {
+            $category->prices()->create([
+                'price_per_kg' => $request->price_per_kg,
+                'effective_from' => $request->effective_from ?? now(),
+            ]);
+        }
+
         return redirect()->route('waste-categories.index')
             ->with('success', 'Kategori sampah berhasil ditambahkan.');
     }
@@ -74,6 +82,14 @@ class WasteCategoryController extends Controller
     public function update(UpdateWasteCategoryRequest $request, WasteCategory $wasteCategory)
     {
         $wasteCategory->update($request->validated());
+
+        // Create new price if provided
+        if ($request->filled('price_per_kg')) {
+            $wasteCategory->prices()->create([
+                'price_per_kg' => $request->price_per_kg,
+                'effective_from' => $request->effective_from ?? now(),
+            ]);
+        }
 
         return redirect()->route('waste-categories.index')
             ->with('success', 'Kategori sampah berhasil diperbarui.');

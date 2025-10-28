@@ -16,8 +16,29 @@ class CustomerFactory extends Factory
      */
     public function definition(): array
     {
+        // Using a static counter to ensure sequential numbering during factory generation
+        static $counter = null;
+
+        if ($counter === null) {
+            // Initialize counter from last customer in database
+            $lastCustomer = \App\Models\Customer::orderBy('id', 'desc')->first();
+
+            if (! $lastCustomer) {
+                $counter = 1;
+            } else {
+                // Extract number from last code
+                preg_match('/(\d+)$/', $lastCustomer->member_code, $matches);
+                $lastNumber = isset($matches[1]) ? (int) $matches[1] : $lastCustomer->id;
+                $counter = $lastNumber + 1;
+            }
+        }
+
+        // Use minimum 4 digits, but allow more if needed
+        $memberCode = 'CUST-'.str_pad($counter, 4, '0', STR_PAD_LEFT);
+        $counter++; // Increment for next call
+
         return [
-            'member_code' => 'CUST-'.str_pad(fake()->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
+            'member_code' => $memberCode,
             'name' => fake()->name(),
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),

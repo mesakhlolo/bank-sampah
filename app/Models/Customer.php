@@ -22,6 +22,49 @@ class Customer extends Model
     ];
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Auto-generate member_code before creating if not provided
+        static::creating(function ($customer) {
+            if (empty($customer->member_code)) {
+                $customer->member_code = static::generateNextMemberCode();
+            }
+        });
+    }
+
+    /**
+     * Generate next member code
+     */
+    private static function generateNextMemberCode(): string
+    {
+        // Get the last customer by ID to ensure proper sequencing
+        $lastCustomer = static::orderBy('id', 'desc')->lockForUpdate()->first();
+
+        if (! $lastCustomer) {
+            return 'CUST-0001';
+        }
+
+        // Extract number from last code using regex (handles CUST-xxxx or any other format)
+        preg_match('/(\d+)$/', $lastCustomer->member_code, $matches);
+
+        if (isset($matches[1])) {
+            $lastNumber = (int) $matches[1];
+        } else {
+            // Fallback: use the ID as base
+            $lastNumber = $lastCustomer->id;
+        }
+
+        $nextNumber = $lastNumber + 1;
+
+        // Use minimum 4 digits, but allow expansion beyond 9999
+        return 'CUST-'.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
      * Get deposits for this customer
      */
     public function deposits()

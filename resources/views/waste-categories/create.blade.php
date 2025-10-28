@@ -42,6 +42,40 @@
                             </label>
                         </div>
 
+                        <!-- Harga Awal -->
+                        <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-3">Harga Awal</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="price_per_kg" class="block text-sm font-medium text-gray-700">Harga per Kg (Rp) *</label>
+                                    <input type="number" name="price_per_kg" id="price_per_kg" 
+                                        value="{{ old('price_per_kg') }}" 
+                                        step="0.01" required min="0"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        placeholder="Contoh: 3000">
+                                    @error('price_per_kg')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="effective_from" class="block text-sm font-medium text-gray-700">Berlaku Dari *</label>
+                                    <input type="date" name="effective_from" id="effective_from" 
+                                        value="{{ old('effective_from', date('Y-m-d')) }}" 
+                                        required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @error('effective_from')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <p class="text-xs text-gray-500 mt-2">
+                                💡 Harga ini akan menjadi harga awal untuk kategori sampah yang baru dibuat.
+                            </p>
+                        </div>
+
                         <!-- Buttons -->
                         <div class="flex items-center justify-end gap-4 mt-6">
                             <a href="{{ route('waste-categories.index') }}"
