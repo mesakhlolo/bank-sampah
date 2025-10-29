@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->command->info('🌱 Starting database seeding...');
         $this->command->newLine();
-        
+
         $this->call([
             UserSeeder::class,
             WasteCategorySeeder::class,
@@ -25,11 +25,11 @@ class DatabaseSeeder extends Seeder
             DepositSeeder::class,
             WithdrawalSeeder::class,
         ]);
-        
+
         $this->command->newLine();
         $this->command->info('🎉 Database seeding completed successfully!');
         $this->command->newLine();
-        
+
         // Display summary statistics
         $this->command->table(
             ['Model', 'Count'],

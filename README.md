@@ -1,345 +1,182 @@
 # Bank Sampah - Waste Bank Management System
 
-[![Laravel](https://img.shields.io/badge/Laravel-11.x-red.svg)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-Aplikasi manajemen Bank Sampah berbasis web yang dibangun menggunakan Laravel 11, Tailwind CSS, dan Alpine.js. Sistem ini memungkinkan pengelolaan setoran sampah, penarikan saldo, dan pelaporan transaksi dengan antarmuka yang mudah digunakan.
-
----
-
-## 📋 Fitur Utama
-
-### ✅ Manajemen Master Data
-
--   **Nasabah**: CRUD data nasabah dengan kode anggota unik
--   **Kategori Sampah**: Kelola kategori sampah (Plastik, Kertas, Kaleng, dll.)
--   **Harga Sampah**: History harga dengan effective date
-
-### 💰 Transaksi
-
--   **Setoran**: Catat setoran sampah multi-item dengan perhitungan otomatis
--   **Penarikan**: Proses penarikan saldo dengan validasi balance
--   **Buku Besar**: Tracking semua mutasi dengan running balance
--   **Struk PDF**: Generate receipt untuk setiap transaksi
-
-### 📊 Pelaporan
-
--   **Dashboard**: Metrics hari ini (setoran, penarikan, top kategori)
--   **Laporan Ringkasan**: Filter by date range, breakdown per kategori, top customers
--   **Export PDF**: Download laporan dalam format PDF
-
-### 🔐 Authorization
-
--   **Role-based Access**: Admin & Operator dengan permission berbeda
--   **Policy Protection**: Automatic authorization menggunakan Laravel Policies
-
----
+Aplikasi manajemen Bank Sampah berbasis web menggunakan Laravel 11, Tailwind CSS, dan Alpine.js.
 
 ## 🚀 Tech Stack
 
--   **Backend**: Laravel 11.x
--   **Frontend**: Blade Templates + Tailwind CSS + Alpine.js
--   **Database**: MySQL 8.0+
--   **PDF Generation**: DomPDF
--   **Testing**: Pest PHP
--   **Code Quality**: Laravel Pint (PSR-12)
+-   Laravel 11.x | PHP 8.2+ | MySQL 8.0+
+-   Tailwind CSS + Alpine.js
+-   DomPDF | Pest PHP | Laravel Pint
 
 ---
 
-## 📦 Installation
+## 📋 Requirements
 
-### Prerequisites
+1. **XAMPP** (PHP 8.2+, MySQL, Apache) - [Download](https://www.apachefriends.org/)
+2. **Composer** - [Download](https://getcomposer.org/download/)
+3. **Node.js & NPM** - [Download](https://nodejs.org/)
+4. **Git** (optional) - [Download](https://git-scm.com/download/win)
 
--   PHP 8.2 or higher
--   Composer
--   MySQL 8.0 or higher
--   Node.js & NPM
+---
 
-### Step 1: Clone Repository
+## 🛠️ Setup di Windows (XAMPP)
 
-```bash
-git clone https://github.com/yourusername/bank-sampah.git
-cd bank-sampah
+### 1. Install Requirements
+
+-   Install XAMPP → Start Apache & MySQL di Control Panel
+-   Install Composer → Arahkan ke `C:\xampp\php\php.exe` saat setup
+-   Install Node.js (LTS version)
+-   (Optional) Tambahkan `C:\xampp\php` ke PATH environment variable
+
+### 2. Clone Project
+
+```powershell
+cd C:\xampp\htdocs
+git clone https://github.com/mesakhlolo/bank-sampah-vibecode.git
+cd bank-sampah-vibecode
 ```
 
-### Step 2: Install Dependencies
+Atau download ZIP dan extract ke `C:\xampp\htdocs\bank-sampah-vibecode`
 
-```bash
+### 3. Install Dependencies
+
+```powershell
 composer install
 npm install
 ```
 
-### Step 3: Environment Configuration
+**Jika error extension PHP:**
 
-```bash
-cp .env.example .env
-php artisan key:generate
-```
+-   Buka `C:\xampp\php\php.ini`
+-   Uncomment (hapus `;`) pada: `extension=fileinfo`, `extension=gd`, `extension=mbstring`, `extension=openssl`, `extension=pdo_mysql`, `extension=zip`
+-   Restart Apache di XAMPP
 
-Edit `.env` file dan konfigurasikan database:
+### 4. Setup Database
 
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=bank_sampah
-DB_USERNAME=root
-DB_PASSWORD=
-```
+1. Buka http://localhost/phpmyadmin
+2. Buat database baru: `bank_sampah` (collation: utf8mb4_unicode_ci)
+3. Copy file environment:
+    ```powershell
+    copy .env.example .env
+    ```
+4. Edit `.env`:
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=bank_sampah
+    DB_USERNAME=root
+    DB_PASSWORD=
+    ```
+5. Generate key:
+    ```powershell
+    php artisan key:generate
+    ```
 
-### Step 4: Database Migration & Seeding
+### 5. Migrasi & Seeding
 
-```bash
-# Jalankan migration dan seeding
+```powershell
 php artisan migrate:fresh --seed
-
-# Atau hanya migration
-php artisan migrate
-
-# Kemudian seed manual
-php artisan db:seed
 ```
 
-**Seeder akan membuat:**
+**Data yang dibuat:**
 
--   2 User: Admin & Operator
--   50 Nasabah dengan data random
+-   2 User (Admin & Operator)
+-   50 Nasabah
 -   5 Kategori Sampah dengan harga
--   ~250-300 Transaksi Setoran
--   ~30-35 Transaksi Penarikan
--   Total data: ~1,200-1,500 records
+-   ~300 Transaksi sample
 
-**Lihat statistik data dummy:**
+### 6. Build Frontend
 
-```bash
-php artisan stats:show
-```
-
-📚 **Dokumentasi Lengkap:** Lihat [SEEDING_GUIDE.md](SEEDING_GUIDE.md) untuk panduan detail.
-
-### Step 5: Build Frontend Assets
-
-```bash
+```powershell
 npm run build
 ```
 
-Untuk development:
+Atau untuk development:
 
-```bash
+```powershell
 npm run dev
 ```
 
-### Step 6: Run Application
+### 7. Jalankan Aplikasi
 
-```bash
+```powershell
 php artisan serve
 ```
 
-Akses aplikasi di: `http://localhost:8000`
+Akses: http://127.0.0.1:8000
+
+**Login:**
+
+-   **Admin**: admin@banksampah.test / password
+-   **Operator**: operator@banksampah.test / password
 
 ---
 
-## 👤 Default Credentials
+## ✅ Fitur Utama
 
-### Admin
-
--   **Email**: `admin@banksampah.test`
--   **Password**: `password`
--   **Akses**: Full access (termasuk master data)
-
-### Operator
-
--   **Email**: `operator@banksampah.test`
--   **Password**: `password`
--   **Akses**: Transaksi only (setoran & penarikan)
+-   **Master Data**: Nasabah, Kategori Sampah, Harga
+-   **Transaksi**: Setoran multi-item, Penarikan dengan validasi saldo
+-   **Laporan**: Dashboard metrics, Laporan ringkasan, Export PDF
+-   **Authorization**: Role-based (Admin & Operator)
+-   **Buku Besar**: Tracking mutasi per nasabah
 
 ---
 
-## 🎬 Demo Scenario (5 Menit)
+## 🐛 Troubleshooting
 
-### Persiapan
+**Error "Access denied" database:**
 
-```bash
-php artisan migrate:fresh --seed
+```
+Periksa .env: DB_USERNAME=root, DB_PASSWORD= (kosong untuk XAMPP default)
 ```
 
-### Flow Demo
+**Error "Class 'ZipArchive' not found":**
 
-**1. Login sebagai Operator** (2 menit)
+```
+Buka php.ini → Uncomment extension=zip → Restart Apache
+```
 
--   Dashboard: Lihat metrics hari ini
--   Setoran Baru:
-    -   Pilih nasabah "Budi Setiawan"
-    -   Tambah: Plastik PET 1.2 kg + Kertas 0.5 kg
-    -   Total: Rp 4.350
-    -   Generate & Download PDF
--   Cek profil nasabah → Saldo bertambah
+**CSS tidak muncul:**
 
-**2. Transaksi Penarikan** (1 menit)
+```powershell
+npm run build
+```
 
--   Pilih nasabah "Siti Aminah"
--   Input nominal: Rp 2.000
--   Validasi balance
--   Download receipt
+**Error "Vite manifest not found":**
 
-**3. Laporan** (2 menit)
-
--   Filter by date range
--   Lihat breakdown per kategori
--   Top 10 customers
--   Export PDF
+```powershell
+npm install
+npm run build
+```
 
 ---
 
-## 🧪 Testing
+## 🛠️ Development Commands
 
-### Run All Tests
+```powershell
+# Format code
+./vendor/bin/pint
 
-```bash
+# Clear cache
+php artisan optimize:clear
+
+# Reset database
+php artisan migrate:fresh --seed
+
+# Run tests
 php artisan test
 ```
-
-### Run Specific Test Suite
-
-```bash
-php artisan test --testsuite=Feature
-php artisan test --filter=DepositManagementTest
-```
-
-### Test Coverage
-
-```bash
-php artisan test --coverage
-```
-
----
-
-## 📂 Project Structure
-
-```
-bank-sampah/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/          # All controllers
-│   │   ├── Requests/              # Form validation requests
-│   │   └── Middleware/
-│   ├── Models/                    # Eloquent models
-│   ├── Policies/                  # Authorization policies
-│   └── Services/                  # Business logic services
-│       ├── DepositService.php
-│       └── WithdrawalService.php
-├── database/
-│   ├── factories/                 # Model factories
-│   ├── migrations/                # Database migrations
-│   └── seeders/                   # Database seeders
-├── resources/
-│   └── views/                     # Blade templates
-│       ├── customers/
-│       ├── deposits/
-│       ├── withdrawals/
-│       ├── waste-categories/
-│       ├── reports/
-│       └── ledger/
-├── routes/
-│   └── web.php                    # Web routes
-└── tests/
-    └── Feature/                   # Feature tests
-```
-
----
-
-## 🛠️ Development
-
-### Code Formatting
-
-```bash
-./vendor/bin/pint
-```
-
-### Clear Cache
-
-```bash
-php artisan optimize:clear
-# Atau individual:
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-```
-
-### Database Fresh Start
-
-```bash
-php artisan migrate:fresh --seed
-```
-
-### Lihat Statistik Data
-
-```bash
-# Tampilkan statistik lengkap (total transaksi, saldo, top customers, dll)
-php artisan stats:show
-```
-
-### Quick Reference
-
-Untuk command-command yang sering digunakan, lihat [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
 
 ---
 
 ## 📚 Dokumentasi
 
--   **[SEEDING_GUIDE.md](SEEDING_GUIDE.md)** - Panduan lengkap database seeding dan testing data
--   **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Referensi cepat command-command penting
--   **[Implementation_Plan.md](Implementation_Plan.md)** - Rencana implementasi detail
--   **[FIXING-BUG-AND-ERROR-LOGIC.md](FIXING-BUG-AND-ERROR-LOGIC.md)** - Dokumentasi bug fixes
 -   **[Requirements.md](Requirements.md)** - Requirement aplikasi lengkap
+-   **[Implementation_Plan.md](Implementation_Plan.md)** - Rencana implementasi detail
 
 ---
 
-## 📖 API Endpoints
+## 📄 License
 
-Semua route memerlukan authentication (`auth` middleware).
-
-### Master Data
-
--   `GET /customers` - List nasabah
--   `POST /customers` - Create nasabah
--   `GET /customers/{id}` - Detail nasabah
--   `PUT /customers/{id}` - Update nasabah
--   `DELETE /customers/{id}` - Delete nasabah (Admin only)
-
-### Transaksi
-
--   `GET /deposits/create` - Form setoran
--   `POST /deposits` - Simpan setoran
--   `GET /deposits/{id}` - Detail setoran
--   `GET /deposits/{id}/download-pdf` - Download PDF
-
--   `GET /withdrawals/create` - Form penarikan
--   `POST /withdrawals` - Simpan penarikan
--   `GET /withdrawals/{id}` - Detail penarikan
--   `GET /withdrawals/{id}/download-pdf` - Download PDF
-
-### Laporan
-
--   `GET /reports/summary` - Laporan ringkasan
--   `GET /reports/download-pdf` - Download laporan PDF
--   `GET /customers/{id}/ledger` - Buku besar nasabah
-
----
-
-## 🔧 Configuration
-
-### PDF Settings
-
-Edit `config/dompdf.php` untuk konfigurasi PDF generation.
-
-### Queue Configuration
-
-Untuk production, gunakan queue untuk proses yang berat:
-
-```bash
-php artisan queue:work
-```
-
----
+This project is open-sourced software licensed under the MIT license.

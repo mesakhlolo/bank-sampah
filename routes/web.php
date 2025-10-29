@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/summary', [ReportController::class, 'summary'])->name('reports.summary');
     Route::get('reports/download-pdf', [ReportController::class, 'downloadPdf'])->name('reports.download-pdf');
     Route::get('customers/{customer}/ledger', [LedgerController::class, 'show'])->name('ledger.show');
+
+    // Transaction History Route
+    Route::get('transactions', [\App\Http\Controllers\TransactionHistoryController::class, 'index'])->name('transactions.index');
 });
 
 require __DIR__.'/auth.php';

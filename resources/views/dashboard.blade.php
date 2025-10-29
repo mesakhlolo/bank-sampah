@@ -108,7 +108,7 @@
                             <div class="font-semibold text-red-700">📊 Laporan</div>
                             <div class="text-sm text-gray-600 mt-1">Lihat laporan dan statistik</div>
                         </a>
-                        <a href="{{ route('deposits.index') }}"
+                        <a href="{{ route('transactions.index') }}"
                             class="block p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition">
                             <div class="font-semibold text-indigo-700">📋 Riwayat Transaksi</div>
                             <div class="text-sm text-gray-600 mt-1">Lihat semua transaksi</div>

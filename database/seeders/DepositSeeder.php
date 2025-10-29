@@ -34,9 +34,9 @@ class DepositSeeder extends Seeder
         }
 
         $this->command->info('Creating deposit transactions...');
-        
+
         $depositCount = 0;
-        
+
         foreach ($customers as $customer) {
             // Create 3-8 deposits per customer untuk data yang lebih banyak
             $depositPerCustomer = rand(3, 8);
@@ -73,7 +73,7 @@ class DepositSeeder extends Seeder
                 try {
                     $deposit = $depositService->createDeposit($data);
                     $depositCount++;
-                    
+
                     if ($depositCount % 20 == 0) {
                         $this->command->info("Progress: {$depositCount} deposits created...");
                     }
@@ -84,9 +84,9 @@ class DepositSeeder extends Seeder
         }
 
         $this->command->info("✓ Total deposits created: {$depositCount}");
-        
+
         // Show some statistics
         $totalAmount = \App\Models\Deposit::sum('total_amount');
-        $this->command->info("✓ Total deposit amount: Rp ".number_format($totalAmount, 0, ',', '.'));
+        $this->command->info('✓ Total deposit amount: Rp '.number_format($totalAmount, 0, ',', '.'));
     }
 }
