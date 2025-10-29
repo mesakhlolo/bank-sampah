@@ -15,8 +15,7 @@
 
                         <!-- Name -->
                         <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori
-                                *</label>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Nama Kategori *</label>
                             <input type="text" name="name" id="name"
                                 value="{{ old('name', $wasteCategory->name) }}" required
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -27,9 +26,8 @@
 
                         <!-- Description -->
                         <div class="mb-4">
-                            <label for="description"
-                                class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                            <textarea name="description" id="description" rows="2"
+                            <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                            <textarea name="description" id="description" rows="3"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $wasteCategory->description) }}</textarea>
                             @error('description')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -37,9 +35,8 @@
                         </div>
 
                         <!-- Is Active -->
-                        <div class="mb-6">
+                        <div class="mb-4">
                             <label class="flex items-center">
-                                <input type="hidden" name="is_active" value="0">
                                 <input type="checkbox" name="is_active" value="1"
                                     {{ old('is_active', $wasteCategory->is_active) ? 'checked' : '' }}
                                     class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -52,7 +49,7 @@
                             $activePrice = $wasteCategory->getActivePriceOn(now());
                         @endphp
                         @if ($activePrice)
-                            <div class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
+                            <div class="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
                                 <div class="text-sm text-gray-600">
                                     Harga saat ini:
                                     <span class="font-semibold text-gray-900">
@@ -65,17 +62,13 @@
                             </div>
                         @endif
 
-                        <!-- Divider -->
-                        <div class="border-t border-gray-200 my-6"></div>
-
                         <!-- Update Price Section -->
-                        <div class="mb-6">
+                        <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <h3 class="text-sm font-semibold text-gray-700 mb-3">Update Harga (Opsional)</h3>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="price_per_kg" class="block text-sm font-medium text-gray-700">Harga
-                                        Baru (Rp/kg)</label>
+                                    <label for="price_per_kg" class="block text-sm font-medium text-gray-700">Harga per Kg (Rp)</label>
                                     <input type="number" name="price_per_kg" id="price_per_kg"
                                         value="{{ old('price_per_kg') }}" step="0.01" min="0"
                                         placeholder="Contoh: 3000"
@@ -86,8 +79,7 @@
                                 </div>
 
                                 <div>
-                                    <label for="effective_from" class="block text-sm font-medium text-gray-700">Berlaku
-                                        Dari</label>
+                                    <label for="effective_from" class="block text-sm font-medium text-gray-700">Berlaku Dari</label>
                                     <input type="date" name="effective_from" id="effective_from"
                                         value="{{ old('effective_from', date('Y-m-d')) }}"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -98,12 +90,12 @@
                             </div>
 
                             <p class="text-xs text-gray-500 mt-2">
-                                Kosongkan jika tidak ingin mengubah harga
+                                💡 Kosongkan jika tidak ingin mengubah harga.
                             </p>
                         </div>
 
                         <!-- Buttons -->
-                        <div class="flex items-center justify-end gap-4 mt-6 pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-end gap-4 mt-6">
                             <a href="{{ route('waste-categories.index') }}"
                                 class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
                                 Batal
