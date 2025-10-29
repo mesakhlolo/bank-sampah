@@ -80,6 +80,58 @@ test('admin can update waste category', function () {
     ]);
 });
 
+test('admin can deactivate waste category', function () {
+    $category = WasteCategory::factory()->create([
+        'name' => 'Active Category',
+        'is_active' => true,
+    ]);
+
+    // Deactivate the category by sending is_active = 0
+    $response = $this->actingAs($this->admin)->put(route('waste-categories.update', $category), [
+        'name' => 'Active Category',
+        'description' => 'Test deactivation',
+        'is_active' => 0,
+    ]);
+
+    $response->assertRedirect(route('waste-categories.index'));
+    $response->assertSessionHas('success');
+
+    // Verify category is now inactive
+    $this->assertDatabaseHas('waste_categories', [
+        'id' => $category->id,
+        'is_active' => false,
+    ]);
+
+    // Verify the category is actually deactivated
+    expect($category->fresh()->is_active)->toBeFalse();
+});
+
+test('admin can reactivate waste category', function () {
+    $category = WasteCategory::factory()->create([
+        'name' => 'Inactive Category',
+        'is_active' => false,
+    ]);
+
+    // Reactivate the category by sending is_active = 1
+    $response = $this->actingAs($this->admin)->put(route('waste-categories.update', $category), [
+        'name' => 'Inactive Category',
+        'description' => 'Test reactivation',
+        'is_active' => 1,
+    ]);
+
+    $response->assertRedirect(route('waste-categories.index'));
+    $response->assertSessionHas('success');
+
+    // Verify category is now active
+    $this->assertDatabaseHas('waste_categories', [
+        'id' => $category->id,
+        'is_active' => true,
+    ]);
+
+    // Verify the category is actually activated
+    expect($category->fresh()->is_active)->toBeTrue();
+});
+
 test('operator cannot update waste category', function () {
     $category = WasteCategory::factory()->create();
 

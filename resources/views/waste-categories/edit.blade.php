@@ -37,6 +37,7 @@
                         <!-- Is Active -->
                         <div class="mb-4">
                             <label class="flex items-center">
+                                <input type="hidden" name="is_active" value="0">
                                 <input type="checkbox" name="is_active" value="1"
                                     {{ old('is_active', $wasteCategory->is_active) ? 'checked' : '' }}
                                     class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
