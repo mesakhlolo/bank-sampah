@@ -115,11 +115,64 @@ Akses: http://127.0.0.1:8000
 
 ## ✅ Fitur Utama
 
+### Admin Dashboard
+
 -   **Master Data**: Nasabah, Kategori Sampah, Harga
 -   **Transaksi**: Setoran multi-item, Penarikan dengan validasi saldo
 -   **Laporan**: Dashboard metrics, Laporan ringkasan, Export PDF
 -   **Authorization**: Role-based (Admin & Operator)
 -   **Buku Besar**: Tracking mutasi per nasabah
+
+### 🌐 Fitur Publik (NEW!)
+
+#### Landing Page
+
+Akses: http://127.0.0.1:8000/
+
+Halaman depan informatif dengan:
+
+-   Penjelasan tentang Bank Sampah
+-   Statistik real-time (nasabah, sampah terkumpul, rupiah tersalur)
+-   Daftar harga sampah terkini
+-   Cara kerja Bank Sampah (4 langkah mudah)
+-   Call-to-action untuk daftar & cek saldo
+
+#### Portal Nasabah
+
+Akses: http://127.0.0.1:8000/nasabah/cek
+
+Nasabah dapat:
+
+-   Cek saldo menggunakan **kode unik** (format: BSB-XXXXXXXXXXXX)
+-   Lihat dashboard dengan statistik pribadi
+-   Lihat riwayat transaksi lengkap (setoran & penarikan)
+-   Lihat detail setoran dengan breakdown item
+-   Lihat harga sampah terkini dan informasi bantuan
+-   **Tidak perlu akun/login**, cukup kode unik saja
+
+**🔒 Keamanan Portal:**
+
+-   Kode unik cryptographically secure (4.7+ triliun kombinasi)
+-   Rate limiting: max 5 percobaan per 5 menit
+-   Session timeout: 30 menit
+-   IP validation untuk prevent session hijacking
+-   Comprehensive security logging
+
+**Demo Access:**
+
+Untuk mendapatkan kode unik nasabah:
+
+1. Login ke admin dashboard sebagai admin/operator
+2. Buka menu "Nasabah"
+3. Lihat detail nasabah → akan tampil **Member Code** (CUST-XXXX) dan **Unique Code** (BSB-XXXXXXXXXXXX)
+4. Gunakan **Unique Code** untuk login ke portal
+
+Atau via command line:
+
+```powershell
+php artisan tinker
+Customer::first()->unique_code  # Tampilkan kode unik
+```
 
 ---
 
@@ -152,6 +205,46 @@ npm run build
 
 ---
 
+## 🎬 Demo Scenario (7 Menit)
+
+### Menit 0-1: Landing Page (NEW)
+
+1. Buka http://127.0.0.1:8000/ (landing page)
+2. Scroll through sections: Hero → Cara Kerja → Statistik → Harga Sampah
+3. Klik tombol "Cek Saldo Saya"
+
+### Menit 1-2: Customer Portal (NEW)
+
+4. Masukkan kode unik nasabah (dapatkan dari admin atau tinker)
+5. Dashboard nasabah tampil: saldo, stats, transaksi terbaru
+6. Navigasi ke "Riwayat Transaksi" → lihat semua transaksi
+7. Klik detail salah satu setoran → tampil breakdown items
+8. Klik "Info & Bantuan" → lihat FAQ dan harga terkini
+9. Logout dari portal
+
+### Menit 2-3: Admin Login
+
+10. Klik "Masuk Admin" dari landing page
+11. Login sebagai Operator (operator@banksampah.test / password)
+
+### Menit 3-5: Core Transactions (Existing)
+
+12. Dashboard admin → lihat metrics dan recent activities
+13. Buat setoran baru untuk nasabah
+14. Proses penarikan saldo
+
+### Menit 5-6: Reports (Existing)
+
+15. Lihat laporan ringkasan
+16. Download PDF laporan
+
+### Menit 6-7: Full Circle
+
+17. Logout dari admin
+18. Kembali ke portal nasabah (gunakan kode unik lagi)
+19. Verify transaksi baru muncul di riwayat
+20. Saldo updated dengan benar ✅
+
 ## 🛠️ Development Commands
 
 ```powershell
@@ -161,11 +254,16 @@ npm run build
 # Clear cache
 php artisan optimize:clear
 
-# Reset database
+# Reset database (will generate new unique codes)
 php artisan migrate:fresh --seed
 
 # Run tests
 php artisan test
+
+# Generate unique code for specific customer
+php artisan tinker
+$customer = Customer::find(1);
+$customer->unique_code;
 ```
 
 ---

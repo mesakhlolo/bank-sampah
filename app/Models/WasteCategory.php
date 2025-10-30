@@ -28,6 +28,14 @@ class WasteCategory extends Model
     }
 
     /**
+     * Alias for prices (for backward compatibility)
+     */
+    public function wastePrices()
+    {
+        return $this->prices();
+    }
+
+    /**
      * Get deposit items for this category
      */
     public function depositItems()

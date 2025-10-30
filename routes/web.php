@@ -1,13 +1,43 @@
 <?php
 
+use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+// Landing page
+Route::get('/', [LandingController::class, 'index'])->name('landing.index');
+
+// Public customer portal routes
+Route::prefix('nasabah')->name('customer-portal.')->group(function () {
+    // Check code page (public)
+    Route::get('/cek', [CustomerPortalController::class, 'showCheckCode'])
+        ->name('check-code');
+
+    Route::post('/cek', [CustomerPortalController::class, 'verifyCode'])
+        ->name('verify-code')
+        ->middleware('throttle:5,5'); // 🔒 Rate limit: 5 attempts per 5 minutes
+
+    // Portal routes (session-guarded)
+    Route::middleware('customer.session')->group(function () {
+        Route::get('/dashboard', [CustomerPortalController::class, 'dashboard'])
+            ->name('dashboard');
+
+        Route::get('/transaksi', [CustomerPortalController::class, 'transactions'])
+            ->name('transactions');
+
+        Route::get('/setoran/{deposit}', [CustomerPortalController::class, 'depositDetail'])
+            ->name('deposit-detail');
+
+        Route::get('/info', [CustomerPortalController::class, 'info'])
+            ->name('info');
+
+        Route::post('/logout', [CustomerPortalController::class, 'logout'])
+            ->name('logout');
+    });
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
