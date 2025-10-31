@@ -54,6 +54,10 @@
                                     </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Kode Portal
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Nama
                                     </th>
                                     <th
@@ -79,6 +83,9 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $customer->member_code }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600">
+                                            {{ $customer->unique_code }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {{ $customer->name }}
@@ -115,7 +122,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
                                             Tidak ada data nasabah.
                                         </td>
                                     </tr>

@@ -4,7 +4,7 @@ Aplikasi manajemen Bank Sampah berbasis web menggunakan Laravel 11, Tailwind CSS
 
 ## 🚀 Tech Stack
 
--   Laravel 11.x | PHP 8.2+ | MySQL 8.0+
+-   Laravel 12.x | PHP 8.2+ | MySQL 8.0+
 -   Tailwind CSS + Alpine.js
 -   DomPDF | Pest PHP | Laravel Pint
 

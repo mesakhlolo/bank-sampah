@@ -26,6 +26,13 @@
                                     <p class="font-semibold text-lg">{{ $customer->member_code }}</p>
                                 </div>
                                 <div>
+                                    <p class="text-sm text-gray-600">Kode Unik Portal</p>
+                                    <div class="flex items-center gap-2">
+                                        <p class="font-mono font-bold text-lg text-blue-600 bg-blue-50 px-3 py-1 rounded">{{ $customer->unique_code }}</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Kode untuk akses portal nasabah</p>
+                                </div>
+                                <div>
                                     <p class="text-sm text-gray-600">Nama Lengkap</p>
                                     <p class="font-semibold">{{ $customer->name }}</p>
                                 </div>
@@ -134,14 +141,20 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @php
+                                            // First, calculate all balances in chronological order (oldest to newest)
+                                            $allEntries = $customer->ledgerEntries()->orderBy('created_at', 'asc')->get();
+                                            $balances = [];
                                             $runningBalance = 0;
-                                            $entries = $customer->ledgerEntries->reverse();
+                                            
+                                            foreach ($allEntries as $e) {
+                                                $runningBalance += $e->direction === 'KREDIT' ? $e->amount : -$e->amount;
+                                                $balances[$e->id] = $runningBalance;
+                                            }
+                                            
+                                            // Display entries in reverse chronological order (newest first)
+                                            $entries = $customer->ledgerEntries;
                                         @endphp
                                         @foreach ($entries as $entry)
-                                            @php
-                                                $runningBalance +=
-                                                    $entry->direction === 'KREDIT' ? $entry->amount : -$entry->amount;
-                                            @endphp
                                             <tr>
                                                 <td class="px-4 py-3 text-sm">
                                                     {{ $entry->transaction_date ? $entry->transaction_date->format('d M Y') : '-' }}
@@ -156,7 +169,7 @@
                                                     {{ $entry->direction === 'DEBIT' ? 'Rp ' . number_format($entry->amount, 0, ',', '.') : '-' }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-right font-semibold">
-                                                    Rp {{ number_format($runningBalance, 0, ',', '.') }}</td>
+                                                    Rp {{ number_format($balances[$entry->id], 0, ',', '.') }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -241,4 +254,16 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Kode berhasil disalin: ' + text);
+            }, function(err) {
+                console.error('Gagal menyalin: ', err);
+            });
+        }
+    </script>
+    @endpush
 </x-app-layout>
