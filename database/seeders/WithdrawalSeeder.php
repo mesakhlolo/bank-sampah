@@ -52,7 +52,7 @@ class WithdrawalSeeder extends Seeder
                 $data = [
                     'customer_id' => $customer->id,
                     'amount' => $withdrawAmount,
-                    'transaction_date' => now()->subDays(rand(0, 10))->format('Y-m-d'),
+                    'transaction_date' => now()->subDays(rand(0, 60))->format('Y-m-d'),
                     'note' => fake()->optional(0.4)->randomElement([
                         'Penarikan tunai',
                         'Transfer bank',
