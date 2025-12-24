@@ -18,7 +18,7 @@
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Kode Anggota (Otomatis)</label>
                             <div class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 px-3 py-2 text-gray-500">
-                                Akan di-generate otomatis dengan format NSB-xxxx
+                                Akan di-generate otomatis dengan format CUST-xxxx
                             </div>
                             <p class="mt-1 text-xs text-gray-500">Kode akan dibuat otomatis saat data disimpan</p>
                         </div>
