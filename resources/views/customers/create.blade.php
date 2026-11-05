@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <form method="POST" action="{{ route('customers.store') }}">
                         @csrf
@@ -27,7 +27,7 @@
                         <div class="mb-4">
                             <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap *</label>
                             <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('name') border-red-500 @enderror">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 @error('name') border-red-500 @enderror">
                             @error('name')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -37,7 +37,7 @@
                         <div class="mb-4">
                             <label for="phone" class="block text-sm font-medium text-gray-700">Telepon</label>
                             <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('phone') border-red-500 @enderror">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 @error('phone') border-red-500 @enderror">
                             @error('phone')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -47,7 +47,7 @@
                         <div class="mb-4">
                             <label for="address" class="block text-sm font-medium text-gray-700">Alamat</label>
                             <textarea name="address" id="address" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('address') border-red-500 @enderror">{{ old('address') }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 @error('address') border-red-500 @enderror">{{ old('address') }}</textarea>
                             @error('address')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -59,7 +59,7 @@
                                 *</label>
                             <input type="date" name="joined_at" id="joined_at"
                                 value="{{ old('joined_at', date('Y-m-d')) }}" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('joined_at') border-red-500 @enderror">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 @error('joined_at') border-red-500 @enderror">
                             @error('joined_at')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -68,11 +68,11 @@
                         <!-- Buttons -->
                         <div class="flex items-center justify-end gap-4 mt-6">
                             <a href="{{ route('customers.index') }}"
-                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-sm">
                                 Batal
                             </a>
                             <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
                                 Simpan
                             </button>
                         </div>

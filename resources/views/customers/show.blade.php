@@ -5,7 +5,7 @@
                 Detail Nasabah
             </h2>
             <a href="{{ route('customers.index') }}"
-                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-sm">
                 ← Kembali
             </a>
         </div>
@@ -14,7 +14,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <!-- Customer Info Card -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Left Column -->
@@ -28,7 +28,7 @@
                                 <div>
                                     <p class="text-sm text-gray-600">Kode Unik Portal</p>
                                     <div class="flex items-center gap-2">
-                                        <p class="font-mono font-bold text-lg text-blue-600 bg-blue-50 px-3 py-1 rounded">{{ $customer->unique_code }}</p>
+                                        <p class="font-mono font-bold text-lg text-blue-600 bg-blue-50 px-3 py-1 rounded-sm">{{ $customer->unique_code }}</p>
                                     </div>
                                     <p class="text-xs text-gray-500 mt-1">Kode untuk akses portal nasabah</p>
                                 </div>
@@ -55,7 +55,7 @@
                         <!-- Right Column - Balance -->
                         <div>
                             <h3 class="text-lg font-semibold mb-4">Saldo</h3>
-                            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-6 text-white">
+                            <div class="bg-linear-to-br from-green-500 to-green-600 rounded-lg p-6 text-white">
                                 <p class="text-sm opacity-90 mb-2">Total Saldo</p>
                                 <p class="text-4xl font-bold">
                                     Rp {{ number_format($customer->balance, 0, ',', '.') }}
@@ -66,13 +66,13 @@
                             <div class="mt-4 flex gap-2">
                                 @can('create', App\Models\Deposit::class)
                                     <a href="{{ route('deposits.create', ['customer_id' => $customer->id]) }}"
-                                        class="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
+                                        class="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm text-center">
                                         + Setor
                                     </a>
                                 @endcan
                                 @can('create', App\Models\Withdrawal::class)
                                     <a href="{{ route('withdrawals.create', ['customer_id' => $customer->id]) }}"
-                                        class="flex-1 bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded text-center">
+                                        class="flex-1 bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-sm text-center">
                                         - Tarik
                                     </a>
                                 @endcan
@@ -83,7 +83,7 @@
             </div>
 
             <!-- Transactions Tabs -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" x-data="{ tab: 'ledger' }">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg" x-data="{ tab: 'ledger' }">
                 <div class="border-b border-gray-200">
                     <nav class="flex -mb-px">
                         <button @click="tab = 'ledger'"

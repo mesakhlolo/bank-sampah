@@ -11,7 +11,7 @@
     </div>
 
     <!-- Filter Tabs -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-4">
+    <div class="bg-white rounded-lg shadow-xs overflow-hidden mb-4">
         <div class="border-b border-gray-200">
             <nav class="flex -mb-px">
                 <a href="{{ route('customer-portal.transactions', ['type' => 'all']) }}" 
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Transactions Table -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white rounded-lg shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -150,7 +150,7 @@
     </div>
 
     <!-- Summary Card -->
-    <div class="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+    <div class="mt-8 bg-linear-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="text-center">
                 <p class="text-sm text-gray-600 mb-1">Saldo Saat Ini</p>

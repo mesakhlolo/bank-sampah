@@ -16,7 +16,7 @@
 
         <!-- Check Code Card -->
         <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
-            <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-5">
+            <div class="bg-linear-to-r from-green-500 to-green-600 px-6 py-5">
                 <p class="text-sm text-green-100 mb-1">Masukkan kode unik Anda untuk melihat saldo</p>
             </div>
 
@@ -25,7 +25,7 @@
                 @if($errors->any())
                 <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg" role="alert">
                     <div class="flex">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -54,7 +54,7 @@
                                value="{{ old('unique_code') }}"
                                placeholder="BSB-X7K9M2P4N8Q1" 
                                maxlength="16"
-                               class="block w-full px-4 py-2.5 text-center text-base font-mono uppercase tracking-wide border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition @error('unique_code') !border-red-400 @enderror"
+                               class="block w-full px-4 py-2.5 text-center text-base font-mono uppercase tracking-wide border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition @error('unique_code') border-red-400! @enderror"
                                required
                                autofocus>
                         <p class="mt-1.5 text-xs text-gray-500 text-center">
@@ -64,7 +64,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit" 
-                            class="w-full flex justify-center items-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition shadow-sm hover:shadow-md">
+                            class="w-full flex justify-center items-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition shadow-xs hover:shadow-md">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -75,7 +75,7 @@
                 <!-- Help Text -->
                 <div class="mt-5 pt-5 border-t border-gray-200">
                     <div class="flex items-start">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             <svg class="h-4 w-4 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -92,7 +92,7 @@
                 <!-- Security Info Box -->
                 <div class="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <div class="flex items-start">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             <svg class="h-4 w-4 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>

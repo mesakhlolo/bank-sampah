@@ -8,12 +8,12 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm">
                     {{ session('error') }}
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <form method="POST" action="{{ route('deposits.store') }}" x-data="depositForm()">
                         @csrf
@@ -22,7 +22,7 @@
                         <div class="mb-4">
                             <label for="customer_id" class="block text-sm font-medium text-gray-700">Nasabah *</label>
                             <select name="customer_id" id="customer_id" required x-model="customerId"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Pilih Nasabah</option>
                                 @foreach ($customers as $customer)
                                     <option value="{{ $customer->id }}"
@@ -42,7 +42,7 @@
                                 Transaksi</label>
                             <input type="date" name="transaction_date" id="transaction_date"
                                 value="{{ old('transaction_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                             @error('transaction_date')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -53,20 +53,20 @@
                             <div class="flex justify-between items-center mb-3">
                                 <label class="block text-sm font-medium text-gray-700">Item Sampah *</label>
                                 <button type="button" @click="addItem"
-                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm">
+                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-sm text-sm">
                                     + Tambah Item
                                 </button>
                             </div>
 
                             <div class="space-y-3">
                                 <template x-for="(item, index) in items" :key="index">
-                                    <div class="flex gap-3 items-start border border-gray-200 p-3 rounded">
+                                    <div class="flex gap-3 items-start border border-gray-200 p-3 rounded-sm">
                                         <!-- Waste Category -->
                                         <div class="flex-1">
                                             <label class="block text-xs font-medium text-gray-600 mb-1">Kategori</label>
                                             <select :name="'items[' + index + '][waste_category_id]'"
                                                 x-model="item.waste_category_id" @change="updatePrice(index)" required
-                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                                class="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                                 <option value="">Pilih Kategori</option>
                                                 @foreach ($wasteCategories as $category)
                                                     <option value="{{ $category->id }}"
@@ -85,7 +85,7 @@
                                             <input type="number" :name="'items[' + index + '][weight_kg]'"
                                                 x-model="item.weight_kg" @input="calculateSubtotal(index)"
                                                 step="0.01" min="0.01" required placeholder="0.00"
-                                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                                class="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                         </div>
 
                                         <!-- Subtotal (readonly) -->
@@ -112,7 +112,7 @@
                         </div>
 
                         <!-- Total Amount Display -->
-                        <div class="mb-6 bg-blue-50 border border-blue-200 p-4 rounded">
+                        <div class="mb-6 bg-blue-50 border border-blue-200 p-4 rounded-sm">
                             <div class="flex justify-between items-center">
                                 <span class="text-lg font-semibold text-gray-700">Total Setoran:</span>
                                 <span class="text-2xl font-bold text-blue-600" x-text="formatCurrency(total)"></span>
@@ -123,7 +123,7 @@
                         <div class="mb-6">
                             <label for="notes" class="block text-sm font-medium text-gray-700">Catatan</label>
                             <textarea name="notes" id="notes" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('notes') }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">{{ old('notes') }}</textarea>
                             @error('notes')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -132,11 +132,11 @@
                         <!-- Buttons -->
                         <div class="flex items-center justify-end gap-4">
                             <a href="{{ route('deposits.index') }}"
-                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-sm">
                                 Batal
                             </a>
                             <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
                                 Simpan Transaksi
                             </button>
                         </div>

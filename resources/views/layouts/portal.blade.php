@@ -14,7 +14,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-gradient-to-br from-green-50 to-blue-50">
+<body class="font-sans antialiased bg-linear-to-br from-green-50 to-blue-50">
     <div class="min-h-screen">
         <!-- Portal Navigation (different from admin) -->
         @if(isset($portalCustomer))
@@ -53,7 +53,7 @@
                             <form method="POST" action="{{ route('customer-portal.logout') }}">
                                 @csrf
                                 <button type="submit" 
-                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
+                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>
@@ -65,7 +65,7 @@
 
                     <!-- Mobile menu button -->
                     <div class="flex items-center sm:hidden">
-                        <button id="mobile-menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-green-600 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500">
+                        <button id="mobile-menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-green-600 hover:bg-green-50 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-green-500">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
@@ -112,7 +112,7 @@
         <!-- Flash Messages -->
         @if(session('success'))
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm relative" role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
             </div>
         </div>
@@ -120,7 +120,7 @@
 
         @if(session('error'))
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm relative" role="alert">
                 <span class="block sm:inline">{{ session('error') }}</span>
             </div>
         </div>

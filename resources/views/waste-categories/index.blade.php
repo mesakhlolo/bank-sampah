@@ -6,7 +6,7 @@
             </h2>
             @can('create', App\Models\WasteCategory::class)
                 <a href="{{ route('waste-categories.create') }}"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
                     + Tambah Kategori
                 </a>
             @endcan
@@ -16,18 +16,18 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm">
                     {{ session('error') }}
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     @if ($categories->isEmpty())
                         <p class="text-center text-gray-500 py-8">Belum ada kategori sampah. Silakan tambahkan kategori
@@ -147,7 +147,7 @@
                                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                                                         @foreach ($futurePrices as $price)
                                                             <div
-                                                                class="bg-white border border-blue-200 rounded px-3 py-2">
+                                                                class="bg-white border border-blue-200 rounded-sm px-3 py-2">
                                                                 <div class="text-sm font-medium text-gray-900">
                                                                     Rp
                                                                     {{ number_format($price->price_per_kg, 0, ',', '.') }}

@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Filter Form -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('reports.summary') }}" class="flex gap-4 items-end">
                         <div class="flex-1">
@@ -16,13 +16,13 @@
                                 Tanggal</label>
                             <input type="date" name="start_date" id="start_date"
                                 value="{{ request('start_date', $start) }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div class="flex-1">
                             <label for="end_date" class="block text-sm font-medium text-gray-700">Sampai
                                 Tanggal</label>
                             <input type="date" name="end_date" id="end_date" value="{{ request('end_date', $end) }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <div>
                             <button type="submit"
@@ -48,7 +48,7 @@
 
             <!-- Summary Metrics -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-green-500 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-green-500 overflow-hidden shadow-xs sm:rounded-lg">
                     <div class="p-6 text-white">
                         <div class="text-2xl font-bold">Rp
                             {{ number_format($totalDeposits->total_amount ?? 0, 0, ',', '.') }}</div>
@@ -57,7 +57,7 @@
                             kg | {{ $totalDeposits->count ?? 0 }} transaksi</div>
                     </div>
                 </div>
-                <div class="bg-red-500 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-red-500 overflow-hidden shadow-xs sm:rounded-lg">
                     <div class="p-6 text-white">
                         <div class="text-2xl font-bold">Rp
                             {{ number_format($totalWithdrawals->total_amount ?? 0, 0, ',', '.') }}</div>
@@ -65,7 +65,7 @@
                         <div class="text-xs mt-1">{{ $totalWithdrawals->count ?? 0 }} transaksi</div>
                     </div>
                 </div>
-                <div class="bg-blue-500 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-blue-500 overflow-hidden shadow-xs sm:rounded-lg">
                     <div class="p-6 text-white">
                         <div class="text-2xl font-bold">Rp {{ number_format($netBalanceChange, 0, ',', '.') }}</div>
                         <div class="text-sm">Perubahan Saldo Bersih</div>
@@ -75,7 +75,7 @@
             </div>
 
             <!-- Category Breakdown -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg mb-6">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4">Breakdown per Kategori Sampah</h3>
                     @if ($categorySummary->isNotEmpty())
@@ -128,7 +128,7 @@
             </div>
 
             <!-- Top 10 Customers -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4">Top 10 Nasabah (berdasarkan Total Setoran)</h3>
                     @if ($topCustomers->isNotEmpty())

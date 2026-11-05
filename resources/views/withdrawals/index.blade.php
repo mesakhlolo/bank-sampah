@@ -6,7 +6,7 @@
             </h2>
             @can('create', App\Models\Withdrawal::class)
                 <a href="{{ route('withdrawals.create') }}"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
                     + Penarikan Baru
                 </a>
             @endcan
@@ -16,19 +16,19 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm">
                     {{ session('error') }}
                 </div>
             @endif
 
             <!-- Filters -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('withdrawals.index') }}"
                         class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -37,14 +37,14 @@
                             <label for="search" class="block text-sm font-medium text-gray-700">Cari Kode</label>
                             <input type="text" name="search" id="search" value="{{ request('search') }}"
                                 placeholder="WD-..."
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
 
                         <!-- Filter by customer -->
                         <div>
                             <label for="customer_id" class="block text-sm font-medium text-gray-700">Nasabah</label>
                             <select name="customer_id" id="customer_id"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Semua Nasabah</option>
                                 @foreach ($customers as $customer)
                                     <option value="{{ $customer->id }}"
@@ -59,24 +59,24 @@
                         <div>
                             <label for="start_date" class="block text-sm font-medium text-gray-700">Dari Tanggal</label>
                             <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
 
                         <!-- Date to -->
                         <div>
                             <label for="end_date" class="block text-sm font-medium text-gray-700">Sampai Tanggal</label>
                             <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
 
                         <!-- Buttons -->
                         <div class="md:col-span-4 flex gap-2">
                             <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
                                 Filter
                             </button>
                             <a href="{{ route('withdrawals.index') }}"
-                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-sm">
                                 Reset
                             </a>
                         </div>
@@ -85,7 +85,7 @@
             </div>
 
             <!-- Transactions Table -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     @if ($withdrawals->isEmpty())
                         <p class="text-center text-gray-500 py-8">Belum ada penarikan.</p>

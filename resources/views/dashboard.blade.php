@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Welcome Message -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-semibold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h3>
                     <p class="text-gray-600">Anda login sebagai: <span
@@ -20,20 +20,20 @@
             <div class="mb-6">
                 <h3 class="text-lg font-semibold mb-4">Transaksi Hari Ini</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-green-500 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="bg-green-500 overflow-hidden shadow-xs sm:rounded-lg">
                         <div class="p-6 text-white">
                             <div class="text-3xl font-bold">Rp {{ number_format($todayDeposits, 0, ',', '.') }}</div>
                             <div class="text-sm">Total Setoran</div>
                         </div>
                     </div>
-                    <div class="bg-red-500 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="bg-red-500 overflow-hidden shadow-xs sm:rounded-lg">
                         <div class="p-6 text-white">
                             <div class="text-3xl font-bold">Rp {{ number_format($todayWithdrawals, 0, ',', '.') }}
                             </div>
                             <div class="text-sm">Total Penarikan</div>
                         </div>
                     </div>
-                    <div class="bg-blue-500 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="bg-blue-500 overflow-hidden shadow-xs sm:rounded-lg">
                         <div class="p-6 text-white">
                             <div class="text-3xl font-bold">{{ $todayTransactions }}</div>
                             <div class="text-sm">Jumlah Transaksi</div>
@@ -44,7 +44,7 @@
 
             <!-- Top 3 Categories Today -->
             @if ($topCategoriesToday->isNotEmpty())
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg mb-6">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold mb-4">Top 3 Kategori Hari Ini</h3>
                         <div class="overflow-x-auto">
@@ -77,7 +77,7 @@
             @endif
 
             <!-- Quick Actions -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4">Menu Cepat</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

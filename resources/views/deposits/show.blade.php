@@ -6,11 +6,11 @@
             </h2>
             <div class="flex gap-2">
                 <a href="{{ route('deposits.download-pdf', $deposit) }}"
-                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-sm">
                     Download PDF
                 </a>
                 <a href="{{ route('deposits.index') }}"
-                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-sm">
                     Kembali
                 </a>
             </div>
@@ -19,7 +19,7 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-8">
                     <!-- Header -->
                     <div class="text-center mb-8">
@@ -65,7 +65,7 @@
                                     <span class="w-32 text-sm text-gray-600">Status:</span>
                                     <span class="font-medium">
                                         <span
-                                            class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded">
+                                            class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-sm">
                                             {{ strtoupper($deposit->status) }}
                                         </span>
                                     </span>
@@ -120,7 +120,7 @@
                     @if ($deposit->notes)
                         <div class="mb-6">
                             <h3 class="text-sm font-semibold text-gray-600 mb-2">CATATAN</h3>
-                            <p class="text-sm text-gray-700 bg-gray-50 p-3 rounded">{{ $deposit->notes }}</p>
+                            <p class="text-sm text-gray-700 bg-gray-50 p-3 rounded-sm">{{ $deposit->notes }}</p>
                         </div>
                     @endif
 

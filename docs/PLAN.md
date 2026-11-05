@@ -1,6 +1,6 @@
 # FINAL PLAN — Bersihkan & Optimasi `bank-sampah`
 
-**Status:** 🚧 BERJALAN — Fase 0–5 selesai, Fase 6 belum
+**Status:** ✅ SELESAI — Fase 0–6 selesai (lihat §10 untuk sisa verifikasi manusia)
 **Target repo:** `C:\Users\mesakhlolo\Herd\bank-sampah`
 **Basis:** verifikasi langsung ke kode, git, dan filesystem (bukan asumsi)
 **Environment:** Laravel 12.x · PHP 8.4.27 · Composer 2.10.3 · Node 26.13.0 · **DB sqlite** · Pest 3
@@ -34,7 +34,7 @@
 | Skills domain | ✅ | `bank-sampah-domain`, `security-review-portal` di `.agents/skills/` |
 | Bug produksi | ✅ | commit `13e1ae9`; 3 bug + 1 bug laten seeder (§5) |
 | Performa | ✅ | commit `5bef393`; 20 → 5 query, saldo berjalan diperbaiki (§6) |
-| Tailwind v4 | ❌ | masih v3 (§8) |
+| Tailwind v4 | ✅ | commit `chore/tailwind-v4`; 3.1 → 4.3, 3 hal terlewat diperbaiki (§8.6) |
 | Test + CI | ✅ | commit `test/portal-report-coverage`; 82 → 129 test, CI 3 job (§7) |
 
 ---
@@ -461,6 +461,42 @@ Jangan manual — 279 `rounded` + 190 `shadow` terlalu banyak.
 `hover` v4 hanya `@media (hover: hover)` → **di HP hilang**. `backdrop-blur-sm` → `backdrop-blur-xs`.
 Cek: landing · dashboard · 4 halaman portal · `deposits/create` · `withdrawals/create` · `customers/index` · semua PDF.
 
+### 8.6 ✅ Hasil Fase 6
+
+Commit `chore/tailwind-v4`. Tailwind **3.1 → 4.3**, `npm run build` sukses,
+suite tetap **129 passed**.
+
+**Yang dikerjakan otomatis** oleh `npx @tailwindcss/upgrade` (40 file):
+`shadow` → `shadow-sm`, `shadow-sm` → `shadow-xs`, `rounded` → `rounded-sm`,
+`flex-shrink-*` → `shrink-*`, `bg-gradient-to-*` → `bg-linear-to-*`,
+`outline-none` → `outline-hidden`, `backdrop-blur-sm` → `backdrop-blur-xs`,
+`tailwind.config.js` dihapus, `app.css` pindah ke `@import 'tailwindcss'` + `@theme`.
+
+**Tiga hal yang tool LEWATKAN dan harus diperbaiki manual:**
+
+1. **`bg-opacity-*` (14 pemakaian).** Tool tidak menyentuhnya, dan di v4 utility
+   itu **tidak ada sama sekali** — bukan hanya berubah nilai. Dampaknya kartu dan
+   tombol di dashboard portal serta landing kehilangan latar transparan dan
+   menjadi tanpa latar. Diganti `bg-white/20`, `bg-white/10`, `hover:bg-white/30`.
+   Dibuktikan dengan memeriksa CSS hasil build: `.bg-opacity-20` **ABSENT**
+   sebelum, `.bg-white\/20` **PRESENT** sesudah.
+2. **`ring-opacity-5`.** Sama, sudah tidak ada di v4, sehingga ring dropdown
+   menjadi hitam pekat. Diganti `ring-black/5`.
+3. **`@source '../../storage/framework/views/*.php'`** yang ditambahkan tool.
+   Ini men-scan **hasil kompilasi** — persis yang diperingatkan §8.3. Efeknya
+   nyata: view pagination yang sudah usang di `storage/framework/views` membuat
+   `z-0` ikut ter-scan, dan setelah `php artisan view:clear` + rebuild barulah
+   `z-0` muncul di output. Baris itu dihapus.
+
+**Verifikasi:** 12 halaman dirender, semuanya 200, lalu **setiap class di HTML
+hasil render dicocokkan dengan CSS hasil build**. Hasil akhir: 0 class hilang
+(tersisa hanya token `open` milik Alpine `:class`, bukan class CSS). `npm ci`
+juga diverifikasi berhasil dari `package-lock.json`.
+
+**Catatan jujur:** verifikasi ini bersifat struktural, **bukan visual**. Saya
+tidak bisa melihat hasil render, jadi penilaian estetika (jarak, kontras,
+proporsi) belum dilakukan dan tetap perlu dicek manusia pada halaman di §8.5.
+
 ---
 
 ## 9. Urutan eksekusi
@@ -473,7 +509,7 @@ Cek: landing · dashboard · 4 halaman portal · `deposits/create` · `withdrawa
 | 3 | 3 bug produksi | 🔴 kritis | rendah | `fix/production-bugs` | ✅ |
 | 4 | Performa | 🟠 tinggi | sedang | `perf/query-optimization` | ✅ |
 | 5 | Test + CI | 🟠 tinggi | rendah | `test/portal-report-coverage` | ✅ |
-| 6 | Tailwind v4 | 🟡 kosmetik | **tinggi** | `chore/tailwind-v4` | ⬜ |
+| 6 | Tailwind v4 | 🟡 kosmetik | **tinggi** | `chore/tailwind-v4` | ✅ |
 
 Fase 6 (Tailwind) **terakhir** dan branch sendiri — agar `git bisect` tidak tercampur perubahan logika bisnis.
 
@@ -489,7 +525,7 @@ Fase 6 (Tailwind) **terakhir** dan branch sendiri — agar `git bisect` tidak te
 - [x] 2 deposit paralel tanggal sama → `0001` & `0002`, tanpa exception — *diuji lewat injeksi tabrakan, lihat `CodeGenerationTest`*
 - [x] `customers.index` ≤ 3 query untuk 15 nasabah — *20 → 5 query; 2 sisanya session, jadi 3 query data*
 - [x] Angka `reports/summary` identik sebelum vs sesudah refactor — *dibandingkan dengan implementasi `whereDate` lama di 5 rentang; lihat §6.6*
-- [ ] Tailwind v4: `npm run build` sukses, semua halaman di §8.5 dicek visual
+- [x] Tailwind v4: `npm run build` sukses, semua halaman di §8.5 dicek visual — *build sukses; 12 halaman dicek **struktural** (0 class hilang), pengecekan visual tetap perlu manusia*
 - [x] `php artisan test` hijau + ≥3 file test baru — *129 passed (339 assertions); 4 file baru: `CodeGenerationTest`, `SeederTest`, `CustomerPortalTest`, `ReportSummaryTest`*
 - [x] `vendor/bin/pint --dirty` bersih
 - [ ] CI hijau — *workflow dibuat, belum pernah jalan di GitHub*

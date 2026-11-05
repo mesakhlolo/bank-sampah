@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6">
                     <form method="POST" action="{{ route('withdrawals.store') }}" x-data="withdrawalForm()">
                         @csrf
@@ -19,7 +19,7 @@
                             </label>
                             <select name="customer_id" id="customer_id" x-model="customerId"
                                 @change="loadCustomerBalance()"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('customer_id') border-red-500 @enderror"
+                                class="block w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 @error('customer_id') border-red-500 @enderror"
                                 required>
                                 <option value="">-- Pilih Nasabah --</option>
                                 @foreach ($customers as $customer)
@@ -50,7 +50,7 @@
                             </label>
                             <input type="date" name="transaction_date" id="transaction_date"
                                 value="{{ old('transaction_date', date('Y-m-d')) }}"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('transaction_date') border-red-500 @enderror"
+                                class="block w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 @error('transaction_date') border-red-500 @enderror"
                                 required>
                             @error('transaction_date')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -68,7 +68,7 @@
                                 </span>
                                 <input type="number" name="amount" id="amount" x-model.number="amount"
                                     min="1" step="1" value="{{ old('amount') }}"
-                                    class="block w-full pl-12 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('amount') border-red-500 @enderror"
+                                    class="block w-full pl-12 rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 @error('amount') border-red-500 @enderror"
                                     placeholder="Masukkan nominal" required>
                             </div>
                             @error('amount')
@@ -89,7 +89,7 @@
                                 Catatan (Opsional)
                             </label>
                             <textarea name="note" id="note" rows="3"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('note') border-red-500 @enderror"
+                                class="block w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 @error('note') border-red-500 @enderror"
                                 placeholder="Tambahkan catatan jika diperlukan">{{ old('note') }}</textarea>
                             @error('note')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -98,7 +98,7 @@
 
                         <!-- General Error -->
                         @if ($errors->has('error'))
-                            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm relative">
                                 {{ $errors->first('error') }}
                             </div>
                         @endif
@@ -106,7 +106,7 @@
                         <!-- Actions -->
                         <div class="flex gap-4">
                             <button type="submit"
-                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7"></path>
@@ -114,7 +114,7 @@
                                 Simpan Penarikan
                             </button>
                             <a href="{{ route('withdrawals.index') }}"
-                                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-xs hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Batal
                             </a>
                         </div>

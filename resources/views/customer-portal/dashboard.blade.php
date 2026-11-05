@@ -11,7 +11,7 @@
     </div>
 
     <!-- Balance Card (Prominent) -->
-    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 mb-6 text-white">
+    <div class="bg-linear-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 mb-6 text-white">
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-green-100 text-xs font-medium mb-1.5">💰 SALDO TERSEDIA</p>
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="hidden sm:block">
-                <div class="bg-white bg-opacity-20 rounded-full p-4">
+                <div class="bg-white/20 rounded-full p-4">
                     <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -37,14 +37,14 @@
         <!-- Quick Action Buttons -->
         <div class="mt-4 flex flex-wrap gap-2">
             <a href="{{ route('customer-portal.transactions') }}" 
-               class="inline-flex items-center px-3 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-white font-medium text-xs transition">
+               class="inline-flex items-center px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium text-xs transition">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Lihat Semua Riwayat
             </a>
             <a href="{{ route('customer-portal.info') }}" 
-               class="inline-flex items-center px-3 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-white font-medium text-xs transition">
+               class="inline-flex items-center px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium text-xs transition">
                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -56,7 +56,7 @@
     <!-- Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <!-- Total Weight -->
-        <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+        <div class="bg-white rounded-lg shadow-xs p-4 border-l-4 border-blue-500">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-medium text-gray-600">Total Setoran</p>
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Total Transactions -->
-        <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
+        <div class="bg-white rounded-lg shadow-xs p-4 border-l-4 border-purple-500">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-medium text-gray-600">Total Transaksi</p>
@@ -88,7 +88,7 @@
         </div>
 
         <!-- Last Deposit -->
-        <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-orange-500">
+        <div class="bg-white rounded-lg shadow-xs p-4 border-l-4 border-orange-500">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-medium text-gray-600">Setoran Terakhir</p>
@@ -117,7 +117,7 @@
     </div>
 
     <!-- Recent Transactions -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div class="bg-white rounded-lg shadow-xs overflow-hidden">
         <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
             <h3 class="text-base font-semibold text-gray-900">Transaksi Terbaru</h3>
             <a href="{{ route('customer-portal.transactions') }}" 
@@ -134,7 +134,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                         <!-- Icon -->
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             @if($entry->direction === 'KREDIT')
                             <div class="bg-green-100 rounded-full p-1.5">
                                 <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,7 +188,7 @@
     <!-- Info Card -->
     <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div class="flex items-start">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <svg class="h-4 w-4 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>

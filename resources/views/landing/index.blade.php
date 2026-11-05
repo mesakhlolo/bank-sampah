@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-green-500 via-green-600 to-blue-600 text-white overflow-hidden">
+<section class="relative bg-linear-to-br from-green-500 via-green-600 to-blue-600 text-white overflow-hidden">
     <div class="absolute inset-0 bg-black opacity-10 pointer-events-none"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -38,7 +38,7 @@
 
             <!-- Right Illustration -->
             <div class="hidden md:block">
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+                <div class="bg-white/10 backdrop-blur-xs rounded-2xl p-6 shadow-xl">
                     <div class="text-center">
                         <div class="text-7xl mb-3">♻️</div>
                         <p class="text-lg font-semibold">Sampah = Berkah</p>
@@ -66,28 +66,28 @@
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <!-- Stat 1 -->
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center border border-blue-200 hover:shadow-md transition">
+            <div class="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center border border-blue-200 hover:shadow-md transition">
                 <div class="text-3xl mb-2">🏠</div>
                 <div class="text-2xl font-bold text-blue-600 mb-1">{{ number_format($stats['total_customers']) }}+</div>
                 <p class="text-xs text-gray-700 font-medium">Nasabah Aktif</p>
             </div>
 
             <!-- Stat 2 -->
-            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center border border-green-200 hover:shadow-md transition">
+            <div class="bg-linear-to-br from-green-50 to-green-100 rounded-xl p-4 text-center border border-green-200 hover:shadow-md transition">
                 <div class="text-3xl mb-2">♻️</div>
                 <div class="text-2xl font-bold text-green-600 mb-1">{{ number_format($stats['total_weight']) }}</div>
                 <p class="text-xs text-gray-700 font-medium">Kg Sampah Terkumpul</p>
             </div>
 
             <!-- Stat 3 -->
-            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center border border-purple-200 hover:shadow-md transition">
+            <div class="bg-linear-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center border border-purple-200 hover:shadow-md transition">
                 <div class="text-3xl mb-2">💵</div>
                 <div class="text-2xl font-bold text-purple-600 mb-1">{{ number_format($stats['total_amount']/1000000, 1) }}Jt</div>
                 <p class="text-xs text-gray-700 font-medium">Rupiah Tersalur</p>
             </div>
 
             <!-- Stat 4 -->
-            <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200 hover:shadow-md transition">
+            <div class="bg-linear-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200 hover:shadow-md transition">
                 <div class="text-3xl mb-2">🌳</div>
                 <div class="text-2xl font-bold text-orange-600 mb-1">{{ number_format($stats['trees_equivalent']) }}</div>
                 <p class="text-xs text-gray-700 font-medium">Pohon Setara</p>
@@ -97,7 +97,7 @@
 </section>
 
 <!-- How It Works Section -->
-<section id="cara-kerja" class="py-12 bg-gradient-to-br from-gray-50 to-green-50">
+<section id="cara-kerja" class="py-12 bg-linear-to-br from-gray-50 to-green-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-8">
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Cara Kerja Bank Sampah</h2>
@@ -106,7 +106,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Step 1 -->
-            <div class="bg-white rounded-xl p-5 text-center shadow-sm hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 text-center shadow-xs hover:shadow-md transition">
                 <div class="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
                     <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -119,7 +119,7 @@
             </div>
 
             <!-- Step 2 -->
-            <div class="bg-white rounded-xl p-5 text-center shadow-sm hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 text-center shadow-xs hover:shadow-md transition">
                 <div class="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
                     <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -132,7 +132,7 @@
             </div>
 
             <!-- Step 3 -->
-            <div class="bg-white rounded-xl p-5 text-center shadow-sm hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 text-center shadow-xs hover:shadow-md transition">
                 <div class="bg-purple-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
                     <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -145,7 +145,7 @@
             </div>
 
             <!-- Step 4 -->
-            <div class="bg-white rounded-xl p-5 text-center shadow-sm hover:shadow-md transition">
+            <div class="bg-white rounded-xl p-5 text-center shadow-xs hover:shadow-md transition">
                 <div class="bg-orange-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
                     <svg class="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -170,7 +170,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($wasteCategories as $category)
-            <div class="bg-gradient-to-br from-gray-50 to-green-50 rounded-lg p-4 border-2 border-green-200 hover:border-green-400 hover:shadow-md transition">
+            <div class="bg-linear-to-br from-gray-50 to-green-50 rounded-lg p-4 border-2 border-green-200 hover:border-green-400 hover:shadow-md transition">
                 <div class="flex items-start justify-between mb-2">
                     <div class="flex-1">
                         <h3 class="text-base font-bold text-gray-900 mb-1">{{ $category->name }}</h3>
@@ -199,7 +199,7 @@
 </section>
 
 <!-- Call to Action Section -->
-<section class="py-20 bg-gradient-to-r from-green-600 to-blue-600 text-white relative overflow-hidden">
+<section class="py-20 bg-linear-to-r from-green-600 to-blue-600 text-white relative overflow-hidden">
     <div class="absolute inset-0 bg-black opacity-10 pointer-events-none"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl md:text-5xl font-bold mb-6">Siap Bergabung dengan Kami?</h2>
@@ -226,19 +226,19 @@
 
         <!-- Contact Info -->
         <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
+            <div class="bg-white/10 backdrop-blur-xs rounded-lg p-4">
                 <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
                 <p class="font-semibold">0812-3456-7890</p>
             </div>
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
+            <div class="bg-white/10 backdrop-blur-xs rounded-lg p-4">
                 <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <p class="font-semibold">info@banksampah.test</p>
             </div>
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
+            <div class="bg-white/10 backdrop-blur-xs rounded-lg p-4">
                 <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />

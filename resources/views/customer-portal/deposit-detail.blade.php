@@ -16,15 +16,15 @@
     </div>
 
     <!-- Deposit Receipt Card -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+    <div class="bg-white rounded-lg shadow-xs overflow-hidden border border-gray-200">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-green-500 to-green-600 px-5 py-4 text-white">
+        <div class="bg-linear-to-r from-green-500 to-green-600 px-5 py-4 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-lg font-bold">BUKTI SETORAN</h1>
                     <p class="text-green-100 text-xs mt-0.5">Bank Sampah Bersih Sejahtera</p>
                 </div>
-                <div class="bg-white bg-opacity-20 rounded-full p-2">
+                <div class="bg-white/20 rounded-full p-2">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -127,9 +127,9 @@
     </div>
 
     <!-- Thank You Message -->
-    <div class="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+    <div class="mt-8 bg-linear-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
         <div class="flex items-center">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <svg class="h-10 w-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                 </svg>

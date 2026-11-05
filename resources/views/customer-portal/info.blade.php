@@ -14,8 +14,8 @@
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Current Waste Prices -->
-            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                <div class="px-4 py-3 bg-gradient-to-r from-green-500 to-green-600">
+            <div class="bg-white rounded-lg shadow-xs overflow-hidden">
+                <div class="px-4 py-3 bg-linear-to-r from-green-500 to-green-600">
                     <h2 class="text-base font-bold text-white flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -27,7 +27,7 @@
                 <div class="p-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         @forelse($wastePrices as $category)
-                        <div class="border border-gray-200 rounded-lg p-3 hover:shadow-sm transition">
+                        <div class="border border-gray-200 rounded-lg p-3 hover:shadow-xs transition">
                             <div class="flex items-center justify-between mb-1.5">
                                 <h3 class="text-xs font-semibold text-gray-900">{{ $category->name }}</h3>
                                 @if($category->wastePrices->isNotEmpty())
@@ -53,7 +53,7 @@
             </div>
 
             <!-- FAQ Section -->
-            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="bg-white rounded-lg shadow-xs overflow-hidden">
                 <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
                     <h2 class="text-base font-bold text-gray-900 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@
             </div>
 
             <!-- Tips Section -->
-            <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-md p-6 border border-blue-200">
+            <div class="bg-linear-to-r from-blue-50 to-green-50 rounded-xl shadow-md p-6 border border-blue-200">
                 <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -135,25 +135,25 @@
                 </h2>
                 <ul class="space-y-3">
                     <li class="flex items-start">
-                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span class="text-gray-700">Bersihkan botol plastik dan kaleng dari sisa makanan/minuman</span>
                     </li>
                     <li class="flex items-start">
-                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span class="text-gray-700">Pisahkan plastik berdasarkan jenisnya (PET, HDPE, PP)</span>
                     </li>
                     <li class="flex items-start">
-                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span class="text-gray-700">Lipat dan rapikan kardus agar mudah ditimbang</span>
                     </li>
                     <li class="flex items-start">
-                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                         <span class="text-gray-700">Kumpulkan sampah dalam kondisi kering, tidak basah</span>
@@ -166,7 +166,7 @@
         <div class="space-y-6">
             <!-- Contact Info -->
             <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600">
+                <div class="px-6 py-4 bg-linear-to-r from-blue-500 to-blue-600">
                     <h2 class="text-lg font-bold text-white flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -241,15 +241,15 @@
             </div>
 
             <!-- Quick Links -->
-            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-md p-6 text-white">
+            <div class="bg-linear-to-br from-green-500 to-green-600 rounded-xl shadow-md p-6 text-white">
                 <h3 class="font-bold mb-4">Akses Cepat</h3>
                 <div class="space-y-2">
                     <a href="{{ route('customer-portal.dashboard') }}" 
-                       class="block px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-sm transition">
+                       class="block px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition">
                         📊 Dashboard
                     </a>
                     <a href="{{ route('customer-portal.transactions') }}" 
-                       class="block px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg text-sm transition">
+                       class="block px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition">
                         📜 Riwayat Transaksi
                     </a>
                 </div>

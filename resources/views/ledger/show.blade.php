@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Customer Info -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg mb-6">
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
@@ -34,7 +34,7 @@
             </div>
 
             <!-- Ledger Entries -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4">Riwayat Mutasi</h3>
                     @if ($ledgerWithBalance->isNotEmpty())
