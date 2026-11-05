@@ -57,54 +57,54 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($ledgerWithBalance as $item)
+                                    @foreach ($ledgerWithBalance as $entry)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                {{ $item['entry']->created_at->format('d/m/Y H:i') }}
+                                                {{ $entry->created_at->format('d/m/Y H:i') }}
                                             </td>
                                             <td class="px-6 py-4 text-sm">
-                                                @if ($item['entry']->referenceable instanceof \App\Models\Deposit)
-                                                    Setoran #{{ $item['entry']->referenceable->code }}
-                                                @elseif ($item['entry']->referenceable instanceof \App\Models\Withdrawal)
-                                                    Penarikan #{{ $item['entry']->referenceable->code }}
+                                                @if ($entry->referenceable instanceof \App\Models\Deposit)
+                                                    Setoran #{{ $entry->referenceable->code }}
+                                                @elseif ($entry->referenceable instanceof \App\Models\Withdrawal)
+                                                    Penarikan #{{ $entry->referenceable->code }}
                                                 @else
-                                                    {{ class_basename($item['entry']->ref_type) }}
-                                                    #{{ $item['entry']->ref_id }}
+                                                    {{ class_basename($entry->ref_type) }}
+                                                    #{{ $entry->ref_id }}
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                                @if ($item['entry']->direction === 'DEBIT')
+                                                @if ($entry->direction === 'DEBIT')
                                                     <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                                         Debit
                                                     </span>
                                                 @else
                                                     <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                         Kredit
                                                     </span>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
-                                                @if ($item['entry']->direction === 'DEBIT')
-                                                    <span class="text-green-600 font-medium">
-                                                        {{ number_format($item['entry']->amount, 0, ',', '.') }}
+                                                @if ($entry->direction === 'DEBIT')
+                                                    <span class="text-red-600 font-medium">
+                                                        {{ number_format($entry->amount, 0, ',', '.') }}
                                                     </span>
                                                 @else
                                                     -
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
-                                                @if ($item['entry']->direction === 'KREDIT')
-                                                    <span class="text-red-600 font-medium">
-                                                        {{ number_format($item['entry']->amount, 0, ',', '.') }}
+                                                @if ($entry->direction === 'KREDIT')
+                                                    <span class="text-green-600 font-medium">
+                                                        {{ number_format($entry->amount, 0, ',', '.') }}
                                                     </span>
                                                 @else
                                                     -
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold">
-                                                {{ number_format($item['running_balance'], 0, ',', '.') }}
+                                                {{ number_format($entry->running_balance, 0, ',', '.') }}
                                             </td>
                                         </tr>
                                     @endforeach

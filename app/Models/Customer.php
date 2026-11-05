@@ -26,6 +26,23 @@ class Customer extends Model
     ];
 
     /**
+     * Memoised ledger balance. Not a column — purely a per-instance cache so a
+     * view that reads `$customer->balance` repeatedly pays for one query.
+     */
+    protected ?float $balanceCache = null;
+
+    /**
+     * Clear the memoised balance whenever the model is re-hydrated or refreshed,
+     * otherwise a stale value would survive a ledger change.
+     */
+    public function refresh()
+    {
+        $this->balanceCache = null;
+
+        return parent::refresh();
+    }
+
+    /**
      * Boot the model.
      */
     protected static function boot()
@@ -180,15 +197,72 @@ class Customer extends Model
     }
 
     /**
-     * Calculate customer balance from ledger entries
+     * Calculate customer balance from ledger entries.
+     *
+     * Balance is never stored — it is always derived from the ledger (see
+     * docs/PROJECT.md §2). Two optimisations matter here:
+     *
+     * 1. The sum is done in SQL. The previous version pulled every ledger row into
+     *    PHP and summed it, so a customer with 500 transactions cost 500 hydrations
+     *    per balance read.
+     * 2. The result is memoised per model instance, because a single view often
+     *    reads `$customer->balance` several times.
+     *
+     * When the ledger was eager loaded with a `withSum` alias, that precomputed
+     * value wins so a list of N customers costs one query instead of N.
      */
     public function getBalanceAttribute(): float
     {
-        return $this->ledgerEntries()
-            ->get()
-            ->sum(function ($entry) {
-                return $entry->direction === 'KREDIT' ? $entry->amount : -$entry->amount;
-            });
+        // Precomputed by `withAggregate()`; avoids one query per row in lists.
+        if (array_key_exists('ledger_sum_signed', $this->attributes)) {
+            return round((float) $this->attributes['ledger_sum_signed'], 2);
+        }
+
+        if ($this->balanceCache !== null) {
+            return $this->balanceCache;
+        }
+
+        $balance = $this->ledgerEntries()
+            ->selectRaw(LedgerEntry::BALANCE_SUM_SQL.' as balance')
+            ->value('balance');
+
+        return $this->balanceCache = round((float) $balance, 2);
+    }
+
+    /**
+     * Ledger entries with a running balance attached, newest first.
+     *
+     * The running balance is computed in SQL with a window function, so only the
+     * requested page crosses the wire while every row still shows the true balance
+     * at that point in time.
+     *
+     * The window runs over the customer's *entire* ledger inside a subquery, then
+     * the type filter is applied outside. Filtering first would make the balance
+     * column drift: a page of deposits only would accumulate deposits and ignore
+     * withdrawals, which is not what a running balance means.
+     *
+     * `running_balance` on each entry is the balance *after* that entry.
+     *
+     * Requires window-function support: SQLite 3.25+, MySQL 8+, MariaDB 10.2+,
+     * PostgreSQL 8.4+. The app targets SQLite and MySQL 8, both fine.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<LedgerEntry>
+     */
+    public function ledgerWithRunningBalance(?string $refType = null)
+    {
+        $withBalance = LedgerEntry::query()
+            ->select('ledger_entries.*')
+            ->selectRaw(
+                'SUM('.LedgerEntry::SIGNED_AMOUNT_SQL.') OVER (ORDER BY created_at, id ROWS UNBOUNDED PRECEDING) as running_balance'
+            )
+            ->where('customer_id', $this->getKey());
+
+        return LedgerEntry::query()
+            ->fromSub($withBalance, 'ledger_entries')
+            ->with('referenceable')
+            ->when($refType, fn ($q) => $q->where('ref_type', $refType))
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
     }
 
     /**

@@ -9,6 +9,22 @@ class LedgerEntry extends Model
 {
     use HasFactory;
 
+    /**
+     * SQL expression for one entry's effect on the balance: KREDIT adds, DEBIT
+     * subtracts. Kept here so the sign convention lives in exactly one place.
+     *
+     * This is the opposite of a conventional bank statement (where a debit to the
+     * customer's account increases it); see docs/PROJECT.md §2.
+     */
+    public const SIGNED_AMOUNT_SQL = "CASE WHEN direction = 'KREDIT' THEN amount ELSE -amount END";
+
+    /**
+     * SQL expression that turns a row set into a signed balance total.
+     *
+     * Used by `withAggregate()` sub-selects and by `Customer::getBalanceAttribute()`.
+     */
+    public const BALANCE_SUM_SQL = 'COALESCE(SUM('.self::SIGNED_AMOUNT_SQL.'), 0)';
+
     protected $fillable = [
         'customer_id',
         'ref_type',

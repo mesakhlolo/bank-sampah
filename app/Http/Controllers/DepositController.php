@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Deposit;
 use App\Models\WasteCategory;
 use App\Services\DepositService;
+use App\Support\DateRange;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -38,12 +39,15 @@ class DepositController extends Controller
             $depositsQuery->where('customer_id', $request->customer_id);
         }
 
+        // Date filters compare real day boundaries so the index on
+        // `transaction_date` stays usable and the final day is not dropped.
+        // See App\Support\DateRange.
         if ($request->filled('date_from')) {
-            $depositsQuery->whereDate('transaction_date', '>=', $request->date_from);
+            $depositsQuery->where('transaction_date', '>=', DateRange::startOfDay($request->date_from));
         }
 
         if ($request->filled('date_to')) {
-            $depositsQuery->whereDate('transaction_date', '<=', $request->date_to);
+            $depositsQuery->where('transaction_date', '<=', DateRange::endOfDay($request->date_to));
         }
 
         if ($request->filled('search')) {

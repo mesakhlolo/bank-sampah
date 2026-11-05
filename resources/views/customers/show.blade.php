@@ -117,7 +117,7 @@
                                 Lihat Semua Mutasi →
                             </a>
                         </div>
-                        @if ($customer->ledgerEntries->count() > 0)
+                        @if ($entries->isNotEmpty())
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
@@ -140,20 +140,6 @@
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
-                                        @php
-                                            // First, calculate all balances in chronological order (oldest to newest)
-                                            $allEntries = $customer->ledgerEntries()->orderBy('created_at', 'asc')->get();
-                                            $balances = [];
-                                            $runningBalance = 0;
-                                            
-                                            foreach ($allEntries as $e) {
-                                                $runningBalance += $e->direction === 'KREDIT' ? $e->amount : -$e->amount;
-                                                $balances[$e->id] = $runningBalance;
-                                            }
-                                            
-                                            // Display entries in reverse chronological order (newest first)
-                                            $entries = $customer->ledgerEntries;
-                                        @endphp
                                         @foreach ($entries as $entry)
                                             <tr>
                                                 <td class="px-4 py-3 text-sm">
@@ -169,7 +155,7 @@
                                                     {{ $entry->direction === 'DEBIT' ? 'Rp ' . number_format($entry->amount, 0, ',', '.') : '-' }}
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-right font-semibold">
-                                                    Rp {{ number_format($balances[$entry->id], 0, ',', '.') }}</td>
+                                                    Rp {{ number_format($entry->running_balance, 0, ',', '.') }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>

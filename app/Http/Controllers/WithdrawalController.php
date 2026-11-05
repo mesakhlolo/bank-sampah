@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWithdrawalRequest;
 use App\Models\Customer;
+use App\Models\LedgerEntry;
 use App\Models\Withdrawal;
 use App\Services\WithdrawalService;
+use App\Support\DateRange;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,12 +33,13 @@ class WithdrawalController extends Controller
             $query->where('customer_id', $request->customer_id);
         }
 
-        // Filter by date range
+        // Filter by date range. Real day boundaries keep the index usable while
+        // still including the final day. See App\Support\DateRange.
         if ($request->filled('start_date')) {
-            $query->whereDate('transaction_date', '>=', $request->start_date);
+            $query->where('transaction_date', '>=', DateRange::startOfDay($request->start_date));
         }
         if ($request->filled('end_date')) {
-            $query->whereDate('transaction_date', '<=', $request->end_date);
+            $query->where('transaction_date', '<=', DateRange::endOfDay($request->end_date));
         }
 
         // Search by code
@@ -58,14 +61,20 @@ class WithdrawalController extends Controller
      */
     public function create()
     {
-        $customers = Customer::orderBy('name')->get()->map(function ($customer) {
-            return [
+        // Balances come from the ledger, so aggregate them in one query instead of
+        // reading `$customer->balance` inside a map (that was one query per customer).
+        $customers = Customer::query()
+            ->select('id', 'member_code', 'name')
+            ->withAggregate('ledgerEntries as ledger_sum_signed', LedgerEntry::BALANCE_SUM_SQL)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Customer $customer) => [
                 'id' => $customer->id,
-                'code' => $customer->code,
+                // `member_code` is the internal code; `code` is not a column on customers.
+                'code' => $customer->member_code,
                 'name' => $customer->name,
-                'balance' => $customer->balance,
-            ];
-        });
+                'balance' => (float) ($customer->ledger_sum_signed ?? 0),
+            ]);
 
         return view('withdrawals.create', compact('customers'));
     }

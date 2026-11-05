@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Deposit;
+use App\Models\Withdrawal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -125,25 +126,16 @@ class CustomerPortalController extends Controller
 
         $type = $request->input('type', 'all'); // all, deposits, withdrawals
 
-        // Build query for combined transactions
-        $ledgerEntries = $customer->ledgerEntries()
-            ->with(['referenceable'])
-            ->when($type === 'deposits', function ($query) {
-                $query->where('ref_type', Deposit::class);
+        // Running balance is computed in SQL (window function) over the customer's
+        // full ledger, then filtered by type and paginated.
+        $ledgerEntries = $customer
+            ->ledgerWithRunningBalance(match ($type) {
+                'deposits' => Deposit::class,
+                'withdrawals' => Withdrawal::class,
+                default => null,
             })
-            ->when($type === 'withdrawals', function ($query) {
-                $query->where('ref_type', \App\Models\Withdrawal::class);
-            })
-            ->latest()
-            ->paginate(20);
-
-        // Calculate running balance
-        $runningBalance = $customer->balance; // Start from current balance
-        foreach ($ledgerEntries as $entry) {
-            $entry->running_balance = $runningBalance;
-            // Go backwards in time
-            $runningBalance += ($entry->direction === 'KREDIT' ? $entry->amount : -$entry->amount);
-        }
+            ->paginate(20)
+            ->withQueryString();
 
         return view('customer-portal.transactions', compact('customer', 'ledgerEntries', 'type'));
     }

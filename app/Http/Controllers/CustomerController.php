@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
+use App\Models\LedgerEntry;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,12 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $query->latest()->paginate(15);
+        $customers = $query
+            // Balance is derived from the ledger, not stored. Aggregate it in the
+            // same query so the list costs one query instead of one per row.
+            ->withAggregate('ledgerEntries as ledger_sum_signed', LedgerEntry::BALANCE_SUM_SQL)
+            ->latest()
+            ->paginate(15);
 
         return view('customers.index', compact('customers'));
     }
@@ -76,12 +82,16 @@ class CustomerController extends Controller
         $this->authorize('view', $customer);
 
         $customer->load([
-            'ledgerEntries' => fn ($q) => $q->latest()->limit(20),
             'deposits' => fn ($q) => $q->latest()->limit(10),
             'withdrawals' => fn ($q) => $q->latest()->limit(10),
         ]);
 
-        return view('customers.show', compact('customer'));
+        // Running balance is computed in SQL, and only 20 rows are fetched. The
+        // previous version loaded the whole ledger twice — once in the controller
+        // and again inside the Blade template — to accumulate balances in PHP.
+        $entries = $customer->ledgerWithRunningBalance()->limit(20)->get();
+
+        return view('customers.show', compact('customer', 'entries'));
     }
 
     /**
