@@ -487,12 +487,12 @@ Fase 6 (Tailwind) **terakhir** dan branch sendiri — agar `git bisect` tidak te
 - [x] `welcome.blade.php` + 3 method mati `LandingController` terhapus
 - [ ] `composer install --no-dev` → PDF download **berhasil** — *DomPDF sudah di `require`; verifikasi deploy belum dijalankan*
 - [x] 2 deposit paralel tanggal sama → `0001` & `0002`, tanpa exception — *diuji lewat injeksi tabrakan, lihat `CodeGenerationTest`*
-- [ ] `customers.index` ≤ 3 query untuk 15 nasabah
-- [ ] Angka `reports/summary` identik sebelum vs sesudah refactor
+- [x] `customers.index` ≤ 3 query untuk 15 nasabah — *20 → 5 query; 2 sisanya session, jadi 3 query data*
+- [x] Angka `reports/summary` identik sebelum vs sesudah refactor — *dibandingkan dengan implementasi `whereDate` lama di 5 rentang; lihat §6.6*
 - [ ] Tailwind v4: `npm run build` sukses, semua halaman di §8.5 dicek visual
-- [ ] `php artisan test` hijau + ≥3 file test baru — *82 passed; 2 file baru (`CodeGenerationTest`, `SeederTest`), portal & report belum*
+- [x] `php artisan test` hijau + ≥3 file test baru — *129 passed (339 assertions); 4 file baru: `CodeGenerationTest`, `SeederTest`, `CustomerPortalTest`, `ReportSummaryTest`*
 - [x] `vendor/bin/pint --dirty` bersih
-- [ ] CI hijau
+- [ ] CI hijau — *workflow dibuat, belum pernah jalan di GitHub*
 
 ---
 
