@@ -195,3 +195,59 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - After the feature tests pass, ask the user to run the complete suite with `php artisan test --compact`.
 
 </laravel-boost-guidelines>
+
+# Project Conventions — Bank Sampah
+
+Konvensi spesifik proyek ini. Melengkapi (bukan menggantikan) Laravel Boost guidelines di atas.
+
+## Dokumen Proyek
+
+- `docs/PLAN.md` — rencana optimasi aktif (fase, keputusan, definition of done)
+- `docs/PROJECT.md` — domain model, aturan bisnis, keamanan portal, referensi historis
+
+Baca dokumen terkait sebelum mengubah area yang tercakup di dalamnya.
+
+## Prinsip Kode
+
+- **KISS** — utamakan solusi paling sederhana yang memenuhi kebutuhan.
+- **DRY** — periksa dulu apakah logika serupa sudah ada sebelum menulis baru.
+- **Refactor saat melebihi 200–300 baris** — terutama Controller dan Model. Ekstrak ke Service, Action, atau Trait.
+- **Fat Models, Skinny Controllers** — logika bisnis di Model atau Service; Controller hanya perantara HTTP.
+- **Form Request** untuk semua validasi. **Policy** untuk otorisasi. **Service** untuk logika kompleks/transaksional.
+
+## Konvensi Laravel
+
+- Gunakan `php artisan make:*` untuk membuat file baru, selalu dengan `--no-interaction`.
+- Route model binding; hindari query manual di controller bila binding memungkinkan.
+- Eager loading (`with()`) wajib pada setiap query yang di-render sebagai list — cegah N+1.
+- Operasi yang menyentuh lebih dari satu tabel **wajib** dibungkus `DB::transaction`.
+- Gunakan named route (`route()`) untuk semua link internal.
+
+## Konvensi Frontend
+
+- Blade + Alpine.js + Tailwind. Tidak ada framework JS tambahan.
+- Komponen Blade yang dapat dipakai ulang masuk `resources/views/components/`.
+- DomPDF **tidak mendukung flexbox/grid** — gunakan `<table>` pada template PDF.
+
+## Format & Perintah
+
+- `vendor/bin/pint --dirty` — format PHP sebelum commit. (Bukan `php artisan pint`; perintah itu tidak ada.)
+- `php artisan test --compact` — jalankan test suite.
+- `npm run build` — build aset sebelum verifikasi UI.
+
+## Yang Harus Dihindari
+
+- ❌ Mengubah `.env` tanpa konfirmasi eksplisit pengguna.
+- ❌ Menambah dependency baru tanpa persetujuan.
+- ❌ Menghapus atau melemahkan test tanpa persetujuan.
+- ❌ Membuat file dokumentasi baru kecuali diminta.
+- ❌ Membuat folder top-level baru tanpa persetujuan.
+
+## Domain — Hal yang Mudah Salah
+
+- **Saldo tidak tersimpan di kolom.** Selalu dihitung dari agregat `ledger_entries`.
+- **`direction` terbalik dari intuisi perbankan.** Setoran = `KREDIT`, penarikan = `DEBIT`.
+- **`DepositItem` menyimpan salinan harga**, bukan referensi ke `WastePrice` — agar transaksi final terkunci.
+- **`prices()` dan `wastePrices()` adalah relasi yang sama** (`wastePrices()` adalah alias). Jangan duplikasi.
+- **Portal nasabah tidak memakai auth Laravel.** Pakai `session('portal_customer_id')` + middleware `customer.session`.
+- **Jangan log kode unik penuh.** Gunakan `substr($code, 0, 6).'******'`.

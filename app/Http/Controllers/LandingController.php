@@ -34,43 +34,4 @@ class LandingController extends Controller
 
         return view('landing.index', compact('stats', 'wasteCategories'));
     }
-
-    /**
-     * About page
-     */
-    public function about()
-    {
-        return view('landing.about');
-    }
-
-    /**
-     * Prices page
-     */
-    public function prices()
-    {
-        $wasteCategories = WasteCategory::with(['wastePrices' => function ($query) {
-            $query->where('effective_from', '<=', now())
-                ->latest('effective_from')
-                ->limit(1);
-        }])
-            ->where('is_active', true)
-            ->get();
-
-        return view('landing.prices', compact('wasteCategories'));
-    }
-
-    /**
-     * Contact page
-     */
-    public function contact()
-    {
-        $contact = [
-            'phone' => '0812-3456-7890',
-            'email' => 'info@banksampah.test',
-            'address' => 'Jl. Bersih Raya No. 123, Jakarta',
-            'hours' => 'Senin - Sabtu: 08.00 - 16.00 WIB',
-        ];
-
-        return view('landing.contact', compact('contact'));
-    }
 }
