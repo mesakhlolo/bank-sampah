@@ -1,6 +1,6 @@
 # FINAL PLAN — Bersihkan & Optimasi `bank-sampah`
 
-**Status:** 🚧 BERJALAN — Fase 0–3 selesai, Fase 4–6 belum
+**Status:** 🚧 BERJALAN — Fase 0–4 selesai, Fase 5–6 belum
 **Target repo:** `C:\Users\mesakhlolo\Herd\bank-sampah`
 **Basis:** verifikasi langsung ke kode, git, dan filesystem (bukan asumsi)
 **Environment:** Laravel 12.x · PHP 8.4.27 · Composer 2.10.3 · Node 26.13.0 · **DB sqlite** · Pest 3
@@ -33,7 +33,7 @@
 | Cleanup repo | ✅ | commit `22e1c48`; 279 → 243 file, 1550 → 1212 KB |
 | Skills domain | ✅ | `bank-sampah-domain`, `security-review-portal` di `.agents/skills/` |
 | Bug produksi | ✅ | commit `13e1ae9`; 3 bug + 1 bug laten seeder (§5) |
-| Performa | ❌ | 5 isu (§6) |
+| Performa | ✅ | commit `5bef393`; 20 → 5 query, saldo berjalan diperbaiki (§6) |
 | Tailwind v4 | ❌ | masih v3 (§8) |
 | Test + CI | 🚧 | `CodeGenerationTest` + `SeederTest` ada; portal/report nol test (§7) |
 
@@ -317,6 +317,38 @@ Pola sama di `CustomerPortalController::transactions()` baris 140–146 — satu
 Perbaikan K4: ganti `"deposit"` / `"withdrawal"` (double quote, rapuh) → `'deposit'` / `'withdrawal'`.
 Refactor ke `ledger_entries` dicatat sebagai item terpisah, **tidak** dikerjakan sekarang.
 
+### 6.6 ✅ Hasil Fase 4
+
+Commit `5bef393` di branch `perf/query-optimization`.
+
+| Perubahan | Bukti |
+|---|---|
+| Saldo di SQL + memoize + `withAggregate` | `customers.index` **20 → 5 query** (2 sisanya session) |
+| `whereDate` → `DateRange` (index tetap terpakai) | angka laporan **identik** dengan implementasi lama di 5 rentang |
+| `ReportService::buildSummary()` | `ReportController` 144 → 40 baris |
+| Saldo berjalan via window function | **303 entri, 0 selisih** vs akumulasi independen |
+| N+1 relasi | 9 route diuji, semua **200** dengan **5 query** |
+| Index baru | `deposits(status, transaction_date)`, `withdrawals(customer_id, transaction_date)` |
+
+**Bug tambahan yang ditemukan saat verifikasi:**
+
+1. **Saldo berjalan terbalik.** `LedgerController` menambah DEBIT dan mengurangi
+   KREDIT — kebalikan aturan domain (setoran = KREDIT = saldo naik). Badge dan
+   warna kolom di `ledger/show.blade.php` juga tertukar.
+2. **`WithdrawalController::create()` membaca `$customer->code`** — kolom itu tidak
+   ada di tabel `customers`, sehingga nilai selalu `null`.
+3. **Batas tanggal kehilangan hari terakhir.** `transaction_date` di-cast ke
+   `datetime`, jadi tersimpan `'Y-m-d 00:00:00'`; perbandingan `<= 'Y-m-d'`
+   membuang seluruh hari terakhir. Diverifikasi dengan mutation test: rentang
+   satu hari mengembalikan **0** alih-alih 1 sebelum `DateRange` dipakai.
+   ⚠️ Angka laporan sempat dinyatakan "identik" padahal bug ini masih ada — data
+   seed kebetulan tidak punya transaksi di hari terakhir bulan. Pelajaran: uji
+   batas, bukan hanya total.
+
+**Utang teknis yang dicatat, belum dikerjakan:** cast `datetime` pada
+`transaction_date` adalah akar masalah kelas bug di atas. Kolomnya DATE; cast itu
+seharusnya `date`. Perubahan ini menyentuh data lama sehingga dipisah dari Fase 4.
+
 ---
 
 ## 7. FASE 5 — Test + CI
@@ -416,7 +448,7 @@ Cek: landing · dashboard · 4 halaman portal · `deposits/create` · `withdrawa
 | 1 | Cleanup repo | 🟢 tinggi | rendah | `chore/cleanup-repo` | ✅ |
 | 2 | 2 skills domain | 🟢 sedang | nol | `chore/cleanup-repo` | ✅ |
 | 3 | 3 bug produksi | 🔴 kritis | rendah | `fix/production-bugs` | ✅ |
-| 4 | Performa | 🟠 tinggi | sedang | `perf/query-optimization` | ⬜ |
+| 4 | Performa | 🟠 tinggi | sedang | `perf/query-optimization` | ✅ |
 | 5 | Test + CI | 🟠 tinggi | rendah | `test/portal-report-coverage` | 🚧 sebagian |
 | 6 | Tailwind v4 | 🟡 kosmetik | **tinggi** | `chore/tailwind-v4` | ⬜ |
 
