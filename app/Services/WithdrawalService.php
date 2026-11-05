@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\LedgerEntry;
 use App\Models\User;
 use App\Models\Withdrawal;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 class WithdrawalService
@@ -29,18 +30,8 @@ class WithdrawalService
                 throw new \Exception('Saldo tidak mencukupi untuk penarikan ini.');
             }
 
-            // Generate unique code
-            $code = $this->generateWithdrawalCode();
-
-            // Create withdrawal
-            $withdrawal = Withdrawal::create([
-                'code' => $code,
-                'customer_id' => $data['customer_id'],
-                'amount' => $data['amount'],
-                'transaction_date' => $data['transaction_date'],
-                'note' => $data['note'] ?? null,
-                'created_by' => $user->id,
-            ]);
+            // Create withdrawal, retrying on code collision
+            $withdrawal = $this->createWithUniqueCode($data, $user);
 
             // Create ledger entry (DEBIT = mengurangi saldo)
             LedgerEntry::create([
@@ -59,6 +50,36 @@ class WithdrawalService
     }
 
     /**
+     * Create the withdrawal row, retrying when the generated code collides.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function createWithUniqueCode(array $data, User $user): Withdrawal
+    {
+        $maxAttempts = 3;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                return Withdrawal::create([
+                    'code' => $this->generateWithdrawalCode(),
+                    'customer_id' => $data['customer_id'],
+                    'amount' => $data['amount'],
+                    'transaction_date' => $data['transaction_date'],
+                    'note' => $data['note'] ?? null,
+                    'created_by' => $user->id,
+                ]);
+            } catch (UniqueConstraintViolationException $e) {
+                if ($attempt === $maxAttempts) {
+                    throw $e;
+                }
+            }
+        }
+
+        // Unreachable: the loop either returns or throws.
+        throw new \RuntimeException('Gagal membuat kode penarikan unik.');
+    }
+
+    /**
      * Generate unique withdrawal code
      * Format: WD-YYYYMMDD-####
      */
@@ -67,9 +88,13 @@ class WithdrawalService
         $date = now()->format('Ymd');
         $prefix = "WD-{$date}-";
 
-        // Get the last withdrawal code for today
+        // Lock the highest existing code for this day so concurrent transactions
+        // serialize instead of computing the same next sequence number.
+        // NOTE: when no row exists yet there is nothing to lock — the unique
+        // constraint plus the retry in createWithUniqueCode() covers that case.
         $lastWithdrawal = Withdrawal::where('code', 'like', "{$prefix}%")
             ->orderBy('code', 'desc')
+            ->lockForUpdate()
             ->first();
 
         if ($lastWithdrawal) {

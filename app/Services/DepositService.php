@@ -7,6 +7,7 @@ use App\Models\DepositItem;
 use App\Models\LedgerEntry;
 use App\Models\WasteCategory;
 use Carbon\Carbon;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 class DepositService
@@ -28,20 +29,10 @@ class DepositService
     public function createDeposit(array $data): Deposit
     {
         return DB::transaction(function () use ($data) {
-            // 1. Generate unique deposit code
-            $code = $this->generateDepositCode($data['transaction_date'] ?? null);
+            // 1. Create deposit header with a unique code, retrying on collision
+            $deposit = $this->createWithUniqueCode($data);
 
-            // 2. Create deposit header
-            $deposit = Deposit::create([
-                'code' => $code,
-                'customer_id' => $data['customer_id'],
-                'created_by' => $data['created_by'],
-                'transaction_date' => $data['transaction_date'] ?? now(),
-                'notes' => $data['notes'] ?? null,
-                'status' => 'final', // Always final for now (no draft support yet)
-            ]);
-
-            // 3. Process each deposit item
+            // 2. Process each deposit item
             $totalAmount = 0;
             $totalWeight = 0;
 
@@ -59,7 +50,9 @@ class DepositService
 
                 // Calculate subtotal for this item
                 $weightKg = (float) $item['weight_kg'];
-                $subtotal = $weightKg * $pricePerKg;                // Create deposit item
+                $subtotal = $weightKg * $pricePerKg;
+
+                // Create deposit item
                 DepositItem::create([
                     'deposit_id' => $deposit->id,
                     'waste_category_id' => $category->id,
@@ -72,13 +65,13 @@ class DepositService
                 $totalWeight += $weightKg;
             }
 
-            // 4. Update deposit totals
+            // 3. Update deposit totals
             $deposit->update([
                 'total_amount' => $totalAmount,
                 'total_weight' => $totalWeight,
             ]);
 
-            // 5. Create ledger entry (credit to customer's balance)
+            // 4. Create ledger entry (credit to customer's balance)
             LedgerEntry::create([
                 'customer_id' => $data['customer_id'],
                 'ref_type' => 'App\\Models\\Deposit',
@@ -87,11 +80,46 @@ class DepositService
                 'amount' => $totalAmount,
             ]);
 
-            // 6. Load relationships for return
+            // 5. Load relationships for return
             $deposit->load(['customer', 'creator', 'items.wasteCategory']);
 
             return $deposit;
         });
+    }
+
+    /**
+     * Create the deposit header, retrying when the generated code collides.
+     *
+     * Sequence generation is read-then-write, so two concurrent requests can
+     * compute the same code. The `code` column is unique, which turns that race
+     * into a UniqueConstraintViolationException — we catch it and recompute
+     * instead of failing the whole deposit.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function createWithUniqueCode(array $data): Deposit
+    {
+        $maxAttempts = 3;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                return Deposit::create([
+                    'code' => $this->generateDepositCode($data['transaction_date'] ?? null),
+                    'customer_id' => $data['customer_id'],
+                    'created_by' => $data['created_by'],
+                    'transaction_date' => $data['transaction_date'] ?? now(),
+                    'notes' => $data['notes'] ?? null,
+                    'status' => 'final', // Always final for now (no draft support yet)
+                ]);
+            } catch (UniqueConstraintViolationException $e) {
+                if ($attempt === $maxAttempts) {
+                    throw $e;
+                }
+            }
+        }
+
+        // Unreachable: the loop either returns or throws.
+        throw new \RuntimeException('Gagal membuat kode setoran unik.');
     }
 
     /**
@@ -102,10 +130,15 @@ class DepositService
     {
         $date = $date ? Carbon::parse($date) : now();
         $dateStr = $date->format('Ymd');
+        $prefix = "DEP-{$dateStr}-";
 
-        // Find the last deposit code for today
-        $lastDeposit = Deposit::where('code', 'like', "DEP-{$dateStr}-%")
+        // Lock the highest existing code for this day so concurrent transactions
+        // serialize instead of computing the same next sequence number.
+        // NOTE: when no row exists yet there is nothing to lock — the unique
+        // constraint plus the retry in createWithUniqueCode() covers that case.
+        $lastDeposit = Deposit::where('code', 'like', "{$prefix}%")
             ->orderBy('code', 'desc')
+            ->lockForUpdate()
             ->first();
 
         if ($lastDeposit) {
@@ -117,7 +150,7 @@ class DepositService
             $newSequence = 1;
         }
 
-        return sprintf('DEP-%s-%04d', $dateStr, $newSequence);
+        return sprintf('%s%04d', $prefix, $newSequence);
     }
 
     /**

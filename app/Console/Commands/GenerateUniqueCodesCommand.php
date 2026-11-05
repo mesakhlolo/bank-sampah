@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Customer;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 
 class GenerateUniqueCodesCommand extends Command
 {
@@ -38,7 +37,7 @@ class GenerateUniqueCodesCommand extends Command
         $this->info("Found {$customers->count()} customers without unique codes. Generating...");
 
         foreach ($customers as $customer) {
-            $customer->unique_code = $this->generateUniqueCode();
+            $customer->unique_code = Customer::generateUniqueCode();
             $customer->save();
 
             $this->line("✓ {$customer->name} ({$customer->member_code}) -> {$customer->unique_code}");
@@ -47,17 +46,5 @@ class GenerateUniqueCodesCommand extends Command
         $this->info("✅ Done! Generated unique codes for {$customers->count()} customers.");
 
         return 0;
-    }
-
-    /**
-     * Generate secure random unique code
-     */
-    private function generateUniqueCode(): string
-    {
-        do {
-            $code = 'BSB-'.strtoupper(Str::random(12));
-        } while (Customer::where('unique_code', $code)->exists());
-
-        return $code;
     }
 }

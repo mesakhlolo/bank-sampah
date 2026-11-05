@@ -2,15 +2,16 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
+     *
+     * Model events are intentionally left enabled. `Customer::creating` is what
+     * assigns `member_code` and `unique_code`, so silencing events leaves those
+     * NOT NULL columns empty.
      */
     public function run(): void
     {
