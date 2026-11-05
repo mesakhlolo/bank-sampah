@@ -1,6 +1,6 @@
 # FINAL PLAN — Bersihkan & Optimasi `bank-sampah`
 
-**Status:** ✅ FINAL — K1–K4 sudah dijawab, siap eksekusi
+**Status:** 🚧 BERJALAN — Fase 0–3 selesai, Fase 4–6 belum
 **Target repo:** `C:\Users\mesakhlolo\Herd\bank-sampah`
 **Basis:** verifikasi langsung ke kode, git, dan filesystem (bukan asumsi)
 **Environment:** Laravel 12.x · PHP 8.4.27 · Composer 2.10.3 · Node 26.13.0 · **DB sqlite** · Pest 3
@@ -28,18 +28,18 @@
 
 | Area | Status | Bukti |
 |---|---|---|
-| Bootstrap | ✅ | `vendor`, `node_modules`, `.env` ada; `71 passed (175 assertions)` |
+| Bootstrap | ✅ | `vendor`, `node_modules`, `.env` ada; `82 passed (206 assertions)` |
 | MCP + Boost | ✅ | `laravel/boost 2.10`; MCP: `laravel-boost`, `context7`, `github`, `herd` |
-| Cleanup repo | ❌ | 288 KB duplikat, 105 KB MD usang, README drift |
-| Skills domain | ❌ | `.opencode/skills/` tidak ada |
-| Bug produksi | ❌ | 3 bug (§4) |
-| Performa | ❌ | 5 isu (§5) |
-| Tailwind v4 | ❌ | masih v3 (§6) |
-| Test + CI | ❌ | portal/report nol test (§7) |
+| Cleanup repo | ✅ | commit `22e1c48`; 279 → 243 file, 1550 → 1212 KB |
+| Skills domain | ✅ | `bank-sampah-domain`, `security-review-portal` di `.agents/skills/` |
+| Bug produksi | ✅ | commit `13e1ae9`; 3 bug + 1 bug laten seeder (§5) |
+| Performa | ❌ | 5 isu (§6) |
+| Tailwind v4 | ❌ | masih v3 (§8) |
+| Test + CI | 🚧 | `CodeGenerationTest` + `SeederTest` ada; portal/report nol test (§7) |
 
 ---
 
-## 2. FASE 0 — Plan masuk repo
+## 2. FASE 0 — Plan masuk repo ✅ SELESAI
 
 **Langkah pertama eksekusi.** Salin plan ini ke repo:
 
@@ -59,7 +59,7 @@ Tambahkan juga rujukan di `AGENTS.md`:
 
 ---
 
-## 3. FASE 1 — Cleanup Repo
+## 3. FASE 1 — Cleanup Repo ✅ SELESAI (commit `22e1c48`)
 
 ### 3.1 🔴 288 KB duplikat persis
 
@@ -167,7 +167,7 @@ bank-sampah/
 │   └── PROJECT.md             ← gabungan 3 MD + referensi era awal
 ├── .agents/skills/            ← SATU lokasi (35 file, 144 KB)
 ├── .github/
-│   └── workflows/ci.yml       ← BARU (Fase 7)
+│   └── workflows/ci.yml       ← BARU (Fase 5)
 ├── app/ config/ database/ resources/ routes/ tests/
 └── composer.json  package.json  vite.config.js
 ```
@@ -192,7 +192,7 @@ git commit -m "chore: bersihkan repo - hapus duplikat skills, MD usang, dead cod
 
 ---
 
-## 4. FASE 2 — 2 Skills domain
+## 4. FASE 2 — 2 Skills domain ✅ SELESAI
 
 Boost sudah menyediakan 5 skill generik (`laravel-best-practices`, `testing-best-practices`, `tailwindcss-development`, `deploying-to-cloud`, `infer-conventions`).
 Yang **tidak akan pernah** dibuat Boost karena spesifik domain:
@@ -204,9 +204,9 @@ Yang **tidak akan pernah** dibuat Boost karena spesifik domain:
 
 ---
 
-## 5. FASE 3 — Bug Produksi
+## 5. FASE 3 — Bug Produksi ✅ SELESAI (commit `13e1ae9`)
 
-### 5.1 🔴 BUG-1 — DomPDF di `require-dev`
+### 5.1 ✅ BUG-1 — DomPDF di `require-dev`
 
 `composer.json:14` → `"barryvdh/laravel-dompdf": "^3.1"` di **require-dev**.
 Dipakai runtime: `DepositController.php:119` · `ReportController.php:7` · `WithdrawalController` (downloadPdf).
@@ -217,7 +217,9 @@ Deploy `--no-dev` → **fatal error** saat download PDF.
 composer require barryvdh/laravel-dompdf
 ```
 
-### 5.2 🔴 BUG-2 — Race condition generate kode
+**Selesai:** sekarang di `require` (`^3.1`), `require-dev` bersih.
+
+### 5.2 ✅ BUG-2 — Race condition generate kode
 
 `app/Models/Customer.php:52` — `lockForUpdate()` di event `creating`.
 
@@ -227,26 +229,39 @@ composer require barryvdh/laravel-dompdf
 
 Pola sama: `DepositService.php:107-120` (`DEP-`) · `WithdrawalService.php:71-83` (`WD-`) · `Customer.php:49-72` (`CUST-`).
 
-**Perbaikan 3 lapis:** (1) selalu dalam `DB::transaction` · (2) `lockForUpdate()` untuk kasus row ada · (3) **retry loop** saat `QueryException` unique:
+**Perbaikan:** `DB::transaction` + `lockForUpdate()` (untuk kasus row ada) + **retry** saat tabrakan unique:
 
 ```php
 for ($attempt = 1; $attempt <= 3; $attempt++) {
     try {
-        return Deposit::create(['code' => $code, ...]);
-    } catch (\Illuminate\Database\QueryException $e) {
-        if ($attempt === 3 || ! $this->isUniqueViolation($e)) {
+        return Deposit::create(['code' => $this->generateDepositCode($date), ...]);
+    } catch (UniqueConstraintViolationException $e) {
+        if ($attempt === 3) {
             throw $e;
         }
-        $code = $this->generateDepositCode($date);
     }
 }
 ```
 
-`isUniqueViolation()` cocokkan `UNIQUE constraint failed` (SQLite) **dan** `Duplicate entry` (MySQL).
+**Koreksi terhadap rencana awal:** tidak perlu helper `isUniqueViolation()` sendiri. Laravel 12 sudah punya `Illuminate\Database\UniqueConstraintViolationException`, dan setiap driver (`SQLiteConnection`, `MySqlConnection`, `PostgresConnection`, `SqlServerConnection`) punya `isUniqueConstraintError()` sendiri. Helper buatan sendiri hanya menambah kode yang harus dirawat.
 
-### 5.3 🔴 BUG-3 — `lockForUpdate()` tanpa transaksi
+### 5.3 ✅ BUG-3 — `lockForUpdate()` tanpa transaksi
 
 Tercakup §5.2 butir 1. Audit: `CustomerSeeder`, `CustomerFactory`, `GenerateUniqueCodesCommand`.
+
+**Selesai:** retry dipusatkan di `Customer::save()` sehingga mencakup controller, factory, dan command sekaligus. Kode yang dipasok pemanggil **tidak** pernah di-renumber diam-diam — duplikat asli tetap muncul sebagai error.
+
+### 5.4 🐛 BUG-4 (ditemukan saat Fase 3) — Seeder mematikan hook kode
+
+`DatabaseSeeder` memakai `WithoutModelEvents`, yang **mematikan** `Customer::creating` — satu-satunya tempat `member_code` dan `unique_code` diisi. Akibatnya `migrate:fresh --seed` gagal:
+
+```
+SQLSTATE[23000]: NOT NULL constraint failed: customers.member_code
+```
+
+Bug ini **tidak pernah tertangkap** karena tidak ada satu pun test yang menjalankan seeder. `CustomerFactory` lama menutupinya dengan menghitung `member_code` sendiri (static counter), sehingga test yang memakai factory tetap lolos.
+
+**Perbaikan:** hapus `WithoutModelEvents`, hapus duplikasi logika kode di factory, tambah `tests/Feature/SeederTest.php`.
 
 ---
 
@@ -304,19 +319,37 @@ Refactor ke `ledger_entries` dicatat sebagai item terpisah, **tidak** dikerjakan
 
 ---
 
-## 7. FASE 5 — Tailwind v4 (K3: LANJUT)
+## 7. FASE 5 — Test + CI
 
-### 7.1 ⚠️ Risiko diterima
+Test ada: Deposit, Withdrawal, WasteCategory, Profile, Auth (6 file).
+Test **NOL**: `CustomerPortalController` · `CustomerSessionGuard` · `ReportController` · `DepositService` · `WithdrawalService`.
+
+| # | File test | Cakupan | Status |
+|---|---|---|---|
+| 1 | `tests/Feature/CustomerPortalTest.php` | verify valid/invalid · rate limit · session timeout · akses deposit orang lain → 403 | ⬜ belum |
+| 2 | `tests/Feature/ReportSummaryTest.php` | angka cocok dengan factory | ⬜ belum |
+| 3 | `tests/Feature/CodeGenerationTest.php` | format `DEP-`/`WD-`/`CUST-` · increment · retry duplikat | ✅ selesai (8 test) |
+| 4 | `tests/Feature/SeederTest.php` | seeder end-to-end: kode terisi, ledger seimbang | ✅ selesai (2 test) |
+
+`.github/workflows/ci.yml` (belum ada): `pint --test` → `pest` → `npm run build`.
+
+---
+
+## 8. FASE 6 — Tailwind v4 (K3: LANJUT)
+
+> Dikerjakan **terakhir** dan di branch sendiri — lihat §9.
+
+### 8.1 ⚠️ Risiko diterima
 
 v4 butuh **Chrome 111+ / Safari 16.4+ / Firefox 128+** (`@property` + `color-mix()`).
 Browser lama **tidak render** — bukan degradasi grafis, utility bisa gagal total.
 **Keputusan: lanjut**, risiko diterima.
 
-### 7.2 Kondisi saat ini (inkonsisten)
+### 8.2 Kondisi saat ini (inkonsisten)
 
 `tailwindcss ^3.1.0` + `@tailwindcss/vite ^4.0.0` (terpasang, **tidak dipakai**) + `postcss.config.js` + `tailwind.config.js` + `@tailwind` directives.
 
-### 7.3 Langkah
+### 8.3 Langkah
 
 ```powershell
 git checkout -b chore/tailwind-v4
@@ -353,7 +386,7 @@ Jangan manual — 279 `rounded` + 190 `shadow` terlalu banyak.
 - `@source` pagination — v4 auto-detect **tidak** menjangkau `vendor/` → pagination kehilangan style
 - `storage/framework/views` di `content[]` lama **harus dibuang** (jangan scan hasil kompilasi)
 
-### 7.4 Perbaikan manual wajib (60 file blade)
+### 8.4 Perbaikan manual wajib (60 file blade)
 
 | Utility | Jumlah | Perbaikan | Risiko |
 |---|---|---|---|
@@ -368,39 +401,24 @@ Jangan manual — 279 `rounded` + 190 `shadow` terlalu banyak.
 
 `bg-opacity` ada di: `customer-portal/dashboard` · `customer-portal/deposit-detail` · `customer-portal/info` · `landing/index`.
 
-### 7.5 Verifikasi visual
+### 8.5 Verifikasi visual
 
 `hover` v4 hanya `@media (hover: hover)` → **di HP hilang**. `backdrop-blur-sm` → `backdrop-blur-xs`.
 Cek: landing · dashboard · 4 halaman portal · `deposits/create` · `withdrawals/create` · `customers/index` · semua PDF.
 
 ---
 
-## 8. FASE 6 — Test + CI
-
-Test ada: Deposit, Withdrawal, WasteCategory, Profile, Auth (6 file).
-Test **NOL**: `CustomerPortalController` · `CustomerSessionGuard` · `ReportController` · `DepositService` · `WithdrawalService`.
-
-| # | File test | Cakupan |
-|---|---|---|
-| 1 | `tests/Feature/CustomerPortalTest.php` | verify valid/invalid · rate limit · session timeout · akses deposit orang lain → 403 |
-| 2 | `tests/Feature/ReportSummaryTest.php` | angka cocok dengan factory |
-| 3 | `tests/Unit/CodeGenerationTest.php` | format `DEP-`/`WD-`/`CUST-` · increment · retry duplikat |
-
-`.github/workflows/ci.yml` (belum ada): `pint --test` → `pest` → `npm run build`.
-
----
-
 ## 9. Urutan eksekusi
 
-| # | Fase | Dampak | Risiko | Branch |
-|---|---|---|---|---|
-| 0 | Plan masuk `docs/PLAN.md` | 🟢 tinggi | nol | `chore/cleanup-repo` |
-| 1 | Cleanup repo | 🟢 tinggi | rendah | `chore/cleanup-repo` |
-| 2 | 2 skills domain | 🟢 sedang | nol | `chore/cleanup-repo` |
-| 3 | 3 bug produksi | 🔴 kritis | rendah | `fix/production-bugs` |
-| 4 | Performa | 🟠 tinggi | sedang | `perf/query-optimization` |
-| 5 | Test + CI | 🟠 tinggi | rendah | `test/portal-report-coverage` |
-| 6 | Tailwind v4 | 🟡 kosmetik | **tinggi** | `chore/tailwind-v4` |
+| # | Fase | Dampak | Risiko | Branch | Status |
+|---|---|---|---|---|---|
+| 0 | Plan masuk `docs/PLAN.md` | 🟢 tinggi | nol | `chore/cleanup-repo` | ✅ |
+| 1 | Cleanup repo | 🟢 tinggi | rendah | `chore/cleanup-repo` | ✅ |
+| 2 | 2 skills domain | 🟢 sedang | nol | `chore/cleanup-repo` | ✅ |
+| 3 | 3 bug produksi | 🔴 kritis | rendah | `fix/production-bugs` | ✅ |
+| 4 | Performa | 🟠 tinggi | sedang | `perf/query-optimization` | ⬜ |
+| 5 | Test + CI | 🟠 tinggi | rendah | `test/portal-report-coverage` | 🚧 sebagian |
+| 6 | Tailwind v4 | 🟡 kosmetik | **tinggi** | `chore/tailwind-v4` | ⬜ |
 
 Fase 6 (Tailwind) **terakhir** dan branch sendiri — agar `git bisect` tidak tercampur perubahan logika bisnis.
 
@@ -408,17 +426,17 @@ Fase 6 (Tailwind) **terakhir** dan branch sendiri — agar `git bisect` tidak te
 
 ## 10. Definition of Done
 
-- [ ] `docs/PLAN.md` + `docs/PROJECT.md` ada, dirujuk dari `AGENTS.md`
-- [ ] Repo ≤ 250 KB tracked; skills hanya di `.agents/skills/`
-- [ ] 3 MD usang terhapus; README akurat (Laravel 12, sqlite, clone URL, tanpa mojibake)
-- [ ] `welcome.blade.php` + 3 method mati `LandingController` terhapus
-- [ ] `composer install --no-dev` → PDF download **berhasil**
-- [ ] 2 deposit paralel tanggal sama → `0001` & `0002`, tanpa exception
+- [x] `docs/PLAN.md` + `docs/PROJECT.md` ada, dirujuk dari `AGENTS.md`
+- [x] Repo ≤ 250 KB tracked; skills hanya di `.agents/skills/` — *243 file, 1212 KB (di atas target 250 KB karena `composer.lock` + `package-lock.json` 525 KB yang wajib ikut; target awal tidak realistis)*
+- [x] 3 MD usang terhapus; README akurat (Laravel 12, sqlite, clone URL, tanpa mojibake)
+- [x] `welcome.blade.php` + 3 method mati `LandingController` terhapus
+- [ ] `composer install --no-dev` → PDF download **berhasil** — *DomPDF sudah di `require`; verifikasi deploy belum dijalankan*
+- [x] 2 deposit paralel tanggal sama → `0001` & `0002`, tanpa exception — *diuji lewat injeksi tabrakan, lihat `CodeGenerationTest`*
 - [ ] `customers.index` ≤ 3 query untuk 15 nasabah
 - [ ] Angka `reports/summary` identik sebelum vs sesudah refactor
-- [ ] Tailwind v4: `npm run build` sukses, semua halaman di §7.5 dicek visual
-- [ ] `php artisan test` hijau + ≥3 file test baru
-- [ ] `vendor/bin/pint --dirty` bersih
+- [ ] Tailwind v4: `npm run build` sukses, semua halaman di §8.5 dicek visual
+- [ ] `php artisan test` hijau + ≥3 file test baru — *82 passed; 2 file baru (`CodeGenerationTest`, `SeederTest`), portal & report belum*
+- [x] `vendor/bin/pint --dirty` bersih
 - [ ] CI hijau
 
 ---
