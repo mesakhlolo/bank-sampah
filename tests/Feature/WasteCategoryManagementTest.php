@@ -23,13 +23,13 @@ test('admin can view waste categories index', function () {
     $response->assertSee($category->name);
 });
 
-test('operator can view waste categories index', function () {
+test('operator cannot view waste categories index', function () {
     $category = WasteCategory::factory()->create();
 
     $response = $this->actingAs($this->operator)->get(route('waste-categories.index'));
 
-    $response->assertStatus(200);
-    $response->assertSee($category->name);
+    $response->assertForbidden();
+    $response->assertDontSee($category->name);
 });
 
 test('admin can create waste category', function () {
