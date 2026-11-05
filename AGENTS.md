@@ -1,253 +1,119 @@
-<laravel-boost-guidelines>
-=== foundation rules ===
-
-# Laravel Boost Guidelines
-
-The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to ensure the best experience when building Laravel applications.
-
-## Foundational Context
-
-This application is a Laravel application running on PHP 8.4. You are an expert with the Laravel ecosystem. Always use the APIs that match the installed major version of each package — do not assume a version.
-
-Before relying on a package's API, confirm its installed version:
-- PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
-- JS packages: check `package.json` for the installed versions.
-
-## Skills Activation
-
-This project has domain-specific skills available in `**/skills/**`. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
-
-## Conventions
-
-- You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
-- Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
-- Check for existing components to reuse before writing a new one.
-
-## Verification Scripts
-
-- Do not create verification scripts or tinker when tests cover that functionality and prove they work. Unit and feature tests are more important.
-
-## Application Structure & Architecture
-
-- Stick to existing directory structure; don't create new base folders without approval.
-- Do not change the application's dependencies without approval.
-
-## Frontend Bundling
-
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
-
-## Documentation Files
-
-- You must only create documentation files if explicitly requested by the user.
-
-## Replies
-
-- Be concise in your explanations - focus on what's important rather than explaining obvious details.
-
-=== boost rules ===
-
-# Laravel Boost
-
-## Tools
-
-- Laravel Boost is an MCP server with tools designed specifically for this application. Prefer Boost tools over manual alternatives like shell commands or file reads.
-- Use `database-query` to run read-only queries against the database instead of writing raw SQL in tinker.
-- Use `database-schema` to inspect table structure before writing migrations or models.
-- Use `get-absolute-url` to resolve the correct scheme, domain, and port for project URLs. Always use this before sharing a URL with the user.
-- Use `browser-logs` to read browser logs, errors, and exceptions. Only recent logs are useful, ignore old entries.
-
-## Searching Documentation (IMPORTANT)
-
-- Use `search-docs` before changes that depend on Laravel ecosystem APIs, behavior, configuration, or version-specific syntax. Skip it for copy-only edits and other changes where package documentation is irrelevant. Reuse sufficient results already in context instead of searching again.
-- Pass a `packages` array to scope results when you know which packages are relevant.
-- Use multiple broad, topic-based queries: `['rate limiting', 'routing rate limiting', 'routing']`. Expect the most relevant results first.
-- Do not add package names to queries because package info is already shared. Use `test resource table`, not `filament 4 test resource table`.
-
-### Search Syntax
-
-1. Use words for auto-stemmed AND logic: `rate limit` matches both "rate" AND "limit".
-2. Use `"quoted phrases"` for exact position matching: `"infinite scroll"` requires adjacent words in order.
-3. Combine words and phrases for mixed queries: `middleware "rate limit"`.
-4. Use multiple queries for OR logic: `queries=["authentication", "middleware"]`.
-
-## Project Rules
-
-- This project contains committed, area-grouped rules in `.ai/rules` when that directory exists (settled decisions, non-obvious traps, standing constraints). Framework and package guidelines that only apply to specific paths (testing, frontend, components) also live there, under `.ai/rules/boost` — this is not just recorded decisions, it is load-bearing guidance you have not seen inline. Before you enter plan mode or create/edit any file, you MUST first: open @.ai/rules/index.md (it maps file globs to rule files), read every rule file whose globs cover the path(s) in scope, and run `grep -rin 'keyword' .ai/rules` to catch what a path match alone misses. Do not write code until you have read and are following every matching rule. If `.ai/rules` does not exist, continue without it.
-- Record a rule with `record-rule` only when the user explicitly asks for one. Instructions for the work at hand are not rules, no matter how emphatic: "remove this typo", "use X here" are work to do, not rules to record. Never record a rule on your own initiative, as a byproduct of a change, or to summarize what you just did. When the user does ask, pass a `glob` (e.g. `app/Http/Controllers/**`), a short `title`, and a few-line `note`. Use `record-rule` rather than your native memory or notes tool, because native memory is personal and session-scoped, while only `.ai/rules` is shared with the team and persists in the repo.
-
-## Artisan
-
-- Run Artisan commands directly via the command line (e.g., `php artisan route:list`). Use `php artisan list` to discover available commands and `php artisan [command] --help` to check parameters.
-- Inspect routes with `php artisan route:list`. Filter with: `--method=GET`, `--name=users`, `--path=api`, `--except-vendor`, `--only-vendor`.
-- Read configuration values using dot notation: `php artisan config:show app.name`, `php artisan config:show database.default`. Or read config files directly from the `config/` directory.
-
-## Tinker
-
-- Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
-- Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
-
-=== php rules ===
-
-# PHP
-
-- Always use curly braces for control structures, even for single-line bodies.
-- Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
-- Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
-- Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
-- Use array shape type definitions in PHPDoc blocks.
-
-=== deployments rules ===
-
-# Deployment
-
-- Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
-- Activate the `deploying-to-cloud` skill whenever deploying to Laravel Cloud, configuring Cloud environments or resources, using the Cloud CLI, or troubleshooting Cloud deployments.
-
-=== tests rules ===
-
-# Test Enforcement
-
-- Add or update tests for behavior and logic changes when a test provides meaningful regression coverage.
-- Pure copy, styling, and layout-only changes do not require new or updated tests.
-- When test coverage applies, run the affected tests and ensure they pass.
-- Test the changed behavior and its important failure modes, but do not add tests beyond them.
-- Read the `testing-best-practices` skill before writing tests.
-
-=== laravel/core rules ===
-
-# Do Things the Laravel Way
-
-- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using `php artisan list` and check their parameters with `php artisan [command] --help`.
-- If you're creating a generic PHP class, use `php artisan make:class`.
-- Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
-
-### Model Creation
-
-- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `php artisan make:model --help` to check the available options.
-
-## APIs & Eloquent Resources
-
-- For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
-
-## URL Generation
-
-- When generating links to other pages, prefer named routes and the `route()` function.
-
-## Testing
-
-- When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
-- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] {name}` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
-
-## Vite Error
-
-- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
-
-=== laravel/v12 rules ===
-
-# Laravel 12
-
-- CRITICAL: ALWAYS use `search-docs` tool for version-specific Laravel documentation and updated code examples.
-- Since Laravel 11, Laravel has a new streamlined file structure which this project uses.
-
-## Laravel 12 Structure
-
-- In Laravel 12, middleware are no longer registered in `app/Http/Kernel.php`.
-- Middleware are configured declaratively in `bootstrap/app.php` using `Application::configure()->withMiddleware()`.
-- `bootstrap/app.php` is the file to register middleware, exceptions, and routing files.
-- `bootstrap/providers.php` contains application specific service providers.
-- The `app/Console/Kernel.php` file no longer exists; use `bootstrap/app.php` or `routes/console.php` for console configuration.
-- Console commands in `app/Console/Commands/` are automatically available and do not require manual registration.
-
-## Database
-
-- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
-
-- Laravel 12 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
-
-### Models
-
-- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
-
-=== pint/core rules ===
-
-# Laravel Pint Code Formatter
-
-- If you have modified any PHP files, you must run `vendor/bin/pint --dirty` before finalizing changes to ensure your code matches the project's expected style.
-- Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
-
-=== pest/core rules ===
-
-# Pest
-
-- This project uses Pest. Create tests with `php artisan make:test --pest {name}`.
-- Do not include the test suite directory in `{name}`. Use `SomeFeatureTest`, not `Feature/SomeFeatureTest`.
-- Read the `testing-best-practices` skill for guidance on coverage, naming, structure, dependency isolation, and review.
-- Do not delete tests or test files without approval. They are part of the application.
-
-## Running Tests
-
-- Run the narrowest set of tests that covers the change. Pass a file path or `--filter=testName` to `php artisan test --compact`.
-- Rerun a test after each change to it.
-- Run `vendor/bin/pest` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.
-- After the feature tests pass, ask the user to run the complete suite with `php artisan test --compact`.
-
-</laravel-boost-guidelines>
-
-# Project Conventions — Bank Sampah
-
-Konvensi spesifik proyek ini. Melengkapi (bukan menggantikan) Laravel Boost guidelines di atas.
-
-## Dokumen Proyek
-
-- `docs/PLAN.md` — rencana optimasi aktif (fase, keputusan, definition of done)
-- `docs/PROJECT.md` — domain model, aturan bisnis, keamanan portal, referensi historis
-
-Baca dokumen terkait sebelum mengubah area yang tercakup di dalamnya.
-
-## Prinsip Kode
-
-- **KISS** — utamakan solusi paling sederhana yang memenuhi kebutuhan.
-- **DRY** — periksa dulu apakah logika serupa sudah ada sebelum menulis baru.
-- **Refactor saat melebihi 200–300 baris** — terutama Controller dan Model. Ekstrak ke Service, Action, atau Trait.
-- **Fat Models, Skinny Controllers** — logika bisnis di Model atau Service; Controller hanya perantara HTTP.
-- **Form Request** untuk semua validasi. **Policy** untuk otorisasi. **Service** untuk logika kompleks/transaksional.
-
-## Konvensi Laravel
-
-- Gunakan `php artisan make:*` untuk membuat file baru, selalu dengan `--no-interaction`.
-- Route model binding; hindari query manual di controller bila binding memungkinkan.
-- Eager loading (`with()`) wajib pada setiap query yang di-render sebagai list — cegah N+1.
-- Operasi yang menyentuh lebih dari satu tabel **wajib** dibungkus `DB::transaction`.
-- Gunakan named route (`route()`) untuk semua link internal.
-
-## Konvensi Frontend
-
-- Blade + Alpine.js + Tailwind. Tidak ada framework JS tambahan.
-- Komponen Blade yang dapat dipakai ulang masuk `resources/views/components/`.
-- DomPDF **tidak mendukung flexbox/grid** — gunakan `<table>` pada template PDF.
-
-## Format & Perintah
-
-- `vendor/bin/pint --dirty` — format PHP sebelum commit. (Bukan `php artisan pint`; perintah itu tidak ada.)
-- `php artisan test --compact` — jalankan test suite.
-- `npm run build` — build aset sebelum verifikasi UI.
-
-## Yang Harus Dihindari
-
-- ❌ Mengubah `.env` tanpa konfirmasi eksplisit pengguna.
-- ❌ Menambah dependency baru tanpa persetujuan.
-- ❌ Menghapus atau melemahkan test tanpa persetujuan.
-- ❌ Membuat file dokumentasi baru kecuali diminta.
-- ❌ Membuat folder top-level baru tanpa persetujuan.
-
-## Domain — Hal yang Mudah Salah
-
-- **Saldo tidak tersimpan di kolom.** Selalu dihitung dari agregat `ledger_entries`.
-- **`direction` terbalik dari intuisi perbankan.** Setoran = `KREDIT`, penarikan = `DEBIT`.
-- **`DepositItem` menyimpan salinan harga**, bukan referensi ke `WastePrice` — agar transaksi final terkunci.
-- **`prices()` dan `wastePrices()` adalah relasi yang sama** (`wastePrices()` adalah alias). Jangan duplikasi.
-- **Portal nasabah tidak memakai auth Laravel.** Pakai `session('portal_customer_id')` + middleware `customer.session`.
-- **Jangan log kode unik penuh.** Gunakan `substr($code, 0, 6).'******'`.
+# AGENTS.md — Bank Sampah
+
+Laravel 12 / PHP 8.4 waste-bank app. Blade + Alpine.js + Tailwind CSS v4; SQLite by default, MySQL/MariaDB supported. Admin/operator use Breeze session auth; the public customer portal uses a custom session, **not** Laravel auth.
+
+## Read first
+
+- `docs/PROJECT.md` — domain model, business rules, portal security, history.
+- `docs/PLAN.md` — roadmap and decisions. It is partly stale (for example, it claims CI exists); trust code and config over prose.
+- Skills: load `bank-sampah-domain` before touching ledger/models, `security-review-portal` before portal/session changes, and `testing-best-practices` before tests.
+
+## Commands
+
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate:fresh --seed   # resets DB: 2 users, 50 customers, ~300 transactions
+composer run dev                   # serve + queue + pail + Vite
+npm run build                      # required after Blade/CSS/JS changes
+
+vendor/bin/pint --dirty            # format changed PHP (never `php artisan pint`)
+php artisan test --compact         # full suite
+php artisan test --compact tests/Feature/DepositManagementTest.php
+php artisan test --compact --filter='operator can create withdrawal'
+```
+
+Verification order: `pint --dirty` → targeted tests → `test --compact` → `npm run build` when frontend changed. No CI workflow, PHPStan/Psalm, or JS linter is configured; these local gates are the source of truth.
+
+## Architecture
+
+- **Thin controllers.** Authorize via Policy, validate via Form Request, delegate to a Service, return view/redirect. No business logic, reporting SQL, or `DB::transaction` in controllers.
+- **Services own transactions.** `DepositService`, `WithdrawalService`, `ReportService`. Any write touching more than one table must be wrapped in `DB::transaction`.
+- **Form Requests + Policies.** All writes use a Form Request; `authorize()` uses the Policy. No inline `$request->validate()`.
+- **Route model binding.** Prefer it over manual `find()`.
+- **Models stay focused.** Relationships, casts, scopes, and derived attributes. Cross-model business rules go in a Service. Do not add a repository layer.
+- **Lists eager-load and paginate.** `with()` on every relationship rendered in a list; paginate every list. `LedgerController` currently does not paginate—fix it when touched.
+- **Date filters use `App\Support\DateRange`.** `whereDate()` defeats the index; bare `Y-m-d` comparisons drop the final day.
+
+## Code style
+
+- Laravel 12 wiring lives in `bootstrap/app.php`; there is no `Http/Kernel.php`.
+- Type-hint parameters and return types; use constructor promotion; always use curly braces.
+- New models use `casts()`, not `$casts`.
+- Remove dead methods, scopes, routes, and views instead of leaving them behind.
+
+## Domain invariants
+
+- **Balance is computed, never stored.** `SUM(KREDIT) - SUM(DEBIT)` from `ledger_entries`. Never add `customers.balance`; never use `get()->sum()`.
+- **Direction is intentional.** Deposit = `KREDIT` (increases); withdrawal = `DEBIT` (decreases). Do not "fix" it.
+- **Prices are snapshotted.** `DepositItem` stores `price_per_kg` and `subtotal`; history is immutable when master prices change.
+- **Price lookup.** Use `getActivePriceOn($date)`. If missing, throw—never fall back to 0 or the latest price.
+- **Prevent duplicate price dates.** There is no unique constraint on `(waste_category_id, effective_from)` yet; add one when touching prices.
+- **Codes.** `DEP-YYYYMMDD-####`, `WD-YYYYMMDD-####`, `CUST-####`. Generation is read-then-increment and racy; use the service retry pattern, and `Customer::save()` retry for `CUST-*`. `member_code`/`unique_code` auto-generate in `creating`; do not set them manually except in focused tests.
+- **Status.** `deposits.status` is `draft|final`; everything is currently `final`. Report/dashboard queries must filter `status='final'` (some existing queries do not—fix when touched).
+- **Withdrawals.** The balance check must be atomic with the insert. The current service locks the code row, not the customer; SQLite ignores `lockForUpdate()`.
+- **Relations.** `WasteCategory::prices()` and `wastePrices()` are the same relation; do not duplicate logic.
+- **Money.** Store decimals; format Rupiah in the UI.
+
+## Security invariants
+
+- **Registration is currently open and defaults new users to `operator`.** Do not extend this. Admin/operator accounts must be admin-created or invited; close public registration when touching auth.
+- **`verified` is not a real gate.** `User` does not implement `MustVerifyEmail`; do not rely on the `verified` middleware.
+- **Role checks need two layers.** Enforce role at route group/middleware and in the Policy; do not rely on a single layer.
+- **Portal is not Laravel auth.** It uses `session('portal_customer_id')`, `portal_login_time`, `portal_ip`, and middleware `customer.session`. Do not use `Auth::user()` there.
+- **Portal session lifecycle.** Call `session()->regenerate()` after successful code verification; `invalidate()` + `regenerateToken()` on logout. Current code only `forget()`s the keys.
+- **Portal ownership.** Check that the requested deposit belongs to the session customer before rendering.
+- **Never log full `unique_code`.** Use `substr($code, 0, 6).'******'`.
+- **No hard delete of history.** Do not cascade-delete `ledger_entries`, `deposits`, `withdrawals`, or `deposit_items` when a customer/category is removed. Use `restrict` or soft deletes. Current FKs cascade—do not add more.
+- **Do not leak internals.** Never show `$e->getMessage()` to users; log details and return a safe Indonesian message.
+- **Secrets.** Do not commit `.env` or log passwords/tokens.
+
+## UI rules
+
+- **One design system.** Green primary, gray neutral, red danger; one radius scale, one button style, one table style. Do not introduce indigo/blue as a second primary.
+- **Indonesian UI, English code.** All user-facing copy is Indonesian; identifiers remain English.
+- **No emoji in operational UI.** Admin and portal use Heroicons inline SVG, not emoji. Landing marketing may use illustrations.
+- **Reusable Blade components.** Put shared UI in `resources/views/components/` (`x-flash`, `x-table`, `x-button`, `x-badge`, `x-empty-state`, `x-page-header`, `x-stat-card`). Do not copy-paste flash/table/button markup across views.
+- **Forms use components.** Prefer Breeze/Blade inputs over raw `<input>` in business forms.
+- **DomPDF uses tables.** No flexbox/grid in PDF templates.
+- **TomSelect conflict is known.** Global Bootstrap 5 CSS plus `!important` overrides fights Tailwind; keep one theme.
+- **No dead script hooks.** Do not add `@push('scripts')` unless the layout renders `@stack('scripts')`.
+
+## Prohibitions
+
+- No repository pattern.
+- No Livewire/Inertia or another JS framework; stay Blade + Alpine.
+- No API/Sanctum. `routes/api.php` is not registered and uses an uninstalled package; remove it rather than extend it.
+- No new dependencies, models, or top-level folders without approval.
+- No `.env` changes without explicit confirmation.
+- No deleting or weakening tests.
+- No dead code, `dd()`/`dump()`, or `env()` outside `config/`.
+- No hard delete of transaction history.
+- No public registration expansion.
+- No emoji in operational UI.
+- No reversing `KREDIT`/`DEBIT` or storing balance.
+- No silent price fallback.
+
+## Known traps
+
+- `waste-categories.show` route exists but the view is missing → 500.
+- Views reference non-existent attributes: `$customer->code` (use `member_code`), `$entry->description`/`transaction_date`, `$deposit->deposit_code` (use `code`), `$item->weight` (use `weight_kg`). Fix, do not copy.
+- Price lookups in Blade loops (`waste-categories/index`, `waste-categories/edit`, `deposits/create`) and per-item lookups in `DepositService` cause N+1; batch them when touching those paths.
+- `TelescopeServiceProvider` is registered in all environments while Telescope is `require-dev`; `composer install --no-dev` can fail at boot.
+- The portal timeout is measured from `portal_login_time` (not sliding); update docs/tests if you change it.
+- Eager-load `limit(1)` in `with()` is per-parent in Laravel 12; do not replace it with a global limit.
+- `docs/PLAN.md` claims CI exists; `.github/workflows/` does not.
+
+## Tests
+
+- Pest 3. Feature tests auto-use `Tests\TestCase` + `RefreshDatabase` via `tests/Pest.php`; DB is in-memory SQLite, session/cache arrays, queue sync.
+- Use factories. `DepositFactory` does not create ledger entries—if a test needs balance, create entries or use `DepositService`.
+- Add tests for behavior changes; run targeted tests first, then the full suite.
+- Do not create tinker scripts when tests cover the behavior.
+
+## Tooling
+
+- Laravel Boost MCP is configured in `opencode.json`: use `application-info`, `database-schema`, `database-query`, and `search-docs` before version-specific Laravel work.
+- Create files with `php artisan make:* --no-interaction`.
