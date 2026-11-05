@@ -19,7 +19,13 @@ Route::prefix('nasabah')->name('customer-portal.')->group(function () {
 
     Route::post('/cek', [CustomerPortalController::class, 'verifyCode'])
         ->name('verify-code')
-        ->middleware('throttle:5,5'); // 🔒 Rate limit: 5 attempts per 5 minutes
+        // Hard backstop only. The user-facing limit lives in the controller
+        // (5 failures / 5 minutes) because it can show a friendly Indonesian
+        // message and the remaining wait time; a route-level throttle that fires
+        // first would return a bare 429 page instead. This ceiling is set above the
+        // controller's limit so the friendly path is the normal one, while runaway
+        // abuse is still capped.
+        ->middleware('throttle:20,5');
 
     // Portal routes (session-guarded)
     Route::middleware('customer.session')->group(function () {

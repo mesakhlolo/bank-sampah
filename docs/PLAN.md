@@ -1,6 +1,6 @@
 # FINAL PLAN — Bersihkan & Optimasi `bank-sampah`
 
-**Status:** 🚧 BERJALAN — Fase 0–4 selesai, Fase 5–6 belum
+**Status:** 🚧 BERJALAN — Fase 0–5 selesai, Fase 6 belum
 **Target repo:** `C:\Users\mesakhlolo\Herd\bank-sampah`
 **Basis:** verifikasi langsung ke kode, git, dan filesystem (bukan asumsi)
 **Environment:** Laravel 12.x · PHP 8.4.27 · Composer 2.10.3 · Node 26.13.0 · **DB sqlite** · Pest 3
@@ -35,7 +35,7 @@
 | Bug produksi | ✅ | commit `13e1ae9`; 3 bug + 1 bug laten seeder (§5) |
 | Performa | ✅ | commit `5bef393`; 20 → 5 query, saldo berjalan diperbaiki (§6) |
 | Tailwind v4 | ❌ | masih v3 (§8) |
-| Test + CI | 🚧 | `CodeGenerationTest` + `SeederTest` ada; portal/report nol test (§7) |
+| Test + CI | ✅ | commit `test/portal-report-coverage`; 82 → 129 test, CI 3 job (§7) |
 
 ---
 
@@ -358,12 +358,35 @@ Test **NOL**: `CustomerPortalController` · `CustomerSessionGuard` · `ReportCon
 
 | # | File test | Cakupan | Status |
 |---|---|---|---|
-| 1 | `tests/Feature/CustomerPortalTest.php` | verify valid/invalid · rate limit · session timeout · akses deposit orang lain → 403 | ⬜ belum |
-| 2 | `tests/Feature/ReportSummaryTest.php` | angka cocok dengan factory | ⬜ belum |
+| 1 | `tests/Feature/CustomerPortalTest.php` | verify valid/invalid · rate limit · session timeout · akses deposit orang lain → 403 | ✅ selesai (17 test) |
+| 2 | `tests/Feature/ReportSummaryTest.php` | angka cocok dengan factory | ✅ selesai (14 test) |
 | 3 | `tests/Feature/CodeGenerationTest.php` | format `DEP-`/`WD-`/`CUST-` · increment · retry duplikat | ✅ selesai (8 test) |
 | 4 | `tests/Feature/SeederTest.php` | seeder end-to-end: kode terisi, ledger seimbang | ✅ selesai (2 test) |
 
 `.github/workflows/ci.yml` (belum ada): `pint --test` → `pest` → `npm run build`.
+
+### 7.1 ✅ Hasil Fase 5
+
+Commit `test/portal-report-coverage`. Suite: **82 → 129 test** (339 assertions).
+
+**Dua bug produksi ditemukan oleh test baru:**
+
+1. **Timeout sesi portal tidak pernah aktif.** `CustomerSessionGuard` memakai
+   `now()->diffInMinutes($loginTime) > 30`. Di Carbon 3 nilai itu **negatif**
+   (`-60` untuk 60 menit lalu), sehingga kondisi `> 30` tidak pernah benar dan
+   sesi menganggur tidak pernah berakhir. Diperbaiki dengan
+   `diffInMinutes($loginTime, true)`. Test `an expired session is rejected`
+   gagal sebelum perbaikan, lulus sesudahnya.
+2. **Rate limit portal membalas 429 mentah.** Route memakai `throttle:5,5`,
+   sehingga percobaan ke-6 diblokir middleware sebelum controller sempat
+   menampilkan pesan Indonesia + sisa waktu tunggu. Route dinaikkan ke
+   `throttle:20,5` sebagai backstop keras, sedangkan batas yang dilihat pengguna
+   (5 percobaan / 5 menit) ditangani controller.
+
+**CI** (`.github/workflows/ci.yml`): 3 job — test (PHP 8.2 & 8.4), Pint, dan
+build aset (`npm ci` + `npm run build`). Database memakai SQLite in-memory dari
+`phpunit.xml`, jadi tidak perlu service container. `npm run build` sudah
+diverifikasi lokal (exit 0).
 
 ---
 
@@ -449,7 +472,7 @@ Cek: landing · dashboard · 4 halaman portal · `deposits/create` · `withdrawa
 | 2 | 2 skills domain | 🟢 sedang | nol | `chore/cleanup-repo` | ✅ |
 | 3 | 3 bug produksi | 🔴 kritis | rendah | `fix/production-bugs` | ✅ |
 | 4 | Performa | 🟠 tinggi | sedang | `perf/query-optimization` | ✅ |
-| 5 | Test + CI | 🟠 tinggi | rendah | `test/portal-report-coverage` | 🚧 sebagian |
+| 5 | Test + CI | 🟠 tinggi | rendah | `test/portal-report-coverage` | ✅ |
 | 6 | Tailwind v4 | 🟡 kosmetik | **tinggi** | `chore/tailwind-v4` | ⬜ |
 
 Fase 6 (Tailwind) **terakhir** dan branch sendiri — agar `git bisect` tidak tercampur perubahan logika bisnis.

@@ -24,8 +24,12 @@ class CustomerSessionGuard
         }
 
         // 🔒 SESSION TIMEOUT: 30 menit inactive
+        //
+        // `diffInMinutes()` is signed in Carbon 3: `now()->diffInMinutes($past)`
+        // returns a negative number, so `> 30` was never true and the idle timeout
+        // silently never fired. Use the absolute elapsed time instead.
         $loginTime = session('portal_login_time');
-        if ($loginTime && now()->diffInMinutes($loginTime) > 30) {
+        if ($loginTime && now()->diffInMinutes($loginTime, true) > 30) {
             $customerId = session('portal_customer_id');
             session()->forget(['portal_customer_id', 'portal_login_time', 'portal_ip']);
 
