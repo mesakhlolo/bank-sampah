@@ -40,7 +40,7 @@ class GenerateUniqueCodesCommand extends Command
             $customer->unique_code = Customer::generateUniqueCode();
             $customer->save();
 
-            $this->line("✓ {$customer->name} ({$customer->member_code}) -> {$customer->unique_code}");
+            $this->line("✓ {$customer->name} ({$customer->member_code}) -> ".substr($customer->unique_code, 0, 6).'******');
         }
 
         $this->info("✅ Done! Generated unique codes for {$customers->count()} customers.");

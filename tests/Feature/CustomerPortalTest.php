@@ -54,6 +54,20 @@ test('a valid unique code logs the customer in', function () {
         ->and(session('portal_ip'))->not->toBeNull();
 });
 
+test('a successful login regenerates the session id', function () {
+    $customer = Customer::factory()->create();
+
+    $this->withSession(['portal_probe' => 'keep']);
+    $previousId = session()->getId();
+
+    $this->post(route('customer-portal.verify-code'), [
+        'unique_code' => $customer->unique_code,
+    ])->assertRedirect(route('customer-portal.dashboard'));
+
+    expect(session()->getId())->not->toBe($previousId)
+        ->and(session('portal_probe'))->toBe('keep');
+});
+
 test('the unique code is accepted case-insensitively', function () {
     $customer = Customer::factory()->create();
 
@@ -185,14 +199,15 @@ test('a customer can view their own deposit', function () {
         ->assertOk();
 });
 
-test('logout clears the portal session', function () {
+test('logout invalidates the portal session', function () {
     $customer = Customer::factory()->create();
 
-    $this->withSession(portalSession($customer))
+    $this->withSession(array_merge(portalSession($customer), ['unrelated' => 'value']))
         ->post(route('customer-portal.logout'))
         ->assertRedirect(route('customer-portal.check-code'));
 
-    expect(session('portal_customer_id'))->toBeNull();
+    expect(session('portal_customer_id'))->toBeNull()
+        ->and(session('unrelated'))->toBeNull();
 });
 
 test('the portal only shows the logged in customer transactions', function () {

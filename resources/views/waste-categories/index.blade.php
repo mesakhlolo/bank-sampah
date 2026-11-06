@@ -1,174 +1,125 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Kategori Sampah & Harga') }}
-            </h2>
-            @can('create', App\Models\WasteCategory::class)
-                <a href="{{ route('waste-categories.create') }}"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
-                    + Tambah Kategori
-                </a>
-            @endcan
-        </div>
+        <x-page-header title="Kategori Sampah & Harga" description="Atur kategori dan harga sampah yang berlaku.">
+            <x-slot name="actions">
+                @can('create', App\Models\WasteCategory::class)
+                    <x-button :href="route('waste-categories.create')" size="sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Tambah Kategori
+                    </x-button>
+                @endcan
+            </x-slot>
+        </x-page-header>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
+    <div class="py-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <x-flash />
 
-            @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
+            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
+                @if ($categories->isEmpty())
+                    <x-empty-state
+                        title="Belum ada kategori sampah"
+                        description="Tambahkan kategori dan harga awal untuk mulai mencatat setoran."
+                    >
+                        <x-slot name="action">
+                            @can('create', App\Models\WasteCategory::class)
+                                <x-button :href="route('waste-categories.create')" size="sm">Tambah Kategori</x-button>
+                            @endcan
+                        </x-slot>
+                    </x-empty-state>
+                @else
+                    <x-table :headers="[
+                        'Kategori',
+                        'Deskripsi',
+                        ['label' => 'Harga Aktif', 'align' => 'right'],
+                        'Berlaku Sejak',
+                        ['label' => 'Status', 'align' => 'center'],
+                        ['label' => 'Aksi', 'align' => 'center'],
+                    ]">
+                        @foreach ($categories as $category)
+                            @php
+                                // Prices are eager-loaded newest-first, so the first one that has
+                                // already taken effect is the active price. Avoids a query per row.
+                                $activePrice = $category->prices->first(
+                                    fn ($price) => $price->effective_from->lessThanOrEqualTo(now())
+                                );
+                                $futurePrices = $category->prices->filter(
+                                    fn ($price) => $price->effective_from->isFuture()
+                                );
+                            @endphp
 
-            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    @if ($categories->isEmpty())
-                        <p class="text-center text-gray-500 py-8">Belum ada kategori sampah. Silakan tambahkan kategori
-                            baru.</p>
-                    @else
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Kategori
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Deskripsi
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Harga Aktif
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Berlaku Sejak
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Aksi
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($categories as $category)
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $category->name }}
+                            <tr class="hover:bg-gray-50">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                                    {{ $category->name }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">
+                                    {{ $category->description ?: '-' }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-gray-900">
+                                    @if ($activePrice)
+                                        Rp {{ number_format($activePrice->price_per_kg, 0, ',', '.') }}
+                                        <span class="text-xs font-normal text-gray-500">/kg</span>
+                                    @else
+                                        <span class="font-normal text-gray-400">Belum ada harga</span>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                    {{ $activePrice ? $activePrice->effective_from->format('d M Y') : '-' }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-center">
+                                    @if ($category->is_active)
+                                        <x-badge variant="green">Aktif</x-badge>
+                                    @else
+                                        <x-badge variant="red">Nonaktif</x-badge>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-center text-sm font-medium">
+                                    @can('update', $category)
+                                        <a href="{{ route('waste-categories.edit', $category) }}"
+                                            class="text-green-700 hover:text-green-900">Edit</a>
+                                    @endcan
+                                    @can('delete', $category)
+                                        <form action="{{ route('waste-categories.destroy', $category) }}"
+                                            method="POST" class="ml-3 inline"
+                                            onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-800">Hapus</button>
+                                        </form>
+                                    @endcan
+                                </td>
+                            </tr>
+
+                            @if ($futurePrices->isNotEmpty())
+                                <tr class="bg-green-50">
+                                    <td colspan="6" class="px-4 py-3">
+                                        <p class="mb-2 text-xs font-semibold text-green-800">Harga yang akan datang</p>
+                                        <div class="grid grid-cols-1 gap-2 md:grid-cols-3">
+                                            @foreach ($futurePrices as $price)
+                                                <div class="rounded-lg border border-green-200 bg-white px-3 py-2">
+                                                    <p class="text-sm font-medium text-gray-900">
+                                                        Rp {{ number_format($price->price_per_kg, 0, ',', '.') }}
+                                                        <span class="text-xs text-gray-500">/kg</span>
+                                                    </p>
+                                                    <p class="text-xs text-gray-600">
+                                                        Mulai {{ $price->effective_from->format('d M Y') }}
+                                                    </p>
                                                 </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="text-sm text-gray-600">
-                                                    {{ $category->description ?: '-' }}
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @php
-                                                    $activePrice = $category->getActivePriceOn(now());
-                                                @endphp
-                                                @if ($activePrice)
-                                                    <div class="text-sm font-semibold text-gray-900">
-                                                        Rp {{ number_format($activePrice->price_per_kg, 0, ',', '.') }}
-                                                        <span class="text-xs text-gray-500 font-normal">/kg</span>
-                                                    </div>
-                                                @else
-                                                    <span class="text-sm text-gray-400">Belum ada harga</span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if ($activePrice)
-                                                    <div class="text-sm text-gray-500">
-                                                        {{ $activePrice->effective_from->format('d M Y') }}
-                                                    </div>
-                                                @else
-                                                    <span class="text-sm text-gray-400">-</span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                @if ($category->is_active)
-                                                    <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Aktif
-                                                    </span>
-                                                @else
-                                                    <span
-                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                        Nonaktif
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                @can('update', $category)
-                                                    <a href="{{ route('waste-categories.edit', $category) }}"
-                                                        class="text-blue-600 hover:text-blue-900 mr-3">
-                                                        Edit
-                                                    </a>
-                                                @endcan
-                                                @can('delete', $category)
-                                                    <form action="{{ route('waste-categories.destroy', $category) }}"
-                                                        method="POST" class="inline"
-                                                        onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="text-red-600 hover:text-red-900">
-                                                            Hapus
-                                                        </button>
-                                                    </form>
-                                                @endcan
-                                            </td>
-                                        </tr>
+                                            @endforeach
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                    </x-table>
 
-                                        <!-- Price History Row (Collapsible) -->
-                                        @php
-                                            $futurePrices = $category->prices->filter(function ($price) {
-                                                return $price->effective_from->isFuture();
-                                            });
-                                        @endphp
-                                        @if ($futurePrices->count() > 0)
-                                            <tr class="bg-blue-50">
-                                                <td colspan="6" class="px-6 py-3">
-                                                    <div class="text-xs font-semibold text-blue-700 mb-2">
-                                                        🔔 Harga Yang Akan Datang:
-                                                    </div>
-                                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                                        @foreach ($futurePrices as $price)
-                                                            <div
-                                                                class="bg-white border border-blue-200 rounded-sm px-3 py-2">
-                                                                <div class="text-sm font-medium text-gray-900">
-                                                                    Rp
-                                                                    {{ number_format($price->price_per_kg, 0, ',', '.') }}
-                                                                    <span class="text-xs text-gray-500">/kg</span>
-                                                                </div>
-                                                                <div class="text-xs text-gray-600">
-                                                                    Mulai:
-                                                                    {{ $price->effective_from->format('d M Y') }}
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
-                </div>
+                    <div class="border-t border-gray-100 px-4 py-3">
+                        {{ $categories->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

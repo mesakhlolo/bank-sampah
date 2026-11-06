@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -36,6 +37,14 @@ class WasteCategory extends Model
     }
 
     /**
+     * Whether this category is already referenced by a deposit item.
+     */
+    public function hasTransactions(): bool
+    {
+        return $this->depositItems()->exists();
+    }
+
+    /**
      * Get deposit items for this category
      */
     public function depositItems()
@@ -44,11 +53,21 @@ class WasteCategory extends Model
     }
 
     /**
-     * Get the active price for a specific date
+     * Get the active price for a specific date.
+     *
+     * When `prices` has been eager loaded the lookup happens in memory, so a
+     * list/form that renders many categories does not run one query per row.
      */
     public function getActivePriceOn($date = null)
     {
-        $date = $date ?? now();
+        $date = $date ? Carbon::parse($date) : now();
+
+        if ($this->relationLoaded('prices')) {
+            return $this->prices
+                ->filter(fn (WastePrice $price) => $price->effective_from->lessThanOrEqualTo($date))
+                ->sortByDesc(fn (WastePrice $price) => $price->effective_from->getTimestamp())
+                ->first();
+        }
 
         return $this->prices()
             ->where('effective_from', '<=', $date)

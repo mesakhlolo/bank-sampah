@@ -173,6 +173,16 @@ class Customer extends Model
     }
 
     /**
+     * Whether this customer owns financial history that must never be deleted.
+     */
+    public function hasTransactions(): bool
+    {
+        return $this->deposits()->exists()
+            || $this->withdrawals()->exists()
+            || $this->ledgerEntries()->exists();
+    }
+
+    /**
      * Get deposits for this customer
      */
     public function deposits()

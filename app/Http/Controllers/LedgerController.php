@@ -14,7 +14,9 @@ class LedgerController extends Controller
         // Note: the previous implementation added DEBIT and subtracted KREDIT,
         // which is inverted for this ledger (deposit = KREDIT = balance up).
         // See docs/PROJECT.md §2.
-        $ledgerWithBalance = $customer->ledgerWithRunningBalance()->get();
+        $ledgerWithBalance = $customer->ledgerWithRunningBalance()
+            ->paginate(20)
+            ->withQueryString();
 
         return view('ledger.show', compact('customer', 'ledgerWithBalance'));
     }

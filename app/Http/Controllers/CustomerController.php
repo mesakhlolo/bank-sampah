@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Models\LedgerEntry;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -122,7 +123,19 @@ class CustomerController extends Controller
     {
         $this->authorize('delete', $customer);
 
-        $customer->delete();
+        if ($customer->hasTransactions()) {
+            return redirect()->route('customers.index')
+                ->with('error', 'Nasabah tidak dapat dihapus karena sudah memiliki transaksi. Data historis harus dipertahankan.');
+        }
+
+        try {
+            $customer->delete();
+        } catch (QueryException $exception) {
+            report($exception);
+
+            return redirect()->route('customers.index')
+                ->with('error', 'Nasabah tidak dapat dihapus karena masih terhubung dengan data transaksi.');
+        }
 
         return redirect()->route('customers.index')
             ->with('success', 'Nasabah berhasil dihapus.');

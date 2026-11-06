@@ -49,6 +49,11 @@
 }
 
 .ts-dropdown .option.active {
-    background-color: #3b82f6 !important;
+    background-color: #16a34a !important;
     color: white !important;
+}
+
+/* Prevent Alpine-controlled elements from flashing before init. */
+[x-cloak] {
+    display: none !important;
 }

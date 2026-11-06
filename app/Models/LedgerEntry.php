@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -36,6 +37,27 @@ class LedgerEntry extends Model
     protected $casts = [
         'amount' => 'decimal:2',
     ];
+
+    /**
+     * Human-readable label for the entry. Derived from the reference type so the
+     * views do not depend on a non-existent `description` column.
+     */
+    protected function description(): Attribute
+    {
+        return Attribute::get(fn (): string => match ($this->ref_type) {
+            Deposit::class => 'Setoran sampah',
+            Withdrawal::class => 'Penarikan saldo',
+            default => 'Transaksi',
+        });
+    }
+
+    /**
+     * The ledger timestamp is the authoritative date for balance history.
+     */
+    protected function transactionDate(): Attribute
+    {
+        return Attribute::get(fn () => $this->created_at);
+    }
 
     /**
      * Get the customer for this ledger entry

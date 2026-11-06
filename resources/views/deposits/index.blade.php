@@ -1,165 +1,114 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Riwayat Setoran Sampah') }}
-            </h2>
-            @can('create', App\Models\Deposit::class)
-                <a href="{{ route('deposits.create') }}"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
-                    + Setoran Baru
-                </a>
-            @endcan
-        </div>
+        <x-page-header title="Riwayat Setoran Sampah" description="Daftar transaksi setoran yang telah tercatat.">
+            <x-slot name="actions">
+                @can('create', App\Models\Deposit::class)
+                    <x-button :href="route('deposits.create')" size="sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Setoran Baru
+                    </x-button>
+                @endcan
+            </x-slot>
+        </x-page-header>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
+    <div class="py-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <x-flash />
 
             <!-- Filters -->
-            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <form method="GET" action="{{ route('deposits.index') }}"
-                        class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <!-- Search by code -->
-                        <div>
-                            <label for="search" class="block text-sm font-medium text-gray-700">Cari Kode</label>
-                            <input type="text" name="search" id="search" value="{{ request('search') }}"
-                                placeholder="DEP-..."
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
+            <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+                <form method="GET" action="{{ route('deposits.index') }}"
+                    class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                    <div>
+                        <x-input-label for="search" value="Cari Kode" />
+                        <input type="text" name="search" id="search" value="{{ request('search') }}"
+                            placeholder="DEP-..."
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                    </div>
 
-                        <!-- Filter by customer -->
-                        <div>
-                            <label for="customer_id" class="block text-sm font-medium text-gray-700">Nasabah</label>
-                            <select name="customer_id" id="customer_id"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">Semua Nasabah</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}"
-                                        {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
-                                        {{ $customer->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div>
+                        <x-input-label for="customer_id" value="Nasabah" />
+                        <select name="customer_id" id="customer_id"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                            <option value="">Semua Nasabah</option>
+                            @foreach ($customers as $customer)
+                                <option value="{{ $customer->id }}"
+                                    {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                                    {{ $customer->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                        <!-- Date from -->
-                        <div>
-                            <label for="date_from" class="block text-sm font-medium text-gray-700">Dari Tanggal</label>
-                            <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
+                    <div>
+                        <x-input-label for="date_from" value="Dari Tanggal" />
+                        <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                    </div>
 
-                        <!-- Date to -->
-                        <div>
-                            <label for="date_to" class="block text-sm font-medium text-gray-700">Sampai Tanggal</label>
-                            <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
+                    <div>
+                        <x-input-label for="date_to" value="Sampai Tanggal" />
+                        <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                    </div>
 
-                        <!-- Buttons -->
-                        <div class="md:col-span-4 flex gap-2">
-                            <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
-                                Filter
-                            </button>
-                            <a href="{{ route('deposits.index') }}"
-                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-sm">
-                                Reset
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                    <div class="flex gap-2 md:col-span-4">
+                        <x-button type="submit" size="sm">Filter</x-button>
+                        <x-button :href="route('deposits.index')" variant="secondary" size="sm">Reset</x-button>
+                    </div>
+                </form>
             </div>
 
-            <!-- Transactions Table -->
-            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    @if ($deposits->isEmpty())
-                        <p class="text-center text-gray-500 py-8">Belum ada setoran.</p>
-                    @else
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Kode
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Tanggal
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Nasabah
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Operator
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Nominal
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Aksi
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($deposits as $deposit)
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ $deposit->code }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $deposit->transaction_date ? $deposit->transaction_date->format('d M Y') : $deposit->created_at->format('d M Y') }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $deposit->customer->name }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $deposit->creator->name }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
-                                                + Rp {{ number_format($deposit->total_amount, 0, ',', '.') }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <a href="{{ route('deposits.show', $deposit) }}"
-                                                    class="text-blue-600 hover:text-blue-900 mr-3">
-                                                    Lihat
-                                                </a>
-                                                <a href="{{ route('deposits.download-pdf', $deposit) }}"
-                                                    class="text-green-600 hover:text-green-900">
-                                                    PDF
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+            <!-- Deposits Table -->
+            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
+                @if ($deposits->isEmpty())
+                    <x-empty-state
+                        title="Belum ada setoran"
+                        description="Transaksi setoran yang dicatat akan muncul di sini."
+                    />
+                @else
+                    <x-table :headers="[
+                        'Kode',
+                        'Tanggal',
+                        'Nasabah',
+                        'Operator',
+                        ['label' => 'Nominal', 'align' => 'right'],
+                        ['label' => 'Aksi', 'align' => 'center'],
+                    ]">
+                        @foreach ($deposits as $deposit)
+                            <tr class="hover:bg-gray-50">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                                    {{ $deposit->code }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                    {{ $deposit->transaction_date ? $deposit->transaction_date->format('d M Y') : $deposit->created_at->format('d M Y') }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                    {{ $deposit->customer->name }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                    {{ $deposit->creator->name }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-green-700">
+                                    + Rp {{ number_format($deposit->total_amount, 0, ',', '.') }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-center text-sm font-medium">
+                                    <a href="{{ route('deposits.show', $deposit) }}"
+                                        class="text-green-700 hover:text-green-900">Lihat</a>
+                                    <a href="{{ route('deposits.download-pdf', $deposit) }}"
+                                        class="ml-3 text-gray-500 hover:text-gray-700">PDF</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </x-table>
 
-                        <!-- Pagination -->
-                        <div class="mt-4">
-                            {{ $deposits->links() }}
-                        </div>
-                    @endif
-                </div>
+                    <div class="border-t border-gray-100 px-4 py-3">
+                        {{ $deposits->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

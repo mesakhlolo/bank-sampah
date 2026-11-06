@@ -1,4 +1,6 @@
 <x-guest-layout>
+    <h1 class="mb-6 text-lg font-semibold text-gray-900">Atur Ulang Kata Sandi</h1>
+
     <form method="POST" action="{{ route('password.store') }}">
         @csrf
 
@@ -14,14 +16,14 @@
 
         <!-- Password -->
         <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="__('Kata Sandi Baru')" />
             <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
         <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" />
 
             <x-text-input id="password_confirmation" class="block mt-1 w-full"
                                 type="password"
@@ -30,9 +32,9 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="mt-6 flex items-center justify-end">
             <x-primary-button>
-                {{ __('Reset Password') }}
+                {{ __('Simpan Kata Sandi') }}
             </x-primary-button>
         </div>
     </form>

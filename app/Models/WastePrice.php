@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,6 +20,19 @@ class WastePrice extends Model
         'price_per_kg' => 'decimal:2',
         'effective_from' => 'datetime',
     ];
+
+    /**
+     * Persist the effective date as `Y-m-d` so the unique index on
+     * (waste_category_id, effective_from) compares dates, not datetimes.
+     */
+    protected function effectiveFrom(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => $value instanceof \DateTimeInterface
+                ? $value->format('Y-m-d')
+                : $value,
+        );
+    }
 
     /**
      * Get the category this price belongs to

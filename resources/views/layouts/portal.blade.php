@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Portal Nasabah') - Bank Sampah</title>
+    <title>@yield('title', 'Portal Nasabah') - {{ config('app.name', 'Bank Sampah') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -14,47 +14,47 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-linear-to-br from-green-50 to-blue-50">
+<body class="bg-gray-50 font-sans antialiased">
     <div class="min-h-screen">
         <!-- Portal Navigation (different from admin) -->
         @if(isset($portalCustomer))
-        <nav class="bg-white shadow-md border-b border-green-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
+        <nav class="border-b border-green-200 bg-white shadow-sm">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 justify-between">
                     <!-- Logo & Brand -->
                     <div class="flex items-center">
-                        <a href="{{ route('customer-portal.dashboard') }}" class="flex items-center">
-                            <span class="text-2xl">♻️</span>
-                            <span class="ml-2 text-xl font-bold text-green-600">Bank Sampah</span>
+                        <a href="{{ route('customer-portal.dashboard') }}" class="flex items-center gap-2">
+                            <x-application-logo class="h-9 w-9 text-green-600" />
+                            <span class="text-lg font-bold text-gray-900">Bank Sampah</span>
                         </a>
                     </div>
 
                     <!-- Navigation Links -->
                     <div class="hidden sm:flex sm:items-center sm:space-x-6">
-                        <a href="{{ route('customer-portal.dashboard') }}" 
+                        <a href="{{ route('customer-portal.dashboard') }}"
                            class="{{ request()->routeIs('customer-portal.dashboard') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-600 hover:text-green-600' }} px-3 py-2 text-sm font-medium transition">
                             Dashboard
                         </a>
-                        <a href="{{ route('customer-portal.transactions') }}" 
+                        <a href="{{ route('customer-portal.transactions') }}"
                            class="{{ request()->routeIs('customer-portal.transactions') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-600 hover:text-green-600' }} px-3 py-2 text-sm font-medium transition">
                             Riwayat
                         </a>
-                        <a href="{{ route('customer-portal.info') }}" 
+                        <a href="{{ route('customer-portal.info') }}"
                            class="{{ request()->routeIs('customer-portal.info') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-600 hover:text-green-600' }} px-3 py-2 text-sm font-medium transition">
                             Info & Bantuan
                         </a>
 
                         <!-- Customer Info & Logout -->
-                        <div class="flex items-center ml-6 space-x-4 border-l pl-6">
+                        <div class="ml-6 flex items-center space-x-4 border-l border-gray-200 pl-6">
                             <div class="text-right">
                                 <div class="text-sm font-semibold text-gray-700">{{ $portalCustomer->name }}</div>
                                 <div class="text-xs text-gray-500">{{ $portalCustomer->member_code }}</div>
                             </div>
                             <form method="POST" action="{{ route('customer-portal.logout') }}">
                                 @csrf
-                                <button type="submit" 
-                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button type="submit"
+                                        class="inline-flex items-center rounded-lg border border-transparent bg-red-600 px-3 py-2 text-sm font-medium leading-4 text-white transition hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                    <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>
                                     Keluar
@@ -65,8 +65,8 @@
 
                     <!-- Mobile menu button -->
                     <div class="flex items-center sm:hidden">
-                        <button id="mobile-menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-green-600 hover:bg-green-50 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-green-500">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button id="mobile-menu-btn" type="button" class="inline-flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-green-50 hover:text-green-600 focus:outline-hidden focus:ring-2 focus:ring-green-500">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
@@ -75,22 +75,22 @@
             </div>
 
             <!-- Mobile menu -->
-            <div id="mobile-menu" class="hidden sm:hidden border-t border-green-100">
-                <div class="px-2 pt-2 pb-3 space-y-1">
-                    <a href="{{ route('customer-portal.dashboard') }}" 
-                       class="{{ request()->routeIs('customer-portal.dashboard') ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-green-50 hover:text-green-600' }} block px-3 py-2 rounded-md text-base font-medium">
+            <div id="mobile-menu" class="hidden border-t border-green-100 sm:hidden">
+                <div class="space-y-1 px-2 pb-3 pt-2">
+                    <a href="{{ route('customer-portal.dashboard') }}"
+                       class="{{ request()->routeIs('customer-portal.dashboard') ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-green-50 hover:text-green-600' }} block rounded-lg px-3 py-2 text-base font-medium">
                         Dashboard
                     </a>
-                    <a href="{{ route('customer-portal.transactions') }}" 
-                       class="{{ request()->routeIs('customer-portal.transactions') ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-green-50 hover:text-green-600' }} block px-3 py-2 rounded-md text-base font-medium">
+                    <a href="{{ route('customer-portal.transactions') }}"
+                       class="{{ request()->routeIs('customer-portal.transactions') ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-green-50 hover:text-green-600' }} block rounded-lg px-3 py-2 text-base font-medium">
                         Riwayat
                     </a>
-                    <a href="{{ route('customer-portal.info') }}" 
-                       class="{{ request()->routeIs('customer-portal.info') ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-green-50 hover:text-green-600' }} block px-3 py-2 rounded-md text-base font-medium">
+                    <a href="{{ route('customer-portal.info') }}"
+                       class="{{ request()->routeIs('customer-portal.info') ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-green-50 hover:text-green-600' }} block rounded-lg px-3 py-2 text-base font-medium">
                         Info & Bantuan
                     </a>
                 </div>
-                <div class="pt-4 pb-3 border-t border-green-100">
+                <div class="border-t border-green-100 pb-3 pt-4">
                     <div class="px-4">
                         <div class="text-base font-semibold text-gray-700">{{ $portalCustomer->name }}</div>
                         <div class="text-sm text-gray-500">{{ $portalCustomer->member_code }}</div>
@@ -98,8 +98,8 @@
                     <div class="mt-3 px-2">
                         <form method="POST" action="{{ route('customer-portal.logout') }}">
                             @csrf
-                            <button type="submit" 
-                                    class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">
+                            <button type="submit"
+                                    class="w-full rounded-lg px-3 py-2 text-left text-base font-medium text-red-600 hover:bg-red-50">
                                 Keluar
                             </button>
                         </form>
@@ -110,21 +110,9 @@
         @endif
 
         <!-- Flash Messages -->
-        @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm relative" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
+        <div class="mx-auto mt-4 max-w-7xl px-4 sm:px-6 lg:px-8">
+            <x-flash />
         </div>
-        @endif
-
-        @if(session('error'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm relative" role="alert">
-                <span class="block sm:inline">{{ session('error') }}</span>
-            </div>
-        </div>
-        @endif
 
         <!-- Page Content -->
         <main class="py-8">
@@ -132,10 +120,10 @@
         </main>
 
         <!-- Footer -->
-        <footer class="bg-white border-t border-gray-200 mt-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <footer class="mt-12 border-t border-gray-200 bg-white">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <div class="text-center text-sm text-gray-500">
-                    <p>&copy; {{ date('Y') }} Bank Sampah Bersih Sejahtera. All rights reserved.</p>
+                    <p>&copy; {{ date('Y') }} Bank Sampah Bersih Sejahtera.</p>
                 </div>
             </div>
         </footer>
@@ -148,5 +136,6 @@
             menu.classList.toggle('hidden');
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

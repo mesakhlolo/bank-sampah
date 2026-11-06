@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReportFilterRequest;
 use App\Services\ReportService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
     public function __construct(private ReportService $reportService) {}
 
-    public function summary(Request $request)
+    public function summary(ReportFilterRequest $request)
     {
         $data = $this->reportService->buildSummary(
             $request->input('start_date'),
@@ -20,7 +20,7 @@ class ReportController extends Controller
         return view('reports.summary', $data);
     }
 
-    public function downloadPdf(Request $request)
+    public function downloadPdf(ReportFilterRequest $request)
     {
         $data = $this->reportService->buildSummary(
             $request->input('start_date'),

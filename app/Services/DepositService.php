@@ -7,7 +7,9 @@ use App\Models\DepositItem;
 use App\Models\LedgerEntry;
 use App\Models\WasteCategory;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class DepositService
@@ -32,15 +34,27 @@ class DepositService
             // 1. Create deposit header with a unique code, retrying on collision
             $deposit = $this->createWithUniqueCode($data);
 
-            // 2. Process each deposit item
+            // 2. Load every category and its applicable prices in one query
+            // instead of a category + price query per item.
+            $transactionDate = $data['transaction_date'] ?? now();
+            $categories = $this->loadCategoriesForItems($data['items'], $transactionDate);
+
+            // 3. Process each deposit item
             $totalAmount = 0;
             $totalWeight = 0;
 
             foreach ($data['items'] as $item) {
-                $category = WasteCategory::findOrFail($item['waste_category_id']);
+                $category = $categories->get($item['waste_category_id']);
+
+                if (! $category) {
+                    throw (new ModelNotFoundException)->setModel(
+                        WasteCategory::class,
+                        [$item['waste_category_id']]
+                    );
+                }
 
                 // Get the price effective on the transaction date
-                $priceRecord = $category->getActivePriceOn($data['transaction_date'] ?? now());
+                $priceRecord = $category->getActivePriceOn($transactionDate);
 
                 if (! $priceRecord) {
                     throw new \Exception("Tidak ada harga aktif untuk kategori: {$category->name}");
@@ -65,13 +79,13 @@ class DepositService
                 $totalWeight += $weightKg;
             }
 
-            // 3. Update deposit totals
+            // 4. Update deposit totals
             $deposit->update([
                 'total_amount' => $totalAmount,
                 'total_weight' => $totalWeight,
             ]);
 
-            // 4. Create ledger entry (credit to customer's balance)
+            // 5. Create ledger entry (credit to customer's balance)
             LedgerEntry::create([
                 'customer_id' => $data['customer_id'],
                 'ref_type' => 'App\\Models\\Deposit',
@@ -80,7 +94,7 @@ class DepositService
                 'amount' => $totalAmount,
             ]);
 
-            // 5. Load relationships for return
+            // 6. Load relationships for return
             $deposit->load(['customer', 'creator', 'items.wasteCategory']);
 
             return $deposit;
@@ -162,10 +176,20 @@ class DepositService
     {
         $total = 0;
         $calculatedItems = [];
+        $transactionDate = $transactionDate ?? now();
+        $categories = $this->loadCategoriesForItems($items, $transactionDate);
 
         foreach ($items as $item) {
-            $category = WasteCategory::findOrFail($item['waste_category_id']);
-            $priceRecord = $category->getActivePriceOn($transactionDate ?? now());
+            $category = $categories->get($item['waste_category_id']);
+
+            if (! $category) {
+                throw (new ModelNotFoundException)->setModel(
+                    WasteCategory::class,
+                    [$item['waste_category_id']]
+                );
+            }
+
+            $priceRecord = $category->getActivePriceOn($transactionDate);
 
             if (! $priceRecord) {
                 throw new \Exception("Tidak ada harga aktif untuk kategori: {$category->name}");
@@ -190,5 +214,32 @@ class DepositService
             'total' => $total,
             'items' => $calculatedItems,
         ];
+    }
+
+    /**
+     * Load the submitted categories with their applicable prices in one query.
+     *
+     * The eager-load constraint keeps only prices effective on the transaction
+     * date, newest first, so `getActivePriceOn()` can pick the first match from
+     * memory instead of issuing a query per item.
+     *
+     * @param  array<int, array{waste_category_id: int|string, weight_kg: int|float|string}>  $items
+     * @return Collection<int, WasteCategory>
+     */
+    private function loadCategoriesForItems(array $items, mixed $transactionDate): Collection
+    {
+        $categoryIds = collect($items)
+            ->pluck('waste_category_id')
+            ->unique()
+            ->values();
+
+        return WasteCategory::query()
+            ->with(['prices' => function ($query) use ($transactionDate): void {
+                $query->where('effective_from', '<=', $transactionDate)
+                    ->orderByDesc('effective_from');
+            }])
+            ->whereIn('id', $categoryIds)
+            ->get()
+            ->keyBy('id');
     }
 }

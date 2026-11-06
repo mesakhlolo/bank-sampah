@@ -56,9 +56,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Master Data Routes
-    Route::resource('customers', \App\Http\Controllers\CustomerController::class);
-    Route::resource('waste-categories', \App\Http\Controllers\WasteCategoryController::class);
-    Route::resource('waste-prices', \App\Http\Controllers\WastePriceController::class)->only(['store', 'destroy']);
+    Route::resource('customers', \App\Http\Controllers\CustomerController::class)->except(['destroy']);
+    Route::delete('customers/{customer}', [\App\Http\Controllers\CustomerController::class, 'destroy'])
+        ->middleware('admin')
+        ->name('customers.destroy');
+
+    Route::middleware('admin')->group(function () {
+        Route::resource('waste-categories', \App\Http\Controllers\WasteCategoryController::class)->except(['show']);
+        Route::resource('waste-prices', \App\Http\Controllers\WastePriceController::class)->only(['store', 'destroy']);
+    });
 
     // Transaction Routes
     Route::resource('deposits', \App\Http\Controllers\DepositController::class)->only(['index', 'create', 'store', 'show']);

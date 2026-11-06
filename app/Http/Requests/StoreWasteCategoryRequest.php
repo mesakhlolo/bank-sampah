@@ -25,6 +25,8 @@ class StoreWasteCategoryRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
+            'price_per_kg' => 'nullable|numeric|min:0',
+            'effective_from' => 'nullable|date|required_with:price_per_kg',
         ];
     }
 
@@ -37,6 +39,8 @@ class StoreWasteCategoryRequest extends FormRequest
             'name' => 'nama kategori',
             'description' => 'deskripsi',
             'is_active' => 'status aktif',
+            'price_per_kg' => 'harga per kg',
+            'effective_from' => 'berlaku dari',
         ];
     }
 }

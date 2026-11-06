@@ -67,7 +67,7 @@ class TransactionHistoryController extends Controller
         $transactions = $query->orderBy('transaction_date', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(15)
-            ->appends($request->all());
+            ->withQueryString();
 
         // Resolve customers and creators in two queries for the whole page.
         // The previous version called Customer::find() and User::find() inside the

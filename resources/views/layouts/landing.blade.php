@@ -21,9 +21,9 @@
             <div class="flex justify-between h-16">
                 <!-- Logo & Brand -->
                 <div class="flex items-center">
-                    <a href="{{ route('landing.index') }}" class="flex items-center">
-                        <span class="text-3xl">♻️</span>
-                        <span class="ml-2 text-xl font-bold text-green-600">Bank Sampah</span>
+                    <a href="{{ route('landing.index') }}" class="flex items-center gap-2">
+                        <x-application-logo class="h-9 w-9 text-green-600" />
+                        <span class="text-xl font-bold text-green-600">Bank Sampah</span>
                     </a>
                 </div>
 
@@ -87,9 +87,9 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- About -->
                 <div>
-                    <div class="flex items-center mb-4">
-                        <span class="text-3xl">♻️</span>
-                        <span class="ml-2 text-xl font-bold">Bank Sampah</span>
+                    <div class="mb-4 flex items-center gap-2">
+                        <x-application-logo class="h-9 w-9 text-green-400" />
+                        <span class="text-xl font-bold">Bank Sampah</span>
                     </div>
                     <p class="text-gray-400 text-sm leading-relaxed">
                         Bersama mewujudkan lingkungan bersih dan ekonomi sirkular melalui pengelolaan sampah yang bertanggung jawab.

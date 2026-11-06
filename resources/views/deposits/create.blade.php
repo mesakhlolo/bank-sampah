@@ -1,147 +1,129 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Transaksi Setoran Baru') }}
-        </h2>
+        <x-page-header title="Transaksi Setoran Baru" description="Catat setoran sampah dari nasabah.">
+            <x-slot name="actions">
+                <x-button :href="route('deposits.index')" variant="secondary" size="sm">Kembali</x-button>
+            </x-slot>
+        </x-page-header>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
-            @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
+    <div class="py-8">
+        <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <x-flash />
 
-            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <form method="POST" action="{{ route('deposits.store') }}" x-data="depositForm()">
-                        @csrf
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+                <form method="POST" action="{{ route('deposits.store') }}" x-data="depositForm()" class="space-y-5">
+                    @csrf
 
-                        <!-- Customer Selection -->
-                        <div class="mb-4">
-                            <label for="customer_id" class="block text-sm font-medium text-gray-700">Nasabah *</label>
-                            <select name="customer_id" id="customer_id" required x-model="customerId"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">Pilih Nasabah</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}"
-                                        {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
-                                        {{ $customer->code }} - {{ $customer->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('customer_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                    <!-- Customer Selection -->
+                    <div>
+                        <x-input-label for="customer_id" value="Nasabah *" />
+                        <select name="customer_id" id="customer_id" required x-model="customerId"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                            <option value="">Pilih Nasabah</option>
+                            @foreach ($customers as $customer)
+                                <option value="{{ $customer->id }}"
+                                    {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
+                                    {{ $customer->member_code }} - {{ $customer->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error class="mt-1" :messages="$errors->get('customer_id')" />
+                    </div>
+
+                    <!-- Transaction Date -->
+                    <div>
+                        <x-input-label for="transaction_date" value="Tanggal Transaksi" />
+                        <input type="date" name="transaction_date" id="transaction_date"
+                            value="{{ old('transaction_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                        <x-input-error class="mt-1" :messages="$errors->get('transaction_date')" />
+                    </div>
+
+                    <!-- Deposit Items -->
+                    <div>
+                        <div class="mb-3 flex items-center justify-between">
+                            <x-input-label value="Item Sampah *" />
+                            <x-button type="button" variant="secondary" size="sm" x-on:click="addItem">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                                Tambah Item
+                            </x-button>
                         </div>
 
-                        <!-- Transaction Date -->
-                        <div class="mb-4">
-                            <label for="transaction_date" class="block text-sm font-medium text-gray-700">Tanggal
-                                Transaksi</label>
-                            <input type="date" name="transaction_date" id="transaction_date"
-                                value="{{ old('transaction_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
-                            @error('transaction_date')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Deposit Items -->
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-3">
-                                <label class="block text-sm font-medium text-gray-700">Item Sampah *</label>
-                                <button type="button" @click="addItem"
-                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-sm text-sm">
-                                    + Tambah Item
-                                </button>
-                            </div>
-
-                            <div class="space-y-3">
-                                <template x-for="(item, index) in items" :key="index">
-                                    <div class="flex gap-3 items-start border border-gray-200 p-3 rounded-sm">
-                                        <!-- Waste Category -->
-                                        <div class="flex-1">
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Kategori</label>
-                                            <select :name="'items[' + index + '][waste_category_id]'"
-                                                x-model="item.waste_category_id" @change="updatePrice(index)" required
-                                                class="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 text-sm">
-                                                <option value="">Pilih Kategori</option>
-                                                @foreach ($wasteCategories as $category)
-                                                    <option value="{{ $category->id }}"
-                                                        data-price="{{ $category->current_price ?? 0 }}">
-                                                        {{ $category->name }} (Rp
-                                                        {{ number_format($category->current_price ?? 0, 0, ',', '.') }}/kg)
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <!-- Weight -->
-                                        <div class="w-32">
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Berat
-                                                (kg)</label>
-                                            <input type="number" :name="'items[' + index + '][weight_kg]'"
-                                                x-model="item.weight_kg" @input="calculateSubtotal(index)"
-                                                step="0.01" min="0.01" required placeholder="0.00"
-                                                class="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500 text-sm">
-                                        </div>
-
-                                        <!-- Subtotal (readonly) -->
-                                        <div class="w-40">
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Subtotal</label>
-                                            <input type="text" :value="formatCurrency(item.subtotal)" readonly
-                                                class="block w-full rounded-md border-gray-200 bg-gray-50 text-sm text-right font-medium">
-                                        </div>
-
-                                        <!-- Remove Button -->
-                                        <div class="pt-6">
-                                            <button type="button" @click="removeItem(index)" x-show="items.length > 1"
-                                                class="text-red-600 hover:text-red-900 font-bold">
-                                                ✕
-                                            </button>
-                                        </div>
+                        <div class="space-y-3">
+                            <template x-for="(item, index) in items" :key="index">
+                                <div class="flex flex-col gap-3 rounded-lg border border-gray-200 p-3 md:flex-row md:items-start">
+                                    <!-- Waste Category -->
+                                    <div class="flex-1">
+                                        <label class="mb-1 block text-xs font-medium text-gray-600">Kategori</label>
+                                        <select :name="'items[' + index + '][waste_category_id]'"
+                                            x-model="item.waste_category_id" @change="updatePrice(index)" required
+                                            class="block w-full rounded-lg border-gray-300 text-sm shadow-xs focus:border-green-500 focus:ring-green-500">
+                                            <option value="">Pilih Kategori</option>
+                                            @foreach ($wasteCategories as $category)
+                                                <option value="{{ $category->id }}"
+                                                    data-price="{{ $category->current_price ?? 0 }}">
+                                                    {{ $category->name }} (Rp
+                                                    {{ number_format($category->current_price ?? 0, 0, ',', '.') }}/kg)
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                </template>
-                            </div>
 
-                            @error('items')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                                    <!-- Weight -->
+                                    <div class="md:w-32">
+                                        <label class="mb-1 block text-xs font-medium text-gray-600">Berat (kg)</label>
+                                        <input type="number" :name="'items[' + index + '][weight_kg]'"
+                                            x-model="item.weight_kg" @input="calculateSubtotal(index)"
+                                            step="0.01" min="0.01" required placeholder="0.00"
+                                            class="block w-full rounded-lg border-gray-300 text-sm shadow-xs focus:border-green-500 focus:ring-green-500">
+                                    </div>
+
+                                    <!-- Subtotal (readonly) -->
+                                    <div class="md:w-40">
+                                        <label class="mb-1 block text-xs font-medium text-gray-600">Subtotal</label>
+                                        <input type="text" :value="formatCurrency(item.subtotal)" readonly
+                                            class="block w-full rounded-lg border-gray-200 bg-gray-50 text-right text-sm font-medium">
+                                    </div>
+
+                                    <!-- Remove Button -->
+                                    <div class="md:pt-6">
+                                        <button type="button" @click="removeItem(index)" x-show="items.length > 1"
+                                            class="text-sm font-medium text-red-600 hover:text-red-800">
+                                            Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
 
-                        <!-- Total Amount Display -->
-                        <div class="mb-6 bg-blue-50 border border-blue-200 p-4 rounded-sm">
-                            <div class="flex justify-between items-center">
-                                <span class="text-lg font-semibold text-gray-700">Total Setoran:</span>
-                                <span class="text-2xl font-bold text-blue-600" x-text="formatCurrency(total)"></span>
-                            </div>
-                        </div>
+                        <x-input-error class="mt-1" :messages="$errors->get('items')" />
+                    </div>
 
-                        <!-- Notes -->
-                        <div class="mb-6">
-                            <label for="notes" class="block text-sm font-medium text-gray-700">Catatan</label>
-                            <textarea name="notes" id="notes" rows="3"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">{{ old('notes') }}</textarea>
-                            @error('notes')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                    <!-- Total Amount Display -->
+                    <div class="rounded-lg border border-green-200 bg-green-50 p-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-semibold text-gray-700">Total Setoran:</span>
+                            <span class="text-2xl font-bold text-green-700" x-text="formatCurrency(total)"></span>
                         </div>
+                    </div>
 
-                        <!-- Buttons -->
-                        <div class="flex items-center justify-end gap-4">
-                            <a href="{{ route('deposits.index') }}"
-                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-sm">
-                                Batal
-                            </a>
-                            <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
-                                Simpan Transaksi
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Notes -->
+                    <div>
+                        <x-input-label for="notes" value="Catatan" />
+                        <textarea name="notes" id="notes" rows="3"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">{{ old('notes') }}</textarea>
+                        <x-input-error class="mt-1" :messages="$errors->get('notes')" />
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+                        <x-button :href="route('deposits.index')" variant="secondary">Batal</x-button>
+                        <x-button type="submit">Simpan Transaksi</x-button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

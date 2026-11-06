@@ -23,6 +23,7 @@ vendor/bin/pint --dirty            # format changed PHP (never `php artisan pint
 php artisan test --compact         # full suite
 php artisan test --compact tests/Feature/DepositManagementTest.php
 php artisan test --compact --filter='operator can create withdrawal'
+php artisan balances:reconcile   # compares ledger balance vs final deposits - withdrawals; exits non-zero on drift or negative balances
 ```
 
 Verification order: `pint --dirty` → targeted tests → `test --compact` → `npm run build` when frontend changed. No CI workflow, PHPStan/Psalm, or JS linter is configured; these local gates are the source of truth.
@@ -34,7 +35,7 @@ Verification order: `pint --dirty` → targeted tests → `test --compact` → `
 - **Form Requests + Policies.** All writes use a Form Request; `authorize()` uses the Policy. No inline `$request->validate()`.
 - **Route model binding.** Prefer it over manual `find()`.
 - **Models stay focused.** Relationships, casts, scopes, and derived attributes. Cross-model business rules go in a Service. Do not add a repository layer.
-- **Lists eager-load and paginate.** `with()` on every relationship rendered in a list; paginate every list. `LedgerController` currently does not paginate—fix it when touched.
+- **Lists eager-load and paginate.** `with()` on every relationship rendered in a list; paginate every list. `LedgerController` paginates at 20 with `withQueryString()`.
 - **Date filters use `App\Support\DateRange`.** `whereDate()` defeats the index; bare `Y-m-d` comparisons drop the final day.
 
 ## Code style
@@ -49,24 +50,25 @@ Verification order: `pint --dirty` → targeted tests → `test --compact` → `
 - **Balance is computed, never stored.** `SUM(KREDIT) - SUM(DEBIT)` from `ledger_entries`. Never add `customers.balance`; never use `get()->sum()`.
 - **Direction is intentional.** Deposit = `KREDIT` (increases); withdrawal = `DEBIT` (decreases). Do not "fix" it.
 - **Prices are snapshotted.** `DepositItem` stores `price_per_kg` and `subtotal`; history is immutable when master prices change.
-- **Price lookup.** Use `getActivePriceOn($date)`. If missing, throw—never fall back to 0 or the latest price.
-- **Prevent duplicate price dates.** There is no unique constraint on `(waste_category_id, effective_from)` yet; add one when touching prices.
+- **Price lookup.** Use `getActivePriceOn($date)`. If missing, throw—never fall back to 0 or the latest price. Eager load `prices` and the accessor resolves from memory; `DepositService` batch-loads categories/prices with one query, so do not reintroduce a lookup per item.
+- **Prevent duplicate price dates.** A unique index on `(waste_category_id, effective_from)` exists; `effective_from` is stored as `Y-m-d` and form requests validate uniqueness. The backfill migration keeps the newest duplicate per category/date.
 - **Codes.** `DEP-YYYYMMDD-####`, `WD-YYYYMMDD-####`, `CUST-####`. Generation is read-then-increment and racy; use the service retry pattern, and `Customer::save()` retry for `CUST-*`. `member_code`/`unique_code` auto-generate in `creating`; do not set them manually except in focused tests.
 - **Status.** `deposits.status` is `draft|final`; everything is currently `final`. Report/dashboard queries must filter `status='final'` (some existing queries do not—fix when touched).
-- **Withdrawals.** The balance check must be atomic with the insert. The current service locks the code row, not the customer; SQLite ignores `lockForUpdate()`.
+- **Withdrawals.** The balance check and the withdrawal insert must stay inside the same transaction. `WithdrawalService` locks the customer row (`lockForUpdate`) before reading the derived balance and passes `attempts=5` to `DB::transaction`, so SQLite's ignored row lock still retries on a write conflict. Do not move the check outside the lock.
 - **Relations.** `WasteCategory::prices()` and `wastePrices()` are the same relation; do not duplicate logic.
 - **Money.** Store decimals; format Rupiah in the UI.
 
 ## Security invariants
 
-- **Registration is currently open and defaults new users to `operator`.** Do not extend this. Admin/operator accounts must be admin-created or invited; close public registration when touching auth.
+- **Registration is admin-only.** `/register` requires `auth` + `admin` (alias in `bootstrap/app.php`); `StoreUserRequest` requires an explicit `role` (`admin|operator`). Do not reopen public registration or rely on the DB default.
 - **`verified` is not a real gate.** `User` does not implement `MustVerifyEmail`; do not rely on the `verified` middleware.
-- **Role checks need two layers.** Enforce role at route group/middleware and in the Policy; do not rely on a single layer.
+- **Role checks need two layers.** Enforce role at route group/middleware and in the Policy; do not rely on a single layer. `waste-categories`, `waste-prices`, and `customers.destroy` are wrapped in the `admin` middleware.
+- **Deactivated users cannot log in.** `users.is_active` defaults to `true`; `LoginRequest` logs an inactive session out before issuing a validation error.
 - **Portal is not Laravel auth.** It uses `session('portal_customer_id')`, `portal_login_time`, `portal_ip`, and middleware `customer.session`. Do not use `Auth::user()` there.
-- **Portal session lifecycle.** Call `session()->regenerate()` after successful code verification; `invalidate()` + `regenerateToken()` on logout. Current code only `forget()`s the keys.
+- **Portal session lifecycle.** `session()->regenerate()` after successful code verification; `invalidate()` + `regenerateToken()` on logout. Do not replace these with `forget()`.
 - **Portal ownership.** Check that the requested deposit belongs to the session customer before rendering.
 - **Never log full `unique_code`.** Use `substr($code, 0, 6).'******'`.
-- **No hard delete of history.** Do not cascade-delete `ledger_entries`, `deposits`, `withdrawals`, or `deposit_items` when a customer/category is removed. Use `restrict` or soft deletes. Current FKs cascade—do not add more.
+- **No hard delete of history.** FK deletes for `deposits`, `withdrawals`, `ledger_entries`, and `deposit_items` use `restrict`. Controllers also block deleting a customer/category that owns transactions and show a safe Indonesian message. Do not add cascading deletes to financial tables.
 - **Do not leak internals.** Never show `$e->getMessage()` to users; log details and return a safe Indonesian message.
 - **Secrets.** Do not commit `.env` or log passwords/tokens.
 
@@ -76,16 +78,19 @@ Verification order: `pint --dirty` → targeted tests → `test --compact` → `
 - **Indonesian UI, English code.** All user-facing copy is Indonesian; identifiers remain English.
 - **No emoji in operational UI.** Admin and portal use Heroicons inline SVG, not emoji. Landing marketing may use illustrations.
 - **Reusable Blade components.** Put shared UI in `resources/views/components/` (`x-flash`, `x-table`, `x-button`, `x-badge`, `x-empty-state`, `x-page-header`, `x-stat-card`). Do not copy-paste flash/table/button markup across views.
+- **Component contracts.** `x-table` headers take strings or `['label' => ..., 'align' => 'right|center']` and an optional named `footer` slot for `<tfoot>`. `x-page-header` takes `title`/`description` plus an `actions` slot. `x-empty-state` accepts optional `icon` and `action`. `x-stat-card` accepts an optional `icon` and `variant`.
+- **Locale.** `APP_NAME="Bank Sampah"`, `APP_LOCALE=id`; auth/profile copy is Indonesian. Keep `lang/id.json` + `lang/id/*.php` in sync when adding framework messages.
 - **Forms use components.** Prefer Breeze/Blade inputs over raw `<input>` in business forms.
 - **DomPDF uses tables.** No flexbox/grid in PDF templates.
-- **TomSelect conflict is known.** Global Bootstrap 5 CSS plus `!important` overrides fights Tailwind; keep one theme.
-- **No dead script hooks.** Do not add `@push('scripts')` unless the layout renders `@stack('scripts')`.
+- **TomSelect conflict is known.** Global Bootstrap 5 CSS plus `!important` overrides fights Tailwind; keep one theme. Active option is green (`#16a34a`).
+- **Alpine flash guard.** `[x-cloak] { display: none !important; }` lives in `resources/css/app.css`; add `x-cloak` to elements that must not flash before Alpine initializes.
+- **No dead script hooks.** Do not add `@push('scripts')` unless the layout renders `@stack('scripts')` (`layouts/app` and `layouts/portal` do).
 
 ## Prohibitions
 
 - No repository pattern.
 - No Livewire/Inertia or another JS framework; stay Blade + Alpine.
-- No API/Sanctum. `routes/api.php` is not registered and uses an uninstalled package; remove it rather than extend it.
+- No API/Sanctum. `routes/api.php` was removed; do not reintroduce it.
 - No new dependencies, models, or top-level folders without approval.
 - No `.env` changes without explicit confirmation.
 - No deleting or weakening tests.
@@ -98,10 +103,10 @@ Verification order: `pint --dirty` → targeted tests → `test --compact` → `
 
 ## Known traps
 
-- `waste-categories.show` route exists but the view is missing → 500.
-- Views reference non-existent attributes: `$customer->code` (use `member_code`), `$entry->description`/`transaction_date`, `$deposit->deposit_code` (use `code`), `$item->weight` (use `weight_kg`). Fix, do not copy.
-- Price lookups in Blade loops (`waste-categories/index`, `waste-categories/edit`, `deposits/create`) and per-item lookups in `DepositService` cause N+1; batch them when touching those paths.
-- `TelescopeServiceProvider` is registered in all environments while Telescope is `require-dev`; `composer install --no-dev` can fail at boot.
+- Views must use `member_code` (not `code`), `weight_kg` (not `weight`), and `code` for deposits (not `deposit_code`).
+- `LedgerEntry` has no `description` or `transaction_date` columns; both are derived accessors on the model.
+- Prices render from eager-loaded `prices`; `getActivePriceOn()` only queries when the relation is not loaded. Do not reintroduce a per-row price lookup in `waste-categories/index`, `deposits/create`, or `DepositService`.
+- `TelescopeServiceProvider` is only registered from `bootstrap/providers.php` when `Laravel\Telescope\TelescopeServiceProvider` exists. Keep the `class_exists()` guard so `--no-dev` installs boot.
 - The portal timeout is measured from `portal_login_time` (not sliding); update docs/tests if you change it.
 - Eager-load `limit(1)` in `with()` is per-parent in Laravel 12; do not replace it with a global limit.
 - `docs/PLAN.md` claims CI exists; `.github/workflows/` does not.
@@ -111,6 +116,7 @@ Verification order: `pint --dirty` → targeted tests → `test --compact` → `
 - Pest 3. Feature tests auto-use `Tests\TestCase` + `RefreshDatabase` via `tests/Pest.php`; DB is in-memory SQLite, session/cache arrays, queue sync.
 - Use factories. `DepositFactory` does not create ledger entries—if a test needs balance, create entries or use `DepositService`.
 - Add tests for behavior changes; run targeted tests first, then the full suite.
+- Concurrency that cannot be proven in one process is tested with real OS processes: `ConcurrentWithdrawalTest` migrates a file-backed SQLite database on a named `sqlite_concurrency` connection and runs `tests/Support/withdraw-worker.php` twice. Point `telescope.storage.database.connection` at that connection or the Telescope migration collides with the in-memory schema.
 - Do not create tinker scripts when tests cover the behavior.
 
 ## Tooling

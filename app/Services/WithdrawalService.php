@@ -21,13 +21,26 @@ class WithdrawalService
      */
     public function createWithdrawal(array $data, User $user): Withdrawal
     {
+        // Retry on "database is locked" so SQLite, which ignores lockForUpdate(),
+        // re-runs the balance check after the competing writer commits.
         return DB::transaction(function () use ($data, $user) {
-            // Load customer with fresh balance
-            $customer = Customer::findOrFail($data['customer_id']);
+            $amount = (float) $data['amount'];
 
-            // Validate balance
-            if ($customer->balance < $data['amount']) {
-                throw new \Exception('Saldo tidak mencukupi untuk penarikan ini.');
+            if ($amount <= 0) {
+                throw new \RuntimeException('Nominal penarikan harus lebih besar dari nol.');
+            }
+
+            // Lock the customer row before reading the balance. On MySQL/MariaDB
+            // this serialises concurrent withdrawals for the same customer, so two
+            // requests cannot both pass the check and overdraw the ledger.
+            // SQLite ignores lockForUpdate(); the transaction retry above covers it.
+            $customer = Customer::query()
+                ->whereKey($data['customer_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (round($customer->balance, 2) < round($amount, 2)) {
+                throw new \RuntimeException('Saldo tidak mencukupi untuk penarikan ini.');
             }
 
             // Create withdrawal, retrying on code collision
@@ -46,7 +59,7 @@ class WithdrawalService
             $withdrawal->load(['customer', 'creator']);
 
             return $withdrawal;
-        });
+        }, 5);
     }
 
     /**

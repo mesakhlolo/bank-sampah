@@ -73,6 +73,9 @@ class CustomerPortalController extends Controller
         // ✅ Login successful - Clear rate limiter
         RateLimiter::clear($key);
 
+        // 🔒 Prevent session fixation before storing the portal identity
+        session()->regenerate();
+
         // 🔒 Store in session with security metadata
         session([
             'portal_customer_id' => $customer->id,
@@ -194,8 +197,9 @@ class CustomerPortalController extends Controller
             'customer_id' => $customerId,
         ]);
 
-        // Clear all session data
-        session()->forget(['portal_customer_id', 'portal_login_time', 'portal_ip']);
+        // Invalidate the portal session and rotate the CSRF token
+        session()->invalidate();
+        session()->regenerateToken();
 
         return redirect()->route('customer-portal.check-code')
             ->with('success', 'Anda telah keluar dari portal nasabah.');

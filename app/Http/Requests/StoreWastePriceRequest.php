@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreWastePriceRequest extends FormRequest
 {
@@ -24,7 +25,12 @@ class StoreWastePriceRequest extends FormRequest
         return [
             'waste_category_id' => 'required|exists:waste_categories,id',
             'price_per_kg' => 'required|numeric|min:0',
-            'effective_from' => 'required|date',
+            'effective_from' => [
+                'required',
+                'date',
+                Rule::unique('waste_prices', 'effective_from')
+                    ->where(fn ($query) => $query->where('waste_category_id', $this->input('waste_category_id'))),
+            ],
         ];
     }
 

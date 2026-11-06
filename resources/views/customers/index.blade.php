@@ -1,141 +1,104 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Data Nasabah') }}
-            </h2>
-            @can('create', App\Models\Customer::class)
-                <a href="{{ route('customers.create') }}"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-sm">
-                    Tambah Nasabah
-                </a>
-            @endcan
-        </div>
+        <x-page-header title="Data Nasabah" description="Kelola data anggota Bank Sampah.">
+            <x-slot name="actions">
+                @can('create', App\Models\Customer::class)
+                    <x-button :href="route('customers.create')" size="sm">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Tambah Nasabah
+                    </x-button>
+                @endcan
+            </x-slot>
+        </x-page-header>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm relative mb-4"
-                    role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
+    <div class="py-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <x-flash />
 
-            <div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <!-- Search Form -->
-                    <form method="GET" action="{{ route('customers.index') }}" class="mb-4">
-                        <div class="flex gap-2">
-                            <input type="text" name="search" value="{{ request('search') }}"
-                                placeholder="Cari nama, kode anggota, atau telepon..."
-                                class="flex-1 rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
-                            <button type="submit"
-                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-sm">
-                                Cari
-                            </button>
-                            @if (request('search'))
-                                <a href="{{ route('customers.index') }}"
-                                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-sm">
-                                    Reset
-                                </a>
-                            @endif
-                        </div>
+            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
+                <div class="border-b border-gray-100 p-4">
+                    <form method="GET" action="{{ route('customers.index') }}" class="flex flex-col gap-2 sm:flex-row">
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Cari nama, kode anggota, atau telepon..."
+                            class="w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500 sm:flex-1">
+                        <x-button type="submit">Cari</x-button>
+                        @if (request('search'))
+                            <x-button :href="route('customers.index')" variant="secondary">Reset</x-button>
+                        @endif
                     </form>
+                </div>
 
-                    <!-- Customers Table -->
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Kode Anggota
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Kode Portal
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Nama
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Telepon
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Tanggal Bergabung
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Saldo
-                                    </th>
-                                    <th
-                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Aksi
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @forelse ($customers as $customer)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{ $customer->member_code }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-xs font-mono text-gray-600">
-                                            {{ $customer->unique_code }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $customer->name }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $customer->phone ?? '-' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $customer->joined_at->format('d M Y') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            Rp {{ number_format($customer->balance, 0, ',', '.') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <div class="flex justify-end gap-2">
-                                                <a href="{{ route('customers.show', $customer) }}"
-                                                    class="text-blue-600 hover:text-blue-900">Detail</a>
-                                                @can('update', $customer)
-                                                    <a href="{{ route('customers.edit', $customer) }}"
-                                                        class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                                @endcan
-                                                @can('delete', $customer)
-                                                    <form action="{{ route('customers.destroy', $customer) }}"
-                                                        method="POST" class="inline"
-                                                        onsubmit="return confirm('Yakin ingin menghapus nasabah ini?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="text-red-600 hover:text-red-900">Hapus</button>
-                                                    </form>
-                                                @endcan
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                                            Tidak ada data nasabah.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                @if ($customers->isEmpty())
+                    <x-empty-state
+                        title="Belum ada nasabah"
+                        description="Tambahkan nasabah pertama untuk mulai mencatat setoran sampah."
+                    >
+                        <x-slot name="action">
+                            @can('create', App\Models\Customer::class)
+                                <x-button :href="route('customers.create')" size="sm">Tambah Nasabah</x-button>
+                            @endcan
+                        </x-slot>
+                    </x-empty-state>
+                @else
+                    <x-table :headers="[
+                        'Kode Anggota',
+                        'Kode Portal',
+                        'Nama',
+                        'Telepon',
+                        'Tanggal Bergabung',
+                        ['label' => 'Saldo', 'align' => 'right'],
+                        ['label' => 'Aksi', 'align' => 'right'],
+                    ]">
+                        @foreach ($customers as $customer)
+                            <tr class="hover:bg-gray-50">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                                    {{ $customer->member_code }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-xs text-gray-500">
+                                    {{ $customer->unique_code }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+                                    {{ $customer->name }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                    {{ $customer->phone ?? '-' }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                    {{ $customer->joined_at->format('d M Y') }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-gray-900">
+                                    Rp {{ number_format($customer->balance, 0, ',', '.') }}
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium">
+                                    <div class="flex justify-end gap-3">
+                                        <a href="{{ route('customers.show', $customer) }}"
+                                            class="text-green-700 hover:text-green-900">Detail</a>
+                                        @can('update', $customer)
+                                            <a href="{{ route('customers.edit', $customer) }}"
+                                                class="text-green-700 hover:text-green-900">Edit</a>
+                                        @endcan
+                                        @can('delete', $customer)
+                                            <form action="{{ route('customers.destroy', $customer) }}"
+                                                method="POST" class="inline"
+                                                onsubmit="return confirm('Yakin ingin menghapus nasabah ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:text-red-800">Hapus</button>
+                                            </form>
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </x-table>
 
-                    <!-- Pagination -->
-                    <div class="mt-4">
+                    <div class="border-t border-gray-100 px-4 py-3">
                         {{ $customers->links() }}
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>

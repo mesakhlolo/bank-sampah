@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\WasteCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateWasteCategoryRequest extends FormRequest
 {
@@ -21,11 +23,23 @@ class UpdateWasteCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $category = $this->route('waste_category');
+        $categoryId = $category instanceof WasteCategory ? $category->getKey() : $category;
+
+        $rules = [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
+            'price_per_kg' => 'nullable|numeric|min:0',
+            'effective_from' => ['nullable', 'date', 'required_with:price_per_kg'],
         ];
+
+        if ($this->filled('price_per_kg')) {
+            $rules['effective_from'][] = Rule::unique('waste_prices', 'effective_from')
+                ->where(fn ($query) => $query->where('waste_category_id', $categoryId));
+        }
+
+        return $rules;
     }
 
     /**
@@ -37,6 +51,8 @@ class UpdateWasteCategoryRequest extends FormRequest
             'name' => 'nama kategori',
             'description' => 'deskripsi',
             'is_active' => 'status aktif',
+            'price_per_kg' => 'harga per kg',
+            'effective_from' => 'berlaku dari',
         ];
     }
 }
