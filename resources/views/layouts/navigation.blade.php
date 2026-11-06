@@ -1,18 +1,16 @@
-<nav x-data="{ open: false }" class="border-b border-gray-100 bg-white">
+<nav x-data="{ open: false }" class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
     <!-- Primary Navigation Menu -->
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 justify-between">
-            <div class="flex">
+        <div class="flex h-16 items-center justify-between gap-4">
+            <div class="flex items-center gap-6">
                 <!-- Logo -->
-                <div class="flex shrink-0 items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                        <x-application-logo class="block h-9 w-9 text-green-600" />
-                        <span class="hidden text-lg font-bold text-gray-900 sm:block">Bank Sampah</span>
-                    </a>
-                </div>
+                <a href="{{ route('dashboard') }}" class="flex shrink-0 items-center gap-2.5">
+                    <x-application-logo class="h-9 w-9 text-green-600" />
+                    <span class="hidden text-base font-semibold tracking-tight text-slate-900 sm:block">Bank Sampah</span>
+                </a>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden items-center gap-1 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
@@ -37,27 +35,28 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center rounded-lg border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-hidden">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
+                        <button class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-600 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-xs font-semibold text-white">
+                                {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                            </span>
+                            <span>{{ Auth::user()->name }}</span>
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
+                        <div class="border-b border-slate-100 px-4 py-3">
+                            <p class="truncate text-sm font-medium text-slate-900">{{ Auth::user()->name }}</p>
+                            <p class="truncate text-xs text-slate-500">{{ Auth::user()->email }}</p>
+                        </div>
+
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Profil') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -67,7 +66,7 @@
                             <x-dropdown-link :href="route('logout')"
                                 onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Keluar') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -75,9 +74,9 @@
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
+            <div class="flex items-center sm:hidden">
                 <button @click="open = ! open"
-                    class="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-hidden">
+                    class="inline-flex items-center justify-center rounded-lg p-2 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex"
                             stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -91,8 +90,8 @@
     </div>
 
     <!-- Responsive Navigation Menu -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
-        <div class="space-y-1 pb-3 pt-2">
+    <div :class="{ 'block': open, 'hidden': !open }" class="hidden border-t border-slate-200 sm:hidden">
+        <div class="space-y-1 px-4 pb-3 pt-2">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
@@ -116,15 +115,20 @@
         </div>
 
         <!-- Responsive Settings Options -->
-        <div class="border-t border-gray-200 pb-1 pt-4">
-            <div class="px-4">
-                <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="text-sm font-medium text-gray-500">{{ Auth::user()->email }}</div>
+        <div class="border-t border-slate-200 px-4 pb-4 pt-4">
+            <div class="flex items-center gap-3">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-green-600 text-sm font-semibold text-white">
+                    {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
+                </span>
+                <div class="min-w-0">
+                    <div class="truncate text-sm font-medium text-slate-900">{{ Auth::user()->name }}</div>
+                    <div class="truncate text-xs text-slate-500">{{ Auth::user()->email }}</div>
+                </div>
             </div>
 
-            <div class="mt-3 space-y-1">
+            <div class="mt-4 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    {{ __('Profil') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
@@ -134,7 +138,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                         onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('Keluar') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

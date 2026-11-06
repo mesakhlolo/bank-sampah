@@ -9,7 +9,9 @@
 
     <div class="py-8">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+            <x-flash />
+
+            <x-card>
                 <form method="POST" action="{{ route('waste-categories.store') }}" class="space-y-5">
                     @csrf
 
@@ -24,56 +26,51 @@
                     <!-- Description -->
                     <div>
                         <x-input-label for="description" value="Deskripsi" />
-                        <textarea name="description" id="description" rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">{{ old('description') }}</textarea>
+                        <x-textarea name="description" id="description" class="mt-1">{{ old('description') }}</x-textarea>
                         <x-input-error class="mt-1" :messages="$errors->get('description')" />
                     </div>
 
                     <!-- Is Active -->
                     <div>
-                        <label class="flex items-center">
+                        <label class="flex items-center gap-2">
                             <input type="hidden" name="is_active" value="0">
-                            <input type="checkbox" name="is_active" value="1"
-                                {{ old('is_active', true) ? 'checked' : '' }}
-                                class="rounded-sm border-gray-300 text-green-600 shadow-xs focus:border-green-500 focus:ring-green-500">
-                            <span class="ml-2 text-sm text-gray-700">Kategori Aktif</span>
+                            <x-checkbox name="is_active" value="1" :checked="old('is_active', true)" />
+                            <span class="text-sm text-slate-700">Kategori Aktif</span>
                         </label>
                     </div>
 
                     <!-- Harga Awal -->
-                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <h3 class="mb-3 text-sm font-semibold text-gray-700">Harga Awal</h3>
+                    <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                        <h3 class="mb-3 text-sm font-semibold text-slate-700">Harga Awal</h3>
 
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <x-input-label for="price_per_kg" value="Harga per Kg (Rp) *" />
-                                <input type="number" name="price_per_kg" id="price_per_kg"
-                                    value="{{ old('price_per_kg') }}" step="0.01" min="0" required
-                                    placeholder="Contoh: 3000"
-                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                                <x-text-input id="price_per_kg" name="price_per_kg" type="number"
+                                    class="mt-1 block w-full" :value="old('price_per_kg')" step="0.01" min="0" required
+                                    placeholder="Contoh: 3000" />
                                 <x-input-error class="mt-1" :messages="$errors->get('price_per_kg')" />
                             </div>
 
                             <div>
                                 <x-input-label for="effective_from" value="Berlaku Dari *" />
-                                <input type="date" name="effective_from" id="effective_from"
-                                    value="{{ old('effective_from', date('Y-m-d')) }}" required
-                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                                <x-text-input id="effective_from" name="effective_from" type="date"
+                                    class="mt-1 block w-full" :value="old('effective_from', date('Y-m-d'))" required />
                                 <x-input-error class="mt-1" :messages="$errors->get('effective_from')" />
                             </div>
                         </div>
 
-                        <p class="mt-2 text-xs text-gray-500">
+                        <p class="mt-2 text-xs text-slate-500">
                             Harga ini akan menjadi harga awal untuk kategori sampah yang baru dibuat.
                         </p>
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+                    <div class="flex items-center justify-end gap-3 border-t border-slate-100 pt-5">
                         <x-button :href="route('waste-categories.index')" variant="secondary">Batal</x-button>
                         <x-button type="submit">Simpan</x-button>
                     </div>
                 </form>
-            </div>
+            </x-card>
         </div>
     </div>
 </x-app-layout>

@@ -11,16 +11,14 @@
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <x-flash />
 
-            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+            <x-card>
                 <form method="POST" action="{{ route('withdrawals.store') }}" x-data="withdrawalForm()" class="space-y-5">
                     @csrf
 
                     <!-- Customer Selection -->
                     <div>
                         <x-input-label for="customer_id" value="Pilih Nasabah *" />
-                        <select name="customer_id" id="customer_id" x-model="customerId"
-                            @change="loadCustomerBalance()" required
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                        <x-select name="customer_id" id="customer_id" x-model="customerId" @change="loadCustomerBalance()" required class="mt-1">
                             <option value="">-- Pilih Nasabah --</option>
                             @foreach ($customers as $customer)
                                 <option value="{{ $customer['id'] }}" data-balance="{{ $customer['balance'] }}"
@@ -29,24 +27,23 @@
                                     {{ number_format($customer['balance'], 0, ',', '.') }})
                                 </option>
                             @endforeach
-                        </select>
+                        </x-select>
                         <x-input-error class="mt-1" :messages="$errors->get('customer_id')" />
                     </div>
 
                     <!-- Current Balance Display -->
                     <div class="rounded-lg border border-green-200 bg-green-50 p-4" x-show="balance !== null" x-cloak>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-gray-700">Saldo Tersedia:</span>
-                            <span class="text-2xl font-bold text-green-700" x-text="formatCurrency(balance)"></span>
+                            <span class="text-sm font-medium text-slate-700">Saldo Tersedia</span>
+                            <span class="text-2xl font-semibold tracking-tight text-green-700" x-text="formatCurrency(balance)"></span>
                         </div>
                     </div>
 
                     <!-- Transaction Date -->
                     <div>
                         <x-input-label for="transaction_date" value="Tanggal Penarikan *" />
-                        <input type="date" name="transaction_date" id="transaction_date"
-                            value="{{ old('transaction_date', date('Y-m-d')) }}" required
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                        <x-text-input id="transaction_date" name="transaction_date" type="date" class="mt-1 block w-full"
+                            :value="old('transaction_date', date('Y-m-d'))" required />
                         <x-input-error class="mt-1" :messages="$errors->get('transaction_date')" />
                     </div>
 
@@ -54,11 +51,11 @@
                     <div>
                         <x-input-label for="amount" value="Nominal Penarikan *" />
                         <div class="relative mt-1">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">Rp</span>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">Rp</span>
                             <input type="number" name="amount" id="amount" x-model.number="amount"
                                 min="1" step="1" value="{{ old('amount') }}"
                                 placeholder="Masukkan nominal" required
-                                class="block w-full rounded-lg border-gray-300 pl-12 shadow-xs focus:border-green-500 focus:ring-green-500">
+                                class="block w-full rounded-lg border-slate-300 pl-12 shadow-xs focus:border-green-500 focus:ring-green-500">
                         </div>
                         <x-input-error class="mt-1" :messages="$errors->get('amount')" />
 
@@ -71,8 +68,7 @@
                     <!-- Note -->
                     <div>
                         <x-input-label for="note" value="Catatan (Opsional)" />
-                        <textarea name="note" id="note" rows="3" placeholder="Tambahkan catatan jika diperlukan"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">{{ old('note') }}</textarea>
+                        <x-textarea name="note" id="note" class="mt-1" placeholder="Tambahkan catatan jika diperlukan">{{ old('note') }}</x-textarea>
                         <x-input-error class="mt-1" :messages="$errors->get('note')" />
                     </div>
 
@@ -83,12 +79,12 @@
                     @endif
 
                     <!-- Actions -->
-                    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+                    <div class="flex items-center justify-end gap-3 border-t border-slate-100 pt-5">
                         <x-button :href="route('withdrawals.index')" variant="secondary">Batal</x-button>
                         <x-button type="submit" variant="danger">Simpan Penarikan</x-button>
                     </div>
                 </form>
-            </div>
+            </x-card>
         </div>
     </div>
 

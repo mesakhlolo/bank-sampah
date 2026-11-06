@@ -7,10 +7,10 @@
 
 @php
     $variants = [
-        'primary' => 'border-transparent bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 active:bg-green-800',
-        'secondary' => 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-green-500',
-        'danger' => 'border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:bg-red-800',
-        'ghost' => 'border-transparent bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-green-500',
+        'primary' => 'border-transparent bg-green-600 text-white shadow-xs hover:bg-green-700 active:bg-green-800 focus-visible:ring-green-600',
+        'secondary' => 'border-slate-300 bg-white text-slate-700 shadow-xs hover:bg-slate-50 hover:text-slate-900 focus-visible:ring-slate-400',
+        'danger' => 'border-transparent bg-red-600 text-white shadow-xs hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-600',
+        'ghost' => 'border-transparent bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400',
     ];
 
     $sizes = [
@@ -18,7 +18,7 @@
         'md' => 'px-4 py-2 text-sm',
     ];
 
-    $classes = 'inline-flex items-center justify-center gap-2 rounded-lg border font-semibold transition ease-in-out duration-150 focus:outline-hidden focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 '
+    $classes = 'inline-flex items-center justify-center gap-2 rounded-lg border font-medium transition duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 '
         .($variants[$variant] ?? $variants['primary']).' '
         .($sizes[$size] ?? $sizes['md']);
 @endphp

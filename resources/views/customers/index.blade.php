@@ -18,12 +18,12 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <x-flash />
 
-            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
-                <div class="border-b border-gray-100 p-4">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-xs">
+                <div class="border-b border-slate-100 p-4">
                     <form method="GET" action="{{ route('customers.index') }}" class="flex flex-col gap-2 sm:flex-row">
                         <input type="text" name="search" value="{{ request('search') }}"
                             placeholder="Cari nama, kode anggota, atau telepon..."
-                            class="w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500 sm:flex-1">
+                            class="w-full rounded-lg border-slate-300 shadow-xs focus:border-green-500 focus:ring-green-500 sm:flex-1">
                         <x-button type="submit">Cari</x-button>
                         @if (request('search'))
                             <x-button :href="route('customers.index')" variant="secondary">Reset</x-button>
@@ -53,23 +53,23 @@
                         ['label' => 'Aksi', 'align' => 'right'],
                     ]">
                         @foreach ($customers as $customer)
-                            <tr class="hover:bg-gray-50">
-                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                            <tr class="hover:bg-slate-50">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-slate-900">
                                     {{ $customer->member_code }}
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 font-mono text-xs text-gray-500">
+                                <td class="whitespace-nowrap px-4 py-3 font-mono text-xs text-slate-500">
                                     {{ $customer->unique_code }}
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-900">
                                     {{ $customer->name }}
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-500">
                                     {{ $customer->phone ?? '-' }}
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-500">
                                     {{ $customer->joined_at->format('d M Y') }}
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-gray-900">
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-slate-900">
                                     Rp {{ number_format($customer->balance, 0, ',', '.') }}
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-medium">
@@ -95,7 +95,7 @@
                         @endforeach
                     </x-table>
 
-                    <div class="border-t border-gray-100 px-4 py-3">
+                    <div class="border-t border-slate-100 px-4 py-3">
                         {{ $customers->links() }}
                     </div>
                 @endif

@@ -18,7 +18,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <x-flash />
 
-            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-xs">
                 @if ($categories->isEmpty())
                     <x-empty-state
                         title="Belum ada kategori sampah"
@@ -51,22 +51,22 @@
                                 );
                             @endphp
 
-                            <tr class="hover:bg-gray-50">
-                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">
+                            <tr class="hover:bg-slate-50">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-slate-900">
                                     {{ $category->name }}
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-600">
+                                <td class="px-4 py-3 text-sm text-slate-600">
                                     {{ $category->description ?: '-' }}
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-gray-900">
+                                <td class="whitespace-nowrap px-4 py-3 text-right text-sm font-semibold text-slate-900">
                                     @if ($activePrice)
                                         Rp {{ number_format($activePrice->price_per_kg, 0, ',', '.') }}
-                                        <span class="text-xs font-normal text-gray-500">/kg</span>
+                                        <span class="text-xs font-normal text-slate-500">/kg</span>
                                     @else
-                                        <span class="font-normal text-gray-400">Belum ada harga</span>
+                                        <span class="font-normal text-slate-400">Belum ada harga</span>
                                     @endif
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                                <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-500">
                                     {{ $activePrice ? $activePrice->effective_from->format('d M Y') : '-' }}
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-3 text-center">
@@ -100,11 +100,11 @@
                                         <div class="grid grid-cols-1 gap-2 md:grid-cols-3">
                                             @foreach ($futurePrices as $price)
                                                 <div class="rounded-lg border border-green-200 bg-white px-3 py-2">
-                                                    <p class="text-sm font-medium text-gray-900">
+                                                    <p class="text-sm font-medium text-slate-900">
                                                         Rp {{ number_format($price->price_per_kg, 0, ',', '.') }}
-                                                        <span class="text-xs text-gray-500">/kg</span>
+                                                        <span class="text-xs text-slate-500">/kg</span>
                                                     </p>
-                                                    <p class="text-xs text-gray-600">
+                                                    <p class="text-xs text-slate-600">
                                                         Mulai {{ $price->effective_from->format('d M Y') }}
                                                     </p>
                                                 </div>
@@ -116,7 +116,7 @@
                         @endforeach
                     </x-table>
 
-                    <div class="border-t border-gray-100 px-4 py-3">
+                    <div class="border-t border-slate-100 px-4 py-3">
                         {{ $categories->links() }}
                     </div>
                 @endif

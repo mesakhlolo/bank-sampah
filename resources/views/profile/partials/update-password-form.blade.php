@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-base font-semibold text-slate-900">
             Perbarui Kata Sandi
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm text-slate-600">
             Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman.
         </p>
     </header>
@@ -40,7 +40,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
+                    class="text-sm text-slate-600"
                 >Tersimpan.</p>
             @endif
         </div>

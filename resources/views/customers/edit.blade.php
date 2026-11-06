@@ -9,7 +9,9 @@
 
     <div class="py-8">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+            <x-flash />
+
+            <x-card>
                 <form method="POST" action="{{ route('customers.update', $customer) }}" class="space-y-5">
                     @csrf
                     @method('PUT')
@@ -41,26 +43,24 @@
                     <!-- Address -->
                     <div>
                         <x-input-label for="address" value="Alamat" />
-                        <textarea name="address" id="address" rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">{{ old('address', $customer->address) }}</textarea>
+                        <x-textarea name="address" id="address" class="mt-1">{{ old('address', $customer->address) }}</x-textarea>
                         <x-input-error class="mt-1" :messages="$errors->get('address')" />
                     </div>
 
                     <!-- Joined At -->
                     <div>
                         <x-input-label for="joined_at" value="Tanggal Bergabung *" />
-                        <input type="date" name="joined_at" id="joined_at"
-                            value="{{ old('joined_at', $customer->joined_at->format('Y-m-d')) }}" required
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                        <x-text-input id="joined_at" name="joined_at" type="date" class="mt-1 block w-full"
+                            :value="old('joined_at', $customer->joined_at->format('Y-m-d'))" required />
                         <x-input-error class="mt-1" :messages="$errors->get('joined_at')" />
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+                    <div class="flex items-center justify-end gap-3 border-t border-slate-100 pt-5">
                         <x-button :href="route('customers.index')" variant="secondary">Batal</x-button>
                         <x-button type="submit">Simpan Perubahan</x-button>
                     </div>
                 </form>
-            </div>
+            </x-card>
         </div>
     </div>
 </x-app-layout>

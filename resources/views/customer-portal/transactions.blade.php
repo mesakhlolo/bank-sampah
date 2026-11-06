@@ -6,32 +6,29 @@
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Riwayat Transaksi</h1>
-        <p class="mt-1 text-sm text-gray-600">Lihat semua setoran dan penarikan Anda.</p>
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Riwayat Transaksi</h1>
+        <p class="mt-1 text-sm text-slate-500">Lihat semua setoran dan penarikan Anda.</p>
     </div>
 
     <!-- Filter Tabs -->
-    <div class="mb-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xs">
-        <div class="border-b border-gray-200">
-            <nav class="flex -mb-px">
-                <a href="{{ route('customer-portal.transactions', ['type' => 'all']) }}"
-                   class="{{ $type === 'all' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} flex-1 whitespace-nowrap border-b-2 px-1 py-3 text-center text-xs font-medium transition">
-                    Semua Transaksi
-                </a>
-                <a href="{{ route('customer-portal.transactions', ['type' => 'deposits']) }}"
-                   class="{{ $type === 'deposits' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} flex-1 whitespace-nowrap border-b-2 px-1 py-3 text-center text-xs font-medium transition">
-                    Setoran
-                </a>
-                <a href="{{ route('customer-portal.transactions', ['type' => 'withdrawals']) }}"
-                   class="{{ $type === 'withdrawals' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }} flex-1 whitespace-nowrap border-b-2 px-1 py-3 text-center text-xs font-medium transition">
-                    Penarikan
-                </a>
-            </nav>
-        </div>
+    <div class="mb-6 inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-xs">
+        @php
+            $tabs = [
+                'all' => 'Semua',
+                'deposits' => 'Setoran',
+                'withdrawals' => 'Penarikan',
+            ];
+        @endphp
+        @foreach ($tabs as $value => $label)
+            <a href="{{ route('customer-portal.transactions', ['type' => $value]) }}"
+               class="{{ $type === $value ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900' }} rounded-md px-4 py-1.5 text-sm font-medium transition">
+                {{ $label }}
+            </a>
+        @endforeach
     </div>
 
     <!-- Transactions Table -->
-    <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xs">
+    <x-card :padding="false">
         <x-table :headers="[
             'Tanggal',
             'Jenis',
@@ -40,61 +37,48 @@
             ['label' => 'Kredit', 'align' => 'right'],
             ['label' => 'Saldo', 'align' => 'right'],
         ]">
-            @forelse($ledgerEntries as $entry)
-                <tr class="transition hover:bg-gray-50">
-                    <!-- Date -->
-                    <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-900">
+            @forelse ($ledgerEntries as $entry)
+                <tr class="hover:bg-slate-50">
+                    <td class="whitespace-nowrap px-4 py-3 text-xs text-slate-900">
                         <div>{{ $entry->created_at->format('d M Y') }}</div>
-                        <div class="text-xs text-gray-500">{{ $entry->created_at->format('H:i') }}</div>
+                        <div class="text-slate-500">{{ $entry->created_at->format('H:i') }}</div>
                     </td>
 
-                    <!-- Type -->
                     <td class="whitespace-nowrap px-4 py-3">
-                        @if($entry->direction === 'KREDIT')
+                        @if ($entry->direction === 'KREDIT')
                             <x-badge variant="green">Setoran</x-badge>
                         @else
                             <x-badge variant="red">Penarikan</x-badge>
                         @endif
                     </td>
 
-                    <!-- Description -->
-                    <td class="px-4 py-3 text-xs text-gray-900">
+                    <td class="px-4 py-3 text-xs text-slate-900">
                         <div>{{ $entry->description }}</div>
-                        @if($entry->ref_type === 'App\Models\Deposit' && $entry->referenceable)
+                        @if ($entry->ref_type === 'App\Models\Deposit' && $entry->referenceable)
                             <a href="{{ route('customer-portal.deposit-detail', $entry->referenceable->id) }}"
-                               class="mt-0.5 inline-flex items-center text-xs text-green-700 hover:text-green-900">
-                                Lihat Detail
-                                <svg class="ml-0.5 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
+                               class="mt-0.5 inline-block text-xs text-slate-500 hover:text-green-700">
+                                Lihat detail
                             </a>
                         @endif
                     </td>
 
-                    <!-- Debit (Expense - Penarikan) -->
                     <td class="whitespace-nowrap px-4 py-3 text-right text-xs">
-                        @if($entry->direction === 'DEBIT')
-                            <span class="font-semibold text-red-600">
-                                - Rp {{ number_format($entry->amount, 0, ',', '.') }}
-                            </span>
+                        @if ($entry->direction === 'DEBIT')
+                            <span class="font-semibold text-red-600">- Rp {{ number_format($entry->amount, 0, ',', '.') }}</span>
                         @else
-                            <span class="text-gray-400">-</span>
+                            <span class="text-slate-400">-</span>
                         @endif
                     </td>
 
-                    <!-- Kredit (Income - Setoran) -->
                     <td class="whitespace-nowrap px-4 py-3 text-right text-xs">
-                        @if($entry->direction === 'KREDIT')
-                            <span class="font-semibold text-green-600">
-                                + Rp {{ number_format($entry->amount, 0, ',', '.') }}
-                            </span>
+                        @if ($entry->direction === 'KREDIT')
+                            <span class="font-semibold text-green-700">+ Rp {{ number_format($entry->amount, 0, ',', '.') }}</span>
                         @else
-                            <span class="text-gray-400">-</span>
+                            <span class="text-slate-400">-</span>
                         @endif
                     </td>
 
-                    <!-- Running Balance -->
-                    <td class="whitespace-nowrap px-4 py-3 text-right text-xs font-bold text-gray-900">
+                    <td class="whitespace-nowrap px-4 py-3 text-right text-xs font-semibold text-slate-900">
                         Rp {{ number_format($entry->running_balance, 0, ',', '.') }}
                     </td>
                 </tr>
@@ -107,34 +91,29 @@
             @endforelse
         </x-table>
 
-        <!-- Pagination -->
-        @if($ledgerEntries->hasPages())
-        <div class="border-t border-gray-200 bg-gray-50 px-4 py-3">
-            {{ $ledgerEntries->links() }}
-        </div>
+        @if ($ledgerEntries->hasPages())
+            <div class="border-t border-slate-100 px-4 py-3">
+                {{ $ledgerEntries->links() }}
+            </div>
         @endif
-    </div>
+    </x-card>
 
-    <!-- Summary Card -->
-    <div class="mt-8 rounded-xl border border-green-200 bg-green-50 p-6">
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div class="text-center">
-                <p class="mb-1 text-sm text-gray-600">Saldo Saat Ini</p>
-                <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($customer->balance, 0, ',', '.') }}</p>
+    <!-- Summary -->
+    <x-card class="mt-6">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <div>
+                <p class="text-sm text-slate-500">Saldo saat ini</p>
+                <p class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Rp {{ number_format($customer->balance, 0, ',', '.') }}</p>
             </div>
-            <div class="text-center">
-                <p class="mb-1 text-sm text-gray-600">Total Setoran</p>
-                <p class="text-2xl font-bold text-green-600">
-                    {{ $customer->deposits()->count() }} transaksi
-                </p>
+            <div>
+                <p class="text-sm text-slate-500">Total setoran</p>
+                <p class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{{ $customer->deposits()->count() }} transaksi</p>
             </div>
-            <div class="text-center">
-                <p class="mb-1 text-sm text-gray-600">Total Penarikan</p>
-                <p class="text-2xl font-bold text-red-600">
-                    {{ $customer->withdrawals()->count() }} transaksi
-                </p>
+            <div>
+                <p class="text-sm text-slate-500">Total penarikan</p>
+                <p class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{{ $customer->withdrawals()->count() }} transaksi</p>
             </div>
         </div>
-    </div>
+    </x-card>
 </div>
 @endsection

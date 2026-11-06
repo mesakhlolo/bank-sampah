@@ -46,7 +46,7 @@ $maxWidth = [
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
+    class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
     style="display: {{ $show ? 'block' : 'none' }};"
 >
     <div
@@ -60,18 +60,18 @@ $maxWidth = [
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
     </div>
 
     <div
         x-show="show"
-        class="mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto"
+        class="mb-6 transform overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-900/5 transition-all sm:mx-auto sm:w-full {{ $maxWidth }}"
         x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+        x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+        x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
         x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
+        x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
     >
         {{ $slot }}
     </div>

@@ -9,7 +9,9 @@
 
     <div class="py-8">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
+            <x-flash />
+
+            <x-card>
                 <form method="POST" action="{{ route('customers.store') }}" class="space-y-5">
                     @csrf
 
@@ -18,10 +20,10 @@
 
                     <div>
                         <x-input-label value="Kode Anggota (Otomatis)" />
-                        <div class="mt-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+                        <div class="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
                             Akan di-generate otomatis dengan format CUST-xxxx
                         </div>
-                        <p class="mt-1 text-xs text-gray-500">Kode akan dibuat otomatis saat data disimpan.</p>
+                        <p class="mt-1 text-xs text-slate-500">Kode akan dibuat otomatis saat data disimpan.</p>
                     </div>
 
                     <!-- Name -->
@@ -43,26 +45,24 @@
                     <!-- Address -->
                     <div>
                         <x-input-label for="address" value="Alamat" />
-                        <textarea name="address" id="address" rows="3"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">{{ old('address') }}</textarea>
+                        <x-textarea name="address" id="address" class="mt-1">{{ old('address') }}</x-textarea>
                         <x-input-error class="mt-1" :messages="$errors->get('address')" />
                     </div>
 
                     <!-- Joined At -->
                     <div>
                         <x-input-label for="joined_at" value="Tanggal Bergabung *" />
-                        <input type="date" name="joined_at" id="joined_at"
-                            value="{{ old('joined_at', date('Y-m-d')) }}" required
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                        <x-text-input id="joined_at" name="joined_at" type="date" class="mt-1 block w-full"
+                            :value="old('joined_at', date('Y-m-d'))" required />
                         <x-input-error class="mt-1" :messages="$errors->get('joined_at')" />
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+                    <div class="flex items-center justify-end gap-3 border-t border-slate-100 pt-5">
                         <x-button :href="route('customers.index')" variant="secondary">Batal</x-button>
                         <x-button type="submit">Simpan</x-button>
                     </div>
                 </form>
-            </div>
+            </x-card>
         </div>
     </div>
 </x-app-layout>

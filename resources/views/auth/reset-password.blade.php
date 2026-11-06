@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <h1 class="mb-6 text-lg font-semibold text-gray-900">Atur Ulang Kata Sandi</h1>
+    <h1 class="mb-6 text-lg font-semibold text-slate-900">Atur Ulang Kata Sandi</h1>
 
     <form method="POST" action="{{ route('password.store') }}">
         @csrf

@@ -9,105 +9,91 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-xl border border-gray-200 bg-white p-8 shadow-xs">
-                <!-- Header -->
-                <div class="mb-8 text-center">
-                    <h1 class="text-2xl font-bold text-gray-900">Bank Sampah</h1>
-                    <p class="mt-1 text-gray-600">Struk Transaksi Setoran</p>
-                    <div class="mt-4 font-mono text-xl font-bold text-green-700">{{ $deposit->code }}</div>
-                </div>
+        <div class="mx-auto max-w-4xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <x-flash />
 
-                <hr class="my-6 border-gray-200">
+            <x-card :padding="false">
+                <!-- Header -->
+                <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
+                    <div>
+                        <h1 class="text-base font-semibold text-slate-900">Bukti Setoran</h1>
+                        <p class="mt-0.5 text-sm text-slate-500">Bank Sampah Bersih Sejahtera</p>
+                    </div>
+                    <x-badge variant="green">{{ ucfirst($deposit->status) }}</x-badge>
+                </div>
 
                 <!-- Transaction Info -->
-                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div class="grid grid-cols-1 gap-5 border-b border-slate-200 bg-slate-50 px-6 py-5 sm:grid-cols-2">
                     <div>
-                        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Informasi Nasabah</h3>
-                        <div class="space-y-2">
-                            <div class="flex">
-                                <span class="w-32 text-sm text-gray-600">Kode Nasabah:</span>
-                                <span class="font-medium">{{ $deposit->customer->member_code }}</span>
-                            </div>
-                            <div class="flex">
-                                <span class="w-32 text-sm text-gray-600">Nama:</span>
-                                <span class="font-medium">{{ $deposit->customer->name }}</span>
-                            </div>
-                            <div class="flex">
-                                <span class="w-32 text-sm text-gray-600">Telepon:</span>
-                                <span class="font-medium">{{ $deposit->customer->phone ?? '-' }}</span>
-                            </div>
-                        </div>
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Kode Setoran</p>
+                        <p class="mt-1 font-mono text-sm font-medium text-slate-900">{{ $deposit->code }}</p>
                     </div>
-
                     <div>
-                        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Informasi Transaksi</h3>
-                        <div class="space-y-2">
-                            <div class="flex">
-                                <span class="w-32 text-sm text-gray-600">Tanggal:</span>
-                                <span class="font-medium">{{ $deposit->transaction_date->format('d F Y') }}</span>
-                            </div>
-                            <div class="flex">
-                                <span class="w-32 text-sm text-gray-600">Operator:</span>
-                                <span class="font-medium">{{ $deposit->creator->name }}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="w-32 text-sm text-gray-600">Status:</span>
-                                <x-badge variant="green">{{ strtoupper($deposit->status) }}</x-badge>
-                            </div>
-                        </div>
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Tanggal</p>
+                        <p class="mt-1 text-sm font-medium text-slate-900">
+                            {{ $deposit->transaction_date->format('d F Y') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Nasabah</p>
+                        <p class="mt-1 text-sm font-medium text-slate-900">{{ $deposit->customer->name }}</p>
+                        <p class="text-xs text-slate-500">{{ $deposit->customer->member_code }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Diterima oleh</p>
+                        <p class="mt-1 text-sm font-medium text-slate-900">{{ $deposit->creator->name }}</p>
+                        <p class="text-xs text-slate-500">{{ $deposit->creator->role === 'admin' ? 'Admin' : 'Operator' }}</p>
                     </div>
                 </div>
 
-                <hr class="my-6 border-gray-200">
-
                 <!-- Deposit Items -->
-                <div class="mb-6">
-                    <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Rincian Setoran</h3>
-                    <x-table :headers="[
-                        'Kategori Sampah',
-                        ['label' => 'Berat (kg)', 'align' => 'right'],
-                        ['label' => 'Harga/kg', 'align' => 'right'],
-                        ['label' => 'Subtotal', 'align' => 'right'],
-                    ]">
-                        @foreach ($deposit->items as $item)
-                            <tr>
-                                <td class="px-4 py-3 text-sm">{{ $item->wasteCategory->name }}</td>
-                                <td class="px-4 py-3 text-right text-sm">
-                                    {{ number_format($item->weight_kg, 2, ',', '.') }}</td>
-                                <td class="px-4 py-3 text-right text-sm">Rp
-                                    {{ number_format($item->price_per_kg, 0, ',', '.') }}</td>
-                                <td class="px-4 py-3 text-right text-sm font-medium">Rp
-                                    {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                            </tr>
-                        @endforeach
+                <div class="px-6 py-5">
+                    <h2 class="text-sm font-semibold text-slate-900">Rincian setoran</h2>
 
-                        <x-slot name="footer">
-                            <tr>
-                                <td colspan="3" class="px-4 py-4 text-right text-sm font-bold text-gray-700">Total Setoran:</td>
-                                <td class="px-4 py-4 text-right text-lg font-bold text-green-700">
-                                    Rp {{ number_format($deposit->total_amount, 0, ',', '.') }}
-                                </td>
-                            </tr>
-                        </x-slot>
-                    </x-table>
+                    <div class="mt-3">
+                        <x-table :headers="[
+                            'Kategori Sampah',
+                            ['label' => 'Berat (kg)', 'align' => 'right'],
+                            ['label' => 'Harga/kg', 'align' => 'right'],
+                            ['label' => 'Subtotal', 'align' => 'right'],
+                        ]">
+                            @foreach ($deposit->items as $item)
+                                <tr>
+                                    <td class="px-4 py-3 text-sm text-slate-900">{{ $item->wasteCategory->name }}</td>
+                                    <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                        {{ number_format($item->weight_kg, 2, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-right text-sm text-slate-600">Rp
+                                        {{ number_format($item->price_per_kg, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-right text-sm font-medium text-slate-900">Rp
+                                        {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+
+                            <x-slot name="footer">
+                                <tr>
+                                    <td colspan="3" class="px-4 py-3 text-right text-sm font-medium text-slate-600">
+                                        Total Setoran</td>
+                                    <td class="px-4 py-3 text-right text-base font-semibold text-slate-900">
+                                        Rp {{ number_format($deposit->total_amount, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            </x-slot>
+                        </x-table>
+                    </div>
                 </div>
 
                 @if ($deposit->notes)
-                    <div class="mb-6">
-                        <h3 class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Catatan</h3>
-                        <p class="rounded-lg bg-gray-50 p-3 text-sm text-gray-700">{{ $deposit->notes }}</p>
+                    <div class="border-t border-slate-200 px-6 py-5">
+                        <h2 class="text-sm font-semibold text-slate-900">Catatan</h2>
+                        <p class="mt-2 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">{{ $deposit->notes }}</p>
                     </div>
                 @endif
 
-                <hr class="my-6 border-gray-200">
-
                 <!-- Footer -->
-                <div class="text-center text-xs text-gray-500">
+                <div class="border-t border-slate-200 bg-slate-50 px-6 py-4 text-xs text-slate-500">
                     <p>Terima kasih atas kontribusi Anda untuk lingkungan yang lebih bersih.</p>
-                    <p class="mt-2">Dicetak pada: {{ now()->format('d F Y, H:i') }}</p>
+                    <p class="mt-1">Dicetak pada {{ now()->format('d F Y, H:i') }} WIB</p>
                 </div>
-            </div>
+            </x-card>
         </div>
     </div>
 </x-app-layout>

@@ -1,5 +1,4 @@
-/* TomSelect styling */
-@import 'tom-select/dist/css/tom-select.bootstrap5.css' layer(base);
+@import 'tom-select/dist/css/tom-select.default.css' layer(base);
 
 @import 'tailwindcss';
 
@@ -8,49 +7,87 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
 @theme {
-  --font-sans:
-    Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, sans-serif;
+
+    /* Softer, slate-tinted elevation scale for a calmer UI. */
+    --shadow-2xs: 0 1px 1px 0 rgb(15 23 42 / 0.04);
+    --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+    --shadow-sm:
+        0 1px 3px 0 rgb(15 23 42 / 0.08), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+    --shadow-md:
+        0 4px 12px -2px rgb(15 23 42 / 0.1), 0 2px 6px -2px rgb(15 23 42 / 0.05);
+    --shadow-lg:
+        0 12px 24px -6px rgb(15 23 42 / 0.12), 0 4px 8px -4px rgb(15 23 42 / 0.06);
 }
 
 /*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  The default border color changed to `currentcolor` in Tailwind CSS v4.
+  Keep a sensible neutral default so elements without an explicit border
+  color still read as hairlines.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-slate-200, currentcolor);
+    }
+
+    ::selection {
+        background-color: var(--color-green-600, #16a34a);
+        color: #fff;
+    }
 }
 
-/* Fix TomSelect transparent issue */
-.ts-wrapper .ts-control,
-.ts-wrapper .ts-control input {
-    background-color: white !important;
-    color: #1f2937 !important;
+/* TomSelect: one theme, aligned with Tailwind form controls. */
+.ts-wrapper {
+    width: 100%;
+}
+
+.ts-wrapper.single .ts-control,
+.ts-wrapper.multi .ts-control {
+    min-height: 2.625rem;
+    border: 1px solid var(--color-slate-300, #cbd5e1);
+    border-radius: var(--radius-lg, 0.5rem);
+    background-color: #fff;
+    padding: 0.5rem 0.75rem;
+    box-shadow: var(--shadow-2xs);
+    color: var(--color-slate-900, #0f172a);
+}
+
+.ts-wrapper.focus .ts-control {
+    border-color: var(--color-green-500, #22c55e);
+    box-shadow: 0 0 0 1px var(--color-green-500, #22c55e);
+    outline: none;
+}
+
+.ts-wrapper .ts-control > input {
+    color: var(--color-slate-900, #0f172a);
+}
+
+.ts-wrapper .ts-control > input::placeholder {
+    color: var(--color-slate-400, #94a3b8);
 }
 
 .ts-dropdown {
-    background-color: white !important;
-    border: 1px solid #d1d5db !important;
+    border: 1px solid var(--color-slate-200, #e2e8f0);
+    border-radius: var(--radius-lg, 0.5rem);
+    box-shadow: var(--shadow-md);
+    margin-top: 0.25rem;
 }
 
 .ts-dropdown .option {
-    background-color: white !important;
-    color: #1f2937 !important;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-slate-700, #334155);
 }
 
-.ts-dropdown .option.active {
-    background-color: #16a34a !important;
-    color: white !important;
+.ts-dropdown .option.active,
+.ts-dropdown .option:hover {
+    background-color: var(--color-green-600, #16a34a);
+    color: #fff;
 }
 
 /* Prevent Alpine-controlled elements from flashing before init. */

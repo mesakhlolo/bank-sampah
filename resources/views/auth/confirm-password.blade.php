@@ -1,7 +1,7 @@
 <x-guest-layout>
-    <h1 class="mb-2 text-lg font-semibold text-gray-900">Konfirmasi Kata Sandi</h1>
+    <h1 class="mb-2 text-lg font-semibold text-slate-900">Konfirmasi Kata Sandi</h1>
 
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="mb-4 text-sm text-slate-600">
         Ini adalah area aman aplikasi. Konfirmasi kata sandi Anda sebelum melanjutkan.
     </div>
 

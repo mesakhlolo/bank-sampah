@@ -17,28 +17,26 @@
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             <x-flash />
 
-            <!-- Filter Form -->
-            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-xs">
+            <!-- Filter -->
+            <x-card title="Periode" :padding="false">
                 <form method="GET" action="{{ route('reports.summary') }}"
-                    class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    class="grid grid-cols-1 items-end gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <x-input-label for="start_date" value="Dari Tanggal" />
-                        <input type="date" name="start_date" id="start_date"
-                            value="{{ request('start_date', $start) }}"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                        <x-text-input type="date" name="start_date" id="start_date"
+                            :value="request('start_date', $start)" class="mt-1 block w-full" />
                     </div>
                     <div>
                         <x-input-label for="end_date" value="Sampai Tanggal" />
-                        <input type="date" name="end_date" id="end_date"
-                            value="{{ request('end_date', $end) }}"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-xs focus:border-green-500 focus:ring-green-500">
+                        <x-text-input type="date" name="end_date" id="end_date"
+                            :value="request('end_date', $end)" class="mt-1 block w-full" />
                     </div>
                     <div class="flex gap-2">
                         <x-button type="submit" size="sm">Tampilkan</x-button>
                         <x-button :href="route('reports.summary')" variant="secondary" size="sm">Reset</x-button>
                     </div>
                 </form>
-            </div>
+            </x-card>
 
             <!-- Summary Metrics -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -65,94 +63,81 @@
             </div>
 
             <!-- Category Breakdown -->
-            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
-                <div class="border-b border-gray-100 px-6 py-4">
-                    <h2 class="text-base font-semibold text-gray-900">Breakdown per Kategori Sampah</h2>
-                </div>
-
+            <x-card title="Breakdown per Kategori Sampah" :padding="false">
                 @if ($categorySummary->isEmpty())
                     <x-empty-state title="Tidak ada data" description="Tidak ada transaksi pada periode ini." />
                 @else
-                    <div class="p-2">
-                        <x-table :headers="[
-                            'Kategori',
-                            ['label' => 'Total Berat (kg)', 'align' => 'right'],
-                            ['label' => 'Total Nilai (Rp)', 'align' => 'right'],
-                            ['label' => 'Jml Transaksi', 'align' => 'right'],
-                        ]">
-                            @foreach ($categorySummary as $category)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $category->name }}</td>
-                                    <td class="px-4 py-3 text-right text-sm text-gray-600">
-                                        {{ number_format($category->total_weight, 2, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-right text-sm text-gray-600">
-                                        {{ number_format($category->total_amount, 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-right text-sm text-gray-600">
-                                        {{ $category->transaction_count }}
-                                    </td>
-                                </tr>
-                            @endforeach
+                    <x-table :headers="[
+                        'Kategori',
+                        ['label' => 'Total Berat (kg)', 'align' => 'right'],
+                        ['label' => 'Total Nilai (Rp)', 'align' => 'right'],
+                        ['label' => 'Jml Transaksi', 'align' => 'right'],
+                    ]">
+                        @foreach ($categorySummary as $category)
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ $category->name }}</td>
+                                <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                    {{ number_format($category->total_weight, 2, ',', '.') }}
+                                </td>
+                                <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                    {{ number_format($category->total_amount, 0, ',', '.') }}
+                                </td>
+                                <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                    {{ $category->transaction_count }}
+                                </td>
+                            </tr>
+                        @endforeach
 
-                            <x-slot name="footer">
-                                <tr>
-                                    <td class="px-4 py-3 text-sm">TOTAL</td>
-                                    <td class="px-4 py-3 text-right text-sm">
-                                        {{ number_format($categorySummary->sum('total_weight'), 2, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-right text-sm">
-                                        {{ number_format($categorySummary->sum('total_amount'), 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-right text-sm">
-                                        {{ $categorySummary->sum('transaction_count') }}
-                                    </td>
-                                </tr>
-                            </x-slot>
-                        </x-table>
-                    </div>
+                        <x-slot name="footer">
+                            <tr>
+                                <td class="px-4 py-3 text-sm">TOTAL</td>
+                                <td class="px-4 py-3 text-right text-sm">
+                                    {{ number_format($categorySummary->sum('total_weight'), 2, ',', '.') }}
+                                </td>
+                                <td class="px-4 py-3 text-right text-sm">
+                                    {{ number_format($categorySummary->sum('total_amount'), 0, ',', '.') }}
+                                </td>
+                                <td class="px-4 py-3 text-right text-sm">
+                                    {{ $categorySummary->sum('transaction_count') }}
+                                </td>
+                            </tr>
+                        </x-slot>
+                    </x-table>
                 @endif
-            </div>
+            </x-card>
 
             <!-- Top 10 Customers -->
-            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
-                <div class="border-b border-gray-100 px-6 py-4">
-                    <h2 class="text-base font-semibold text-gray-900">Top 10 Nasabah</h2>
-                    <p class="mt-0.5 text-sm text-gray-500">Berdasarkan total setoran pada periode ini.</p>
-                </div>
-
+            <x-card title="Top 10 Nasabah" description="Berdasarkan total setoran pada periode ini." :padding="false">
                 @if ($topCustomers->isEmpty())
                     <x-empty-state title="Tidak ada data" description="Tidak ada transaksi pada periode ini." />
                 @else
-                    <div class="p-2">
-                        <x-table :headers="[
-                            '#',
-                            'Nama Nasabah',
-                            'Telepon',
-                            ['label' => 'Total Nilai (Rp)', 'align' => 'right'],
-                            ['label' => 'Total Berat (kg)', 'align' => 'right'],
-                            ['label' => 'Jml Transaksi', 'align' => 'right'],
-                        ]">
-                            @foreach ($topCustomers as $index => $customer)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-sm text-gray-500">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $customer->name }}</td>
-                                    <td class="px-4 py-3 text-sm text-gray-500">{{ $customer->phone }}</td>
-                                    <td class="px-4 py-3 text-right text-sm text-gray-600">
-                                        {{ number_format($customer->total_amount, 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-right text-sm text-gray-600">
-                                        {{ number_format($customer->total_weight, 2, ',', '.') }}
-                                    </td>
-                                    <td class="px-4 py-3 text-right text-sm text-gray-600">
-                                        {{ $customer->transaction_count }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </x-table>
-                    </div>
+                    <x-table :headers="[
+                        '#',
+                        'Nama Nasabah',
+                        'Telepon',
+                        ['label' => 'Total Nilai (Rp)', 'align' => 'right'],
+                        ['label' => 'Total Berat (kg)', 'align' => 'right'],
+                        ['label' => 'Jml Transaksi', 'align' => 'right'],
+                    ]">
+                        @foreach ($topCustomers as $index => $customer)
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 text-sm text-slate-500">{{ $index + 1 }}</td>
+                                <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ $customer->name }}</td>
+                                <td class="px-4 py-3 text-sm text-slate-500">{{ $customer->phone }}</td>
+                                <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                    {{ number_format($customer->total_amount, 0, ',', '.') }}
+                                </td>
+                                <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                    {{ number_format($customer->total_weight, 2, ',', '.') }}
+                                </td>
+                                <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                    {{ $customer->transaction_count }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </x-table>
                 @endif
-            </div>
+            </x-card>
         </div>
     </div>
 </x-app-layout>

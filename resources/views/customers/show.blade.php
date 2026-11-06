@@ -10,21 +10,21 @@
     <div class="py-8">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             <!-- Customer Info Card -->
-            <div class="rounded-xl border border-gray-200 bg-white shadow-xs">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-xs">
                 <div class="p-6">
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <!-- Left Column -->
                         <div>
-                            <h3 class="mb-4 text-base font-semibold text-gray-900">Informasi Nasabah</h3>
+                            <h3 class="mb-4 text-base font-semibold text-slate-900">Informasi Nasabah</h3>
                             <div class="space-y-3">
                                 <div>
-                                    <p class="text-sm text-gray-600">Kode Anggota</p>
+                                    <p class="text-sm text-slate-600">Kode Anggota</p>
                                     <p class="text-lg font-semibold">{{ $customer->member_code }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">Kode Unik Portal</p>
+                                    <p class="text-sm text-slate-600">Kode Unik Portal</p>
                                     <div class="mt-1 flex items-center gap-2">
-                                        <p class="inline-block rounded-lg bg-gray-100 px-3 py-1 font-mono text-lg font-bold text-gray-900">
+                                        <p class="inline-block rounded-lg bg-slate-100 px-3 py-1 font-mono text-lg font-bold text-slate-900">
                                             {{ $customer->unique_code }}
                                         </p>
                                         <button type="button"
@@ -33,22 +33,22 @@
                                             Salin
                                         </button>
                                     </div>
-                                    <p class="mt-1 text-xs text-gray-500">Kode untuk akses portal nasabah.</p>
+                                    <p class="mt-1 text-xs text-slate-500">Kode untuk akses portal nasabah.</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">Nama Lengkap</p>
+                                    <p class="text-sm text-slate-600">Nama Lengkap</p>
                                     <p class="font-semibold">{{ $customer->name }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">No. Telepon</p>
+                                    <p class="text-sm text-slate-600">No. Telepon</p>
                                     <p class="font-semibold">{{ $customer->phone ?: '-' }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">Alamat</p>
+                                    <p class="text-sm text-slate-600">Alamat</p>
                                     <p class="font-semibold">{{ $customer->address ?: '-' }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">Tanggal Bergabung</p>
+                                    <p class="text-sm text-slate-600">Tanggal Bergabung</p>
                                     <p class="font-semibold">
                                         {{ $customer->joined_at ? $customer->joined_at->format('d F Y') : '-' }}</p>
                                 </div>
@@ -57,10 +57,10 @@
 
                         <!-- Right Column - Balance -->
                         <div>
-                            <h3 class="mb-4 text-base font-semibold text-gray-900">Saldo</h3>
-                            <div class="rounded-xl bg-linear-to-br from-green-500 to-green-600 p-6 text-white">
-                                <p class="mb-2 text-sm opacity-90">Total Saldo</p>
-                                <p class="text-4xl font-bold">
+                            <h3 class="mb-4 text-base font-semibold text-slate-900">Saldo</h3>
+                            <div class="rounded-xl bg-slate-900 p-6 text-white">
+                                <p class="text-xs font-medium uppercase tracking-widest text-slate-400">Total saldo</p>
+                                <p class="mt-2 text-4xl font-semibold tracking-tight">
                                     Rp {{ number_format($customer->balance, 0, ',', '.') }}
                                 </p>
                             </div>
@@ -82,24 +82,24 @@
             </div>
 
             <!-- Transactions Tabs -->
-            <div class="rounded-xl border border-gray-200 bg-white shadow-xs" x-data="{ tab: 'ledger' }">
-                <div class="border-b border-gray-200">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-xs" x-data="{ tab: 'ledger' }">
+                <div class="border-b border-slate-200">
                     <nav class="flex -mb-px overflow-x-auto">
                         <button @click="tab = 'ledger'"
                             :class="tab === 'ledger' ? 'border-green-500 text-green-700' :
-                                'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
                             class="border-b-2 px-6 py-4 text-sm font-medium">
                             Buku Besar
                         </button>
                         <button @click="tab = 'deposits'"
                             :class="tab === 'deposits' ? 'border-green-500 text-green-700' :
-                                'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
                             class="border-b-2 px-6 py-4 text-sm font-medium">
                             Riwayat Setoran
                         </button>
                         <button @click="tab = 'withdrawals'"
                             :class="tab === 'withdrawals' ? 'border-green-500 text-green-700' :
-                                'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                                'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
                             class="border-b-2 px-6 py-4 text-sm font-medium">
                             Riwayat Penarikan
                         </button>
@@ -110,7 +110,7 @@
                     <!-- Ledger Tab -->
                     <div x-show="tab === 'ledger'">
                         <div class="mb-4 flex items-center justify-between">
-                            <h3 class="text-base font-semibold text-gray-900">Buku Besar (20 Transaksi Terakhir)</h3>
+                            <h3 class="text-base font-semibold text-slate-900">Buku Besar (20 Transaksi Terakhir)</h3>
                             <a href="{{ route('ledger.show', $customer) }}"
                                 class="text-sm font-medium text-green-700 hover:text-green-900">
                                 Lihat Semua Mutasi
@@ -126,7 +126,7 @@
                                 ['label' => 'Saldo', 'align' => 'right'],
                             ]">
                                 @foreach ($entries as $entry)
-                                    <tr class="hover:bg-gray-50">
+                                    <tr class="hover:bg-slate-50">
                                         <td class="whitespace-nowrap px-4 py-3 text-sm">
                                             {{ $entry->transaction_date ? $entry->transaction_date->format('d M Y') : '-' }}
                                         </td>
@@ -151,24 +151,24 @@
 
                     <!-- Deposits Tab -->
                     <div x-show="tab === 'deposits'">
-                        <h3 class="mb-4 text-base font-semibold text-gray-900">Riwayat Setoran (10 Terakhir)</h3>
+                        <h3 class="mb-4 text-base font-semibold text-slate-900">Riwayat Setoran (10 Terakhir)</h3>
                         @if ($customer->deposits->count() > 0)
                             <div class="space-y-3">
                                 @foreach ($customer->deposits as $deposit)
-                                    <div class="rounded-lg border border-gray-200 p-4 hover:bg-gray-50">
+                                    <div class="rounded-lg border border-slate-200 p-4 hover:bg-slate-50">
                                         <div class="flex items-start justify-between gap-4">
                                             <div>
-                                                <p class="font-mono text-sm text-gray-600">{{ $deposit->code }}</p>
-                                                <p class="mt-1 text-sm text-gray-500">
+                                                <p class="font-mono text-sm text-slate-600">{{ $deposit->code }}</p>
+                                                <p class="mt-1 text-sm text-slate-500">
                                                     {{ $deposit->transaction_date ? $deposit->transaction_date->format('d M Y') : '-' }}
                                                 </p>
-                                                <p class="mt-2 text-sm text-gray-600">
+                                                <p class="mt-2 text-sm text-slate-600">
                                                     {{ $deposit->items->count() }} jenis sampah,
                                                     {{ number_format($deposit->total_weight, 2) }} kg
                                                 </p>
                                             </div>
                                             <div class="text-right">
-                                                <p class="text-lg font-bold text-green-600">
+                                                <p class="text-lg font-semibold text-slate-900">
                                                     Rp {{ number_format($deposit->total_amount, 0, ',', '.') }}
                                                 </p>
                                                 <a href="{{ route('deposits.show', $deposit) }}"
@@ -187,24 +187,24 @@
 
                     <!-- Withdrawals Tab -->
                     <div x-show="tab === 'withdrawals'">
-                        <h3 class="mb-4 text-base font-semibold text-gray-900">Riwayat Penarikan (10 Terakhir)</h3>
+                        <h3 class="mb-4 text-base font-semibold text-slate-900">Riwayat Penarikan (10 Terakhir)</h3>
                         @if ($customer->withdrawals->count() > 0)
                             <div class="space-y-3">
                                 @foreach ($customer->withdrawals as $withdrawal)
-                                    <div class="rounded-lg border border-gray-200 p-4 hover:bg-gray-50">
+                                    <div class="rounded-lg border border-slate-200 p-4 hover:bg-slate-50">
                                         <div class="flex items-start justify-between gap-4">
                                             <div>
-                                                <p class="font-mono text-sm text-gray-600">{{ $withdrawal->code }}</p>
-                                                <p class="mt-1 text-sm text-gray-500">
+                                                <p class="font-mono text-sm text-slate-600">{{ $withdrawal->code }}</p>
+                                                <p class="mt-1 text-sm text-slate-500">
                                                     {{ $withdrawal->transaction_date ? $withdrawal->transaction_date->format('d M Y') : '-' }}
                                                 </p>
                                                 @if ($withdrawal->note)
-                                                    <p class="mt-2 text-sm text-gray-600">{{ $withdrawal->note }}</p>
+                                                    <p class="mt-2 text-sm text-slate-600">{{ $withdrawal->note }}</p>
                                                 @endif
                                             </div>
                                             <div class="text-right">
-                                                <p class="text-lg font-bold text-red-600">
-                                                    Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}
+                                                <p class="text-lg font-semibold text-red-600">
+                                                    - Rp {{ number_format($withdrawal->amount, 0, ',', '.') }}
                                                 </p>
                                                 <a href="{{ route('withdrawals.show', $withdrawal) }}"
                                                     class="mt-2 inline-block text-sm font-medium text-green-700 hover:text-green-900">

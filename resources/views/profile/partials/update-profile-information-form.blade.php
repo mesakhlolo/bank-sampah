@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-base font-semibold text-slate-900">
             Informasi Profil
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm text-slate-600">
             Perbarui informasi profil dan alamat email akun Anda.
         </p>
     </header>
@@ -30,10 +30,10 @@
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
-                    <p class="mt-2 text-sm text-gray-800">
+                    <p class="mt-2 text-sm text-slate-800">
                         Alamat email Anda belum diverifikasi.
 
-                        <button form="send-verification" class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        <button form="send-verification" class="rounded-md text-sm text-slate-600 underline hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                             Klik di sini untuk mengirim ulang email verifikasi.
                         </button>
                     </p>
@@ -56,7 +56,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
+                    class="text-sm text-slate-600"
                 >Tersimpan.</p>
             @endif
         </div>

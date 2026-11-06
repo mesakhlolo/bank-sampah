@@ -1,7 +1,7 @@
 <x-guest-layout>
-    <h1 class="mb-2 text-lg font-semibold text-gray-900">Lupa Kata Sandi</h1>
+    <h1 class="mb-2 text-lg font-semibold text-slate-900">Lupa Kata Sandi</h1>
 
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="mb-4 text-sm text-slate-600">
         Masukkan alamat email Anda. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi.
     </div>
 
